@@ -6,6 +6,7 @@ using AisectOnline.Data.Db;
 using AisectOnline.Services.Extensions;
 using AisectOnline.Services.Modules.Roles;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
@@ -51,6 +52,14 @@ builder.Services.AddControllers()
     });
 
 
+// Forwarded Headers (required for Azure reverse proxy / TLS termination)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 // Data Protection
 var dpKeysPath = config["DataProtectionKeys:Path"];
 if (string.IsNullOrEmpty(dpKeysPath) || !Path.IsPathRooted(dpKeysPath) || !Directory.Exists(Path.GetPathRoot(dpKeysPath)))
@@ -85,13 +94,19 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 // Seed Roles
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<IRoleSeeder>();
     await seeder.SeedAsync();
 }
+catch (Exception ex)
+{
+    Log.Error(ex, "Failed to seed roles at startup. The app will continue without seeding.");
+}
 
 // Pipeline
+app.UseForwardedHeaders();
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
