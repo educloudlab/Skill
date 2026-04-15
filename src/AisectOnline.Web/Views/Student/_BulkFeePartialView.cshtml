@@ -1,0 +1,148 @@
+﻿
+@using AisectOnline.Services.Modules.Students
+@(Html.DevExtreme().DataGrid<StudentFeeDto>()
+    .ID("gridContainer")
+    .ShowBorders(true)
+    .Paging(paging => paging.Enabled(false))
+    .Editing(editing => {
+        editing.Mode(GridEditMode.Row);
+        editing.AllowAdding(true);
+        editing.AllowDeleting(true);
+        editing.AllowUpdating(true);
+    })
+    .Columns(columns => {
+        columns.Add().Type(GridCommandColumnType.Buttons)
+            .Caption("Actions")
+            .Width(120)
+            .Buttons(b => {
+                b.Add().Name(GridColumnButtonName.Edit);
+                b.Add().Name(GridColumnButtonName.Delete);
+                b.Add().Name(GridColumnButtonName.Save);
+                b.Add().Name(GridColumnButtonName.Cancel);
+            });
+        columns.Add()
+           .Caption("Student Details")
+               .CssClass("band-header")
+           .Columns(c =>
+           {
+               c.Add().DataField("StudentCourseFeeID").Width(100);
+               c.Add().DataField("Seq_No").Caption("Sequence No").Width(50);
+               c.Add().DataField("RequestNo").Width(150);
+               c.Add().DataField("StudentID").AllowEditing(false).Width(80);
+               c.Add().DataField("StudentName").Width(150);
+               c.Add().DataField("FatherName").Width(150);
+               c.Add().DataField("MobileNo").Width(100);
+               c.Add().DataField("EmailAddress").Width(150);
+           });
+
+        columns.Add()
+       .Caption("Course Details")
+       .CssClass("band-header")
+       .Columns(c => {
+           c.Add().DataField("CourseName").Width(150);
+           c.Add().DataField("ProgrammeName").Width(100);
+           c.Add().DataField("PessionName").Width(120);
+           c.Add().DataField("Scheme").Width(100);
+
+       });
+        columns.Add()
+            .Caption("Fee Details")
+            .CssClass("band-header")
+            .Columns(c => {
+                c.Add().DataField("FeeType").Width(100);
+                c.Add().DataField("Month").Width(50);
+                c.Add().DataField("Fee")
+    .CustomizeText(@<text>function(cellInfo) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cellInfo.value);
+    }</text>)
+    .Width(100);
+       c.Add().DataField("lateFee")
+    .CustomizeText(@<text>function(cellInfo) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cellInfo.value);
+    }</text>)
+    .Width(100);
+
+       c.Add().DataField("totalFee")
+    .CustomizeText(@<text>function(cellInfo) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cellInfo.value);
+    }</text>)
+    .Width(100);
+
+      c.Add().DataField("serviceTax")
+    .CustomizeText(@<text>function(cellInfo) {
+        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cellInfo.value);
+    }</text>)
+    .Width(100);
+                 c.Add().DataField("OfflineBranchcode").Width(100);
+                c.Add().DataField("ProspectusNo").Width(100);
+            })
+            .Lookup(lookup => lookup
+                .DataSource(d => d.Mvc().Controller("Student").LoadAction("_BulkFeePartialView").Key("seq_No").LoadParams(new {feeType=1}))
+                .DisplayExpr("StudentCourseFeeID")
+                .ValueExpr("Seq_No")
+            );
+    })
+    .DataSource(d => d.Mvc()
+        .Controller("Student")      
+        .UpdateAction("Put")
+        .InsertAction("Post")
+        .DeleteAction("Delete")
+        .LoadAction("_BulkFeePartialView")
+        .Key("Seq_No")
+        .LoadParams(new { feeType = "1" })
+       
+
+
+    )
+    .Sorting(sorting=>sorting.Mode(GridSortingMode.Multiple))
+    .AllowColumnReordering(true)
+    .AllowColumnResizing(true)
+    //.Selection(s=>s.Mode(SelectionMode.Multiple))
+    //.GroupPanel(groupPnel=>groupPnel.Visible(true))
+
+   // .LoadPanel(l=>l.Enabled(false))
+     .Selection(s => s.Mode(SelectionMode.Multiple).ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always))
+    .Paging(p => p.PageSize(10))
+    .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new int[] { 10, 20, 50 }))
+    .FilterRow(f => f.Visible(true))
+
+    .OnEditingStart(@<text> function(e) { logEvent("EditingStart"); } </text>)
+    .OnInitNewRow(@<text> function(e) { logEvent("InitNewRow"); } </text>)
+    .OnRowInserting(@<text> function(e) { logEvent("RowInserting"); } </text>)
+    .OnRowInserted(@<text> function(e) { logEvent("RowInserted"); } </text>)
+    .OnRowUpdating(@<text> function(e) { logEvent("RowUpdating"); } </text>)
+    .OnRowUpdated(@<text> function(e) { logEvent("RowUpdated"); } </text>)
+    .OnRowRemoving(@<text> function(e) { logEvent("RowRemoving"); } </text>)
+    .OnRowRemoved(@<text> function(e) { logEvent("RowRemoved"); } </text>)
+    .OnSaving(@<text> function(e) { logEvent("Saving"); } </text>)
+    .OnSaved(@<text> function(e) { logEvent("Saved"); } </text>)
+    .OnEditCanceling(@<text> function(e) { logEvent("EditCanceling"); } </text>)
+    .OnEditCanceled(@<text> function(e) { logEvent("EditCanceled"); } </text>)
+)
+
+@* <div id="events">
+    <div>
+        <div class="caption">
+            Fired events
+        </div>
+        @(Html.DevExtreme().Button()
+            .ID("clear")
+            .Text("Clear")
+            .OnClick("onClearClick")
+        )
+    </div>
+    <ul></ul>
+</div> *@
+
+<script>
+    function logEvent(eventName) {
+        var logList = $("#events ul"),
+            newItem = $("<li>", { text: eventName });
+
+        logList.prepend(newItem);
+    }
+
+    function onClearClick() {
+        $("#events ul").empty();
+    }
+</script>

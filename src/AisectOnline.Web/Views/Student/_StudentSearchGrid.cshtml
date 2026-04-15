@@ -1,0 +1,32 @@
+﻿@model IEnumerable<AisectOnline.Services.Modules.Students.StudentResult1>
+@using AisectOnline.Services.Modules.Students
+@using DevExtreme.AspNet.Mvc
+
+@if (Model != null && Model.Any())
+{
+    @(Html.DevExtreme().DataGrid<StudentResult1>()
+            .ID("studentGrid")
+            .DataSource(Model)
+            .KeyExpr("Id")
+            .ShowBorders(true)
+            .Columns(columns =>
+            {
+                    columns.AddFor(m => m.Name);
+                    columns.AddFor(m => m.RegistrationNumber);
+                columns.AddFor(m => m.Status);
+                columns.AddFor(m => m.CenterCode);
+                columns.AddFor(m => m.Course);
+                columns.AddFor(m => m.Session);
+            })
+            .Paging(p => p.PageSize(10))
+            .Pager(p => p.ShowPageSizeSelector(true))
+        )
+}
+else
+{
+    <div class="alert alert-warning mt-3">No records found.</div>
+}
+
+@* @section Scripts {
+    @(Html.DevExtreme().GetScripts())
+} *@

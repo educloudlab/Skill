@@ -1,0 +1,665 @@
+﻿@using AisectOnline.Services.Modules
+@{
+    ViewData["Title"] = "Student Information";
+}
+
+    
+<html>
+<body>
+    <div class="form-container">
+        <div class="ScrollStyle">		
+			<br>
+			<img src="/images/img.jpeg" style="width: 100%;" alt="Description of image">
+
+			 <br/>
+			  @if (TempData["Result"] != null)
+              {
+                <div class="alert alert-success" style="text-align:center;font-size:18px; font-weight:bold; margin-left:0px">@TempData["Result"]</div>
+              }
+		
+ @using (Html.BeginForm("setStudentDetail", "StudentDetails", FormMethod.Post,  new { id = "admissionForm" }))
+ {
+          
+			<div class="section">
+				<div class="form-row">
+	     
+                <div class="form-group">
+				<label for="Zoneid">Zone</label>
+                <select id="Zoneid" name="Zoneid" class="form-control" onchange="loadZone(this.value)" required>
+                    <option value="">Select Zone</option>
+
+					@if(ViewBag.Zone!=null)
+					{
+                    @foreach (var Zone in ViewBag.Zone)
+                    {
+                        <option value="@Zone.Value">@Zone.Text</option>
+                    }
+					}
+                </select>
+            </div>
+
+			        <div class="form-group">
+						<label for="Stateid">State:</label>
+						 <select id="Stateid" name="Stateid" class="form-control" onchange="loadState(this.value)" required>
+						<option value="">Select State</option>   </select>
+					</div>
+
+					<div class="form-group">
+						<label for="districtId">District:</label>
+						 <select id="districtId" name="districtId" class="form-control" onchange="loadDistricts(this.value)" required>
+						<option value="">Select District</option>   </select>
+					</div>
+
+
+					
+				
+				</div>
+
+				<div class="form-row">
+                      <div class="form-group">
+						<label for="SKPid">SKP:</label>
+						 <select id="SKPid" name="SKPid" class="form-control" required>
+						<option value="">Select SKP</option>   </select>
+					</div>
+			
+					<div class="form-group">
+						<label for="studname">Student Name</label>
+						<input type="text" placeholder="Enter Student Name..." id="studname" name="studname" oninput="validateString(this)" required>
+					</div>
+					<div class="form-group">
+						<label for="fathername">Father Name</label>
+						<input type="text" placeholder="Enter Father Name..." id="fathername" name="fathername" oninput="validateString(this)" required>
+					</div>
+				</div>
+			
+				<div class="form-row">
+
+					<div class="form-group">
+						<label for="mothername">Mother Name</label>
+						<input type="text" placeholder="Enter Mother Name..." id="mothername" name="mothername" oninput="validateString(this)" required>
+					</div>
+
+					<div class="form-group">
+						<label for="Guardian">Guardian Name</label>
+						<input type="text" placeholder="Enter Guardian Name..." id="Guardian" name="Guardian" oninput="validateString(this)" required>
+					</div>
+						<div class="form-group">
+						<label for="dob">Date of Birth:</label>
+						<input type="date" id="dob" name="dob" required>
+					</div>
+					</div>
+				    <div class="form-row">				
+					   <div class="form-group">
+						 <label for="gender">Gender</label>
+						    <select id="gender" name="gender" required>
+							<option value="">Select a Gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						   </select>
+					</div>
+				
+					<div class="form-group">
+						<label for="category">Category</label>
+						<select id="category" name="category" required>
+							<option value="">Select a Category</option>
+							<option value="General">General</option>
+							<option value="OBC">OBC</option>
+							<option value="SC">SC</option>
+							<option value="ST">ST</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" placeholder="Enter Your Email" id="email" name="email" required>
+					</div>
+					
+
+
+			  </div>
+			
+				
+			
+				<div class="form-row">
+
+					<div class="form-group">
+						<label for="mobile">Mobile</label>
+						<input type="tel" placeholder="Enter Your Mobile No" id="mobile" maxlength="10" oninput="validateInteger(this)" name="mobile" required>
+					</div>
+					<div class="form-group">
+						<label for="aadhar">Aadhar No</label>
+						<input type="text" placeholder="Enter Your Aadhar No" id="aadhar" maxlength="12" oninput="validationIntegerAdd" name="aadhar" required>
+					</div>
+
+
+					
+					<div class="form-group">
+						<label for="Address">Address</label>
+						<input type="text" placeholder="Enter Your Address..." id="address" name="address" required>
+					</div>
+					
+					
+
+				</div>
+			
+				<div class="form-row">
+					
+					<div class="form-group">
+						<label for="city">City:</label>
+					<input type="text" placeholder="Enter Your City..." id="city" name="city" oninput="validateString(this)" required">
+					</div>
+					<div class="form-group">
+						<label for="pin">Pin Code</label>
+						<input type="text" placeholder="Enter Pin Code..." id="pin" name="pin" maxlength="6" oninput="validateInteger(this)" required>
+										 
+				</div>
+					<div class="form-group">
+						<label for="Education">Education</label>
+						 <select id="Education" name="Education" class="form-control" required>
+                    <option value="">Select Education</option>
+					@if(ViewBag.Education!=null)
+					{
+                    @foreach (var Edu in ViewBag.Education)
+                    {
+                        <option value="@Edu.Text">@Edu.Text</option>
+                    }
+					}
+                    </select>
+
+
+					</div>					  
+				</div>
+				<div class="form-row">				  
+		    <div class="form-group">
+						<label for="Specialization">Specialization</label>
+						<input type="text" placeholder="Enter Your Specialization" id="Specialization" name="Specialization" required>
+					   </div>
+
+				<div class="form-group">
+						<label for="Medium">Medium</label>
+						<select id="Medium" name="Medium" required>
+							<option value="">Select Medium</option>
+							<option value="Hindi">Hindi</option>
+							<option value="English">English</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
+
+
+				<div class="form-group">
+					<label for="board">Board</label>
+					<input type="text" placeholder="Enter Board" id="board" name="board" required>
+				</div>
+			</div>
+			<div class="form-row">
+			      <div class="form-group">
+					<label for="year">Passing Year</label>
+					<input type="number" placeholder="Enter Year" id="year" name="year" required>
+				</div>				
+
+					 <div class="form-group">
+						<label for="Division">Division:</label>
+						 <select id="Division" name="Division" class="form-control" required>
+						<option value="">Select Division</option>
+						<option value="I">I</option>
+						<option value="II">II</option>
+						<option value="III">III</option>					
+					</select>
+					</div>
+
+
+					<div class="form-group">
+						<label for="projectname">Project Name</label>
+						<input type="text" placeholder="Enter Project Name" id="projectname" name="projectname" required>
+					</div>
+					
+			</div>
+
+				
+			
+				<div class="form-row">
+						
+				<div class="form-group">
+						<label for="projectfy">Project FY</label>
+						<input type="text" placeholder="Enter Project FY" id="projectfy" name="projectfy" required>
+					</div>
+
+					 <div class="form-group">
+						<label for="Funded">Funded By:</label>
+						 <select id="Funded" name="Funded" class="form-control" required>
+						<option value="">Select Funded By</option>
+						<option value="CSR">CSR</option>
+						<option value="GOVT">GOVT</option>
+						<option value="Schools">Schools</option>					
+					</select>
+					</div>
+
+
+			
+
+					<div class="form-group">
+						<label for="Assessment">Assessment Mode:</label>
+						 <select id="Assessment" name="Assessment" class="form-control" required>
+						<option value="">Select Assessment Mode</option>
+						<option value="SSC">SSC</option>
+						<option value="NON SSC">NON SSC</option>										
+					</select>
+					</div>					
+			
+				
+				
+				
+
+					
+				</div>
+			
+				<div class="form-row">
+
+					<div class="form-group">
+			        <label for="Placement">Placement Oriented:</label>
+					 <select id="Placement" name="Placement" class="form-control" required>
+                    <option value="">Select Placement Oriented</option>
+					 <option value="YES">YES</option>
+					  <option value="NO">NO</option>                  
+                     </select>
+					</div>
+
+
+						<div class="form-group">
+						<label for="Sectors">Sector Name:</label>
+
+					 <select id="Sector" name="Sector" class="form-control" required>
+                    <option value="">Select Sector</option>
+								@if (ViewBag.Sector != null)
+								{
+									@foreach (var Sector in ViewBag.Sector)
+									{
+										<option value="@Sector.Text">@Sector.Text</option>
+									}
+								}
+							</select>
+
+
+
+					</div>
+
+					<div class="form-group">
+						<label for="coursecode">Course Code QP Code</label>
+						<input type="text" placeholder="Enter Course Code QP Code" id="coursecode" name="coursecode" required>
+					</div>
+					
+					
+				</div>
+			
+				<div class="form-row">
+
+					<div class="form-group">
+						<label for="coursename">Course Name</label>
+						<input type="text" placeholder="Enter Course Name" id="coursename" name="coursename" required>
+					</div>
+
+					<div class="form-group">
+						<label for="batchid">Batch ID</label>
+						<input type="number" placeholder="Enter Batch ID" id="batchid" name="batchid" required>
+					</div>
+
+					 <div class="form-group">
+						<label for="Entity">Aisect Entity:</label>
+						 <select id="Entity" name="Entity" class="form-control" required>
+						<option value="">Select Aisect Entity</option>
+						<option value="Aisect Limited">Aisect Limited</option>
+						<option value="Aisect Society Bhopal">Aisect Society Bhopal</option>
+						<option value="Aisect Society Raipur">Aisect Society Raipur</option>					
+					</select>
+					</div>
+				</div>
+				<div class="form-row">
+					 <div class="form-group">
+						<label for="StudentCertified">Student Certified:</label>
+						 <select id="StudentCertified" name="StudentCertified" class="form-control" required>
+						<option value="">Select Student Certification</option>
+						<option value="Yse">Yes</option>
+						<option value="No">No</option>
+											
+					</select>
+					</div>
+
+					 <div class="form-group">
+						<label for="StudentPlaced">Student Placed:</label>
+						 <select id="StudentPlaced" name="StudentPlaced" class="form-control" required>
+						<option value="">Select No.Of Student Placed</option>
+						<option value="Yes">Yes</option>
+						<option value="No">No</option>					   			
+					</select>
+					</div>
+				  
+					<div class="form-group">
+						<label for="createdby">Created By</label>
+						<input type="text" placeholder="Enter Created By" id="createdby" name="createdby" required>
+					</div>
+				</div>
+			
+				<button type="submit" id="btnsave" name="btnsave" style="background-color: #004b80;color: white;font-weight: 600;width:32%; height:-16px; margin-top: 2%;">Submit</button>
+						
+			</div>
+          }
+		  </div></div>
+
+
+</body>
+
+</html>
+
+<style>
+
+     
+input[type="date"] {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+body {
+font-family: 'poppins', sans-serif;
+background-color: #f0f0f0;
+display: flex;
+justify-content: center;
+align-items: center;
+
+}
+
+
+
+.form-container {
+background-color: white;
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+width: 100%;
+max-width: 2000px;
+
+
+}
+
+
+
+/* === BASE HEADING === */ 
+
+h1 {
+position: relative;
+padding: 0;
+margin: 0;
+font-family: "Raleway", sans-serif;
+font-weight: 300;
+font-size: 40px;
+color: #007bff;
+-webkit-transition: all 0.4s ease 0s;
+-o-transition: all 0.4s ease 0s;
+transition: all 0.4s ease 0s;
+}
+
+h1 span {
+display: block;
+font-size: 0.5em;
+line-height: 1.3;
+}
+h1 em {
+font-style: normal;
+font-weight: 600;
+}
+
+/* === HEADING STYLE #1 === */
+.one h1 {
+text-align: center;
+padding-bottom: 5px;
+}
+.one h1:before {
+width: 28px;
+height: 5px;
+display: block;
+content: "";
+position: absolute;
+bottom: 3px;
+left: 50%;
+margin-left: -14px;
+background-color: #007bff;
+}
+.one h1:after {
+width: 100px;
+height: 1px;
+display: block;
+content: "";
+position: relative;
+margin-top: 10px;
+left: 50%;
+margin-left: -50px;
+background-color: #007bff;
+}
+
+
+.section {
+margin-bottom: 30px;
+}
+
+h3 {
+margin-bottom: 20px;
+color: #007bff;
+border-bottom: 1px solid #007bff;
+padding-bottom: 2px;
+font-size: 18px;
+margin-top: 18px;
+}
+
+.form-row {
+display: flex;
+flex-wrap: wrap;
+gap: 15px;
+margin-top: 15px;
+}
+
+.form-group {
+flex: 1 1 calc(25% - 15px);
+}
+
+label {
+display: block;
+margin-bottom: 5px;
+font-size: 14px;
+color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="file"],
+input[type="number"],
+select {
+width: 100%;
+padding: 10px;
+font-size: 14px;
+border: 1px solid #ccc;
+border-radius: 5px;
+transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus {
+border-color: #007bff;
+}
+
+
+
+
+
+button {
+    width: 30%;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+        margin-left: 35%;
+}
+
+button:hover {
+    background-color: #0400ff;
+}
+
+</style>
+<script>
+
+
+
+    function validateString(input) {
+            var regex = /^[A-Za-z\s]*$/;
+            var errorMessage = document.getElementById('error-message');
+            
+            if (!regex.test(input.value)) {
+                input.value = input.value.replace(/[^A-Za-z\s]/g, ''); // Remove non-string characters
+                errorMessage.textContent = "Numbers are not allowed!";
+            } else {
+                errorMessage.textContent = ""; // Clear the error message
+            }
+        }
+
+
+		function validateInteger(input) {
+    var regex = /^[0-9]*$/; // Regular expression to allow only digits (0-9)
+    var errorMessage = document.getElementById('error-message');
+
+    // Check if the input contains any non-integer characters
+    if (!regex.test(input.value)) {
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        errorMessage.textContent = "Only integers are allowed!";
+    } 
+    // Check if the length is not equal to 6
+    else if (input.value.length< 7) {
+        errorMessage.textContent = "Input must be exactly 6 digits!";
+    } 
+    else {
+        errorMessage.textContent = ""; // Clear the error message
+    }
+
+
+
+	function validationIntegerAdd(input)
+	{
+		var regex=/^[0-9]*$/;
+		var errorMessage=document.getElementById('error message');
+		if(!regex.test(input.value)){
+			input.value=input.value.replace(/[^0-9]/g,'');
+			errorMessage.textContent="Only integers are allowed!";
+		}
+		else if(input.value.length!=12)
+		{
+			errorMessage.textContent="Input Must be exactly 12 digits";
+		}
+		else
+		{
+			errorMessage.textContent="";
+		}
+	}
+}
+
+
+
+$(document).ready(function() {
+    $('#dropdown').change(function() {
+        var stateId = $(this).val(); // Get the selected stateId
+        $('#hdnstateID').val(stateId); // Set the hidden input value
+
+        if (stateId) {
+            $.ajax({
+                url: '@Url.Action("GetDistricts", "StudentDetails")', // Call the GetDistricts action
+                type: 'GET',
+                dataType: 'json',
+                data: { stateId: stateId }, // Pass the stateId as data
+                success: function(data) {
+                    var $districtId = $('#districtId'); // Get the district dropdown element
+                    $districtId.empty(); // Clear previous options
+                    $districtId.append('<option value="">Select District</option>'); // Add a default option
+
+                    // Loop through the returned data and populate the dropdown
+                    $.each(data, function(index, item) {
+                        console.log(item); // Debug: log each item (District) for verification
+                        $districtId.append($('<option>').val(item.DistrictId).text(item.DistrictName));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching districts:", status, error); // Handle errors
+                }
+            });
+        } else {
+            // Reset district dropdown if no state is selected
+            $('#districtId').empty().append('<option value="">Select District</option>');
+        }
+    });
+});
+
+
+
+//$('#btnsave').click(function(){
+
+//	$('#skpDropdownText')
+
+//});
+
+
+
+</script>
+
+
+<script>
+
+	 function loadZone(ZoneId) {
+            $.getJSON('@Url.Action("GetState", "StudentDetails")', { ZoneId: ZoneId }, function (data) {
+                var stateDropdown = $('#Stateid');
+                stateDropdown.empty();
+                stateDropdown.append('<option value="">-- Select District --</option>');
+                $.each(data, function (index, item) {
+                    stateDropdown.append('<option value="' + item.StateID + '">' + item.StateName + '</option>');
+                });
+            });
+        }
+        function loadState(stateId) {
+            $.getJSON('@Url.Action("GetDistricts", "StudentDetails")', { stateId: stateId }, function (data) {
+                var districtDropdown = $('#districtId');
+                districtDropdown.empty();
+                districtDropdown.append('<option value="">-- Select District --</option>');
+                $.each(data, function (index, item) {
+                    districtDropdown.append('<option value="' + item.DistrictId + '">' + item.DistrictName + '</option>');
+                });
+            });
+        }
+
+        function loadDistricts(districtId) {
+            $.getJSON('@Url.Action("GetKiosksByDistrict", "StudentDetails")', { districtId: districtId }, function (data) {
+                var skpDropdown = $('#SKPid');
+                skpDropdown.empty();
+                skpDropdown.append('<option value="">-- Select SKP --</option>');
+                $.each(data, function (index, item) {
+                    skpDropdown.append('<option value="' + item.KIOSKID + '">' + item.KioskCode + '</option>');
+                });
+            });
+        }
+
+
+ 
+
+    </script>
+
+
+
+

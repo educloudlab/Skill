@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AisectOnline.Web</title>
+    <script type="importmap"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/devextreme/dx.light.css" />
+
+    <script src="~/js/devextreme/jquery.min.js"></script>
+    <script src="~/js/devextreme/dx.all.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+</head>
+<body>
+    <div class="custom-header">
+        <div class="logo-bar">
+            <img src="https://apps7.aisectonline.com/AisectNew/assets/AisectLibrary/Images/logo.png" alt="AISECT Online Logo" />
+        </div>
+
+        <div class="nav-social-container">
+            <div class="nav-menu" style="width:100%">
+                <div class="logo-box" style="padding: 2%;">
+
+                    @* *@
+
+
+                    <span style="color: #ffffff !important;">
+                        @Html.ActionLink("Upload Excel", "UploadExcel", "StudentDetails", new { @style = "color: #ffffff !important; font-weight: bold; font-size:15px" })
+                    </span>
+
+
+
+                </div>
+
+
+                <div class="logo-box" style="    padding: 2%;">
+                    <span>
+                        @Html.ActionLink("Student Details", "StudentDetail", "StudentDetails")
+                    </span>
+                </div>
+
+
+                <div class="logo-box" style="padding: 2%;">
+                    <span>
+                        @Html.ActionLink("Student Report", "StudentData", "StudentDetails")
+                    </span>
+                </div>
+
+                <div class="logo-box" style="padding: 2%;">
+                    <span>
+                        @Html.ActionLink("Student Dashboard", "StudentDashboard", "StudentDetails")
+                    </span>
+                </div>
+               @*  <a href="#" class="active">Home</a>
+                <a href="#">Registration</a>
+                <a href="#">Kiosk</a>
+                <a href="#">Services</a>
+                <a href="#">Contact</a> *@
+            </div>
+        </div>
+
+        <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-linkedin-in"></i>
+            <i class="fab fa-pinterest"></i>
+            <i class="fab fa-google-plus-g"></i>
+        </div>
+    </div>
+
+    <div class="custom-global-style">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer-bar">
+        &copy; 2025 - AisectOnline.Web -
+        <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

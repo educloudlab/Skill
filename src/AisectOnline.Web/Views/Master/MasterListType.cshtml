@@ -1,0 +1,15 @@
+﻿
+@using AisectOnline.Services.Modules.MasterData
+
+
+@model IList<MasterListDto>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Master List Grid";
+}
+
+
+<div>
+    @Html.Partial("_MasterListTypePartialView", Model)
+</div>

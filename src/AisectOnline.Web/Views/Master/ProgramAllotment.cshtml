@@ -1,0 +1,433 @@
+﻿@model AisectOnline.Services.Modules.MasterData.ProgrammeAllotment
+@using DevExtreme.AspNet.Mvc
+
+@{
+    Layout = "_Layout";
+}
+
+<link href="~/css/devextreme/dx.light.css" rel="stylesheet" />
+
+<style>
+    /* Page + corner polygon design */
+    .page {
+        margin: 78px auto;
+        max-width: 1150px;
+        font-family: "Segoe UI", Roboto, Arial;
+        color: #0b335f;
+        position: relative;
+    }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            left: -40px;
+            width: 300px;
+            height: 300px;
+            background: conic-gradient( rgba(0,114,255,0.12) 0deg 90deg, rgba(0,198,255,0.1) 90deg 180deg, rgba(255,107,107,0.12) 180deg 270deg, rgba(252,211,77,0.12) 270deg 360deg );
+            clip-path: polygon(0 0, 100% 0, 70% 70%, 0 100%);
+            z-index: 0;
+        }
+
+        .page::after {
+            content: "";
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 280px;
+            height: 280px;
+            background: conic-gradient( rgba(34,197,94,0.12) 0deg 120deg, rgba(59,130,246,0.12) 120deg 240deg, rgba(244,63,94,0.12) 240deg 360deg );
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 70%);
+            z-index: 0;
+        }
+
+        .page > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    /* Header */
+    .header-box {
+        background: linear-gradient(180deg,#fff,#fbfdff);
+        border: 1px solid #e6edf9;
+        border-radius: 12px;
+        padding: 6px 0;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(11,63,255,0.06);
+        margin-bottom: 12px;
+    }
+
+        .header-box .title {
+            font-weight: 800;
+            font-size: 20px;
+            color: #ff6a00;
+        }
+
+        .header-box .underline {
+            width: 120px;
+            height: 2px;
+            margin: 6px auto 8px;
+            border-radius: 6px;
+            background: linear-gradient(90deg,#ff9a3c,#ff6a00);
+        }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin: 6px 0 12px;
+    }
+
+    .tab {
+        padding: 8px 16px;
+        border-radius: 12px;
+        background: #f4f6fb;
+        border: 1px solid #e6edf9;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .tab.active {
+            background: linear-gradient(90deg,#0b63ff,#6e4bff);
+            color: #fff;
+        }
+
+    /* Master card */
+    .master-card {
+        display: none;
+        border-radius: 12px;
+        background: linear-gradient(180deg,#ffffff,#fbfdff);
+        border: 1px solid #e9eefb;
+        padding: 18px;
+        box-shadow: 0 12px 32px rgba(11,63,255,0.04);
+    }
+
+    /* Programme card */
+    .prog-card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #fff;
+        border: 1px solid rgba(11,63,255,0.06);
+    }
+
+    /* pill group - side by side equal width */
+    .pill-group {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .pill-radio {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        border-radius: 10px;
+        padding: 12px 14px;
+        border: 2px solid #d6e1fb;
+        background: #fff;
+        transition: .12s;
+        position: relative;
+    }
+
+        .pill-radio input {
+            display: none;
+        }
+
+    .pill-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid:#cfe0ff;
+        background: #fff;
+        position: relative;
+    }
+
+    .pill-text {
+        font-weight: 700;
+        color: #153452;
+        text-align: center;
+    }
+
+    /* selected */
+    .pill-radio.selected {
+        border-color: #0b63ff;
+        background: #fff;
+    }
+
+        .pill-radio.selected .pill-dot {
+            border-color: #0b63ff;
+        }
+
+            .pill-radio.selected .pill-dot::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                transform: translate(-50%,-50%);
+                background: #0b63ff;
+            }
+
+        .pill-radio.selected .pill-text {
+            color: #0b63ff;
+        }
+
+    /* inline dropdown (in-flow) - will be placed below pill-group but horizontally offset to align under clicked pill */
+    .inline-dropdown {
+        display: none;
+        margin-top: 10px;
+        background: #fff;
+        border: 1px solid #d6e1fb;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 8px 20px rgba(11,63,255,0.06);
+        width: 320px; /* will be overridden by JS to match pill width */
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+        position: relative; /* relative so margin-left shifts it */
+        left: 0;
+    }
+
+        .inline-dropdown ._kiosk-title {
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #153452;
+        }
+
+    .small-dropdown {
+        width: 100%;
+        padding: 9px 10px;
+        border-radius: 6px;
+        border: 1px solid #d6e1fb;
+        font-weight: 600;
+    }
+
+    /* actions */
+    .actions-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 12px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: 1px solid #d6e1fb;
+        background: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .btn.primary {
+            background: linear-gradient(90deg,#6b3cff,#0b63ff);
+            color: #fff;
+            border: none;
+        }
+
+        .btn.msc {
+            background: #fff;
+            border: 1px solid rgba(123,77,255,0.3);
+            color: #2c2c6f;
+        }
+
+    /* grid */
+    .grid-wrap {
+        margin-top: 16px;
+    }
+
+    .dx-datagrid .dx-header-row > td {
+        background: #eaf3ff !important;
+        color: #0b3b7a;
+        font-weight: 700;
+    }
+</style>
+
+<div class="page">
+    <div class="header-box" role="banner">
+        <div class="title">Program Allocate</div>
+        <div class="underline" aria-hidden="true"></div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Main tabs">
+        <div id="tabKiosk" class="tab" role="tab" onclick="openTab('KIOSK')">Kiosk Service</div>
+        <div id="tabProgramme" class="tab" role="tab" onclick="openTab('Programme')">Programme</div>
+    </div>
+
+    <div id="masterCard" class="master-card" aria-hidden="true">
+        <div class="prog-card" role="region" aria-label="Programme controls">
+            <label style="font-weight:800;">Program</label>
+
+            <div>
+                <div style="font-weight:700; margin-bottom:6px;">Programme Options</div>
+
+                <div class="pill-group" id="pillGroup" role="radiogroup" aria-label="Programme options">
+                    <label class="pill-radio" id="pillMulti" onclick="selectPill(this, 'MultiService')">
+                        <input type="radio" name="progPill" value="MultiService" />
+                        <span class="pill-dot" aria-hidden="true"></span>
+                        <span class="pill-text">MultiService Only</span>
+                    </label>
+
+                    <label class="pill-radio" id="pillEdu" onclick="selectPill(this, 'Educational')">
+                        <input type="radio" name="progPill" value="Educational" />
+                        <span class="pill-dot" aria-hidden="true"></span>
+                        <span class="pill-text">Educational (Assigned later MultiService)</span>
+                    </label>
+                </div>
+
+                <!-- inline dropdown: in-flow element (we'll align horizontally under clicked pill using margin-left computed in JS) -->
+                <div id="inlineDropdown" class="inline-dropdown" aria-hidden="true">
+                    <div class="_kiosk-title">KIOSK</div>
+
+                    <!-- Replace with ASPx partial if you need server-populated list -->
+                    @* <select id="progSelectSmall" class="small-dropdown" aria-label="Kiosk select">
+                        <option value="">Please select</option>
+                        <option>AVADHESH SHARMA _AISECT ETC CENTRE</option>
+                        <option>A100011_RAM KRISHAN _WELSH VISA GLOBAL</option>
+                        <option>A100025_ABHISHEK DEVGAN _GALAXY INFORMATION TECHNOLOGY (GIT)</option>
+                        <option>A100064_Rajiv kumar gupta _AISECT MULTI SERVICE CENTER</option>
+                    </select> *@
+                </div>
+            </div>
+
+            <div class="actions-row" role="group" aria-label="Actions">
+                <button id="btnSubmit" class="btn primary" onclick="submitProgramme()">Submit</button>
+                <button class="btn msc" onclick="mscAllot()">MSC &amp; FI Allotment</button>
+            </div>
+        </div>
+
+        <div id="kioskBlock" class="grid-wrap" aria-live="polite">
+            @(Html.DevExtreme().DataGrid()
+                        .ID("studentGrid")
+                        .DataSource(ds => ds.Mvc().LoadAction("GetStudentFees"))
+                        .KeyExpr("seq_No")
+                        .ShowBorders(true)
+                        .Paging(p => p.PageSize(12))
+                        .Pager(pg => pg.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 12, 25, 50 }).ShowInfo(true))
+                        .Columns(columns =>
+                        {
+                            columns.Add().Caption("Actions").CellTemplate("actionCell").Width(60).AllowFiltering(false);
+                            columns.Add().DataField("CourseFeeID").Caption("CourseFee ID");
+                            columns.Add().DataField("seq_No").Caption("Seq No");
+                            columns.Add().DataField("request_No").Caption("Request No");
+                            columns.Add().DataField("student_ID").Caption("Student ID");
+                            columns.Add().DataField("student_Name").Caption("Student Name");
+                            columns.Add().DataField("father_Name").Caption("Father Name");
+                            columns.Add().DataField("mobile_No").Caption("Mobile No");
+                            columns.Add().DataField("email").Caption("Email");
+                            columns.Add().DataField("course_Name").Caption("Course Name");
+                            columns.Add().DataField("programme").Caption("Programme");
+                            columns.Add().DataField("session").Caption("Session");
+                        })
+                        .OnContentReady("gridContentReady")
+                        )
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Show master card on tab click */
+    function openTab(tab) {
+      document.getElementById('tabKiosk').classList.remove('active');
+      document.getElementById('tabProgramme').classList.remove('active');
+
+      var master = document.getElementById('masterCard');
+      master.style.display = 'block';
+      master.setAttribute('aria-hidden','false');
+
+      if (tab === 'Programme') {
+        document.getElementById('tabProgramme').classList.add('active');
+        document.getElementById('kioskBlock').style.display = 'none';
+      } else {
+        document.getElementById('tabKiosk').classList.add('active');
+        document.getElementById('kioskBlock').style.display = 'block';
+        var grid = $("#studentGrid").dxDataGrid && $("#studentGrid").dxDataGrid("instance");
+        if (grid) grid.refresh();
+      }
+
+      clearPills();
+    }
+
+    /* When a pill is clicked: mark selected and show inline dropdown aligned under clicked pill */
+    function selectPill(labelEl, value) {
+      // clear previous visuals
+      document.querySelectorAll('.pill-radio').forEach(p => {
+        p.classList.remove('selected');
+        var inp = p.querySelector('input'); if (inp) inp.checked = false;
+      });
+
+      // mark clicked pill
+      labelEl.classList.add('selected');
+      var input = labelEl.querySelector('input'); if (input) input.checked = true;
+
+      // show inline dropdown (in-flow), and align it horizontally under clicked pill
+      var inline = document.getElementById('inlineDropdown');
+      inline.style.display = 'block';
+      inline.setAttribute('aria-hidden', 'false');
+
+      // Compute alignment: center of pill relative to pill-group left
+      var pillRect = labelEl.getBoundingClientRect();
+      var groupRect = document.getElementById('pillGroup').getBoundingClientRect();
+
+      // target width: match pill width (but clamp to min/max)
+      var targetWidth = Math.min(Math.max(pillRect.width, 220), groupRect.width - 20);
+      inline.style.width = targetWidth + 'px';
+
+      // compute left offset relative to pill-group: pillCenter - groupLeft - (targetWidth/2)
+      var pillCenter = pillRect.left + (pillRect.width / 2);
+      var left = pillCenter - groupRect.left - (targetWidth / 2);
+
+      // clamp left so dropdown stays inside pill-group container
+      var minLeft = 0;
+      var maxLeft = groupRect.width - targetWidth;
+      if (left < minLeft) left = minLeft;
+      if (left > maxLeft) left = maxLeft;
+
+      // apply using margin-left (since element is in-flow under pill-group)
+      inline.style.marginLeft = left + 'px';
+    }
+
+    /* clear pill visuals & hide dropdown */
+    function clearPills() {
+      document.querySelectorAll('.pill-radio').forEach(p => {
+        p.classList.remove('selected');
+        var inp = p.querySelector('input'); if (inp) inp.checked = false;
+      });
+      var inline = document.getElementById('inlineDropdown');
+      if (inline) {
+        inline.style.display = 'none';
+        inline.setAttribute('aria-hidden', 'true');
+        inline.style.marginLeft = '0px';
+        inline.style.width = '';
+      }
+      var sel = document.getElementById('progSelectSmall'); if (sel) sel.value = '';
+    }
+
+    /* Submit / MSC */
+    function submitProgramme() {
+      var inline = document.getElementById('inlineDropdown');
+      var visible = inline && inline.style.display !== 'none';
+      var prog = visible ? document.getElementById('progSelectSmall').value : '';
+      if (!prog) { alert('Please select a program'); return; }
+      var sel = document.querySelector('.pill-radio input:checked');
+      if (!sel) { alert('Please select programme option'); return; }
+      alert('Submitted: ' + prog + ' (' + sel.value + ')');
+    }
+
+    function mscAllot() { alert('Open MSC & FI Allotment flow'); }
+
+    /* init: hide master-card until tab click */
+    (function init(){
+      document.getElementById('masterCard').style.display = 'none';
+      clearPills();
+    })();
+</script>

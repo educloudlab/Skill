@@ -1,0 +1,246 @@
+﻿@using AisectOnline.Services.Modules.Students
+@using DevExtreme.AspNet.Mvc
+@model IList<StudentFeeDto>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Students Grid";
+}
+
+<style>
+    :root {
+        --line: #e5e7eb;
+        --muted: #6b7280;
+        --brand: #4f46e5;
+        --green: #16a34a;
+        --gray1: #f5f6f8;
+        --gray2: #e9ecef;
+        --hover: #eef2ff;
+    }
+
+    .wrap {
+        max-width: 100%;
+        margin: 80px auto 24px;
+        padding: 0 16px
+    }
+    /* Pill toggle (same radios, nicer look) */
+    .pill {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 999px;
+        padding: 6px;
+        gap: 6px;
+        width: max-content
+    }
+
+        .pill input {
+            display: none
+        }
+
+        .pill label {
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            color: #475569
+        }
+
+        .pill input:checked + span {
+            background: var(--brand);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 999px;
+            box-shadow: 0 0 0 3px rgba(79,70,229,.15)
+        }
+
+    /* Card around grid */
+    .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 10px 28px rgba(20,20,40,.06);
+        overflow: hidden
+    }
+
+    /* Grey zebra rows + hover */
+    #BulkFeeGrid {
+        width: 100%
+    }
+
+    .dx-datagrid-rowsview .dx-data-row {
+        background: var(--gray1)
+    }
+
+    .dx-datagrid-rowsview .dx-row-alt {
+        background: var(--gray2)
+    }
+
+    .dx-datagrid-rowsview .dx-data-row:hover {
+        background: var(--hover)
+    }
+
+    .dx-datagrid-headers .dx-header-row {
+        background: #fafafa
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message as string))
+{
+    <div class="alert alert-success" role="alert">@ViewBag.Message</div>
+}
+
+<div class="wrap">
+    <!-- Toggle (keep same names/ids so your JS works) -->
+    <div class="pill" style="margin-bottom:12px">
+        <label>
+            @Html.RadioButton("registrationType", "1", true, new { @id = "registration" })
+            <span>Registration</span>
+        </label>
+        <label>
+            @Html.RadioButton("registrationType", "3", false, new { @id = "reRegistration" })
+            <span>Re-Registration</span>
+        </label>
+    </div>
+
+    <!-- Grid partial inside a card (unchanged partial markup) -->
+    <div class="card">
+        @Html.Partial("_BulkFeePartialView", Model)
+    </div>
+
+    <!-- Student Fee Payment (different color as requested) -->
+    <div style="margin-top:12px">
+        <button id="getSelectedBtn" name="getSelectedBtn"
+                class="btn"
+                style="display:inline-flex;align-items:center;gap:8px;border:none;border-radius:12px;font-weight:800;padding:10px 16px;background:linear-gradient(135deg,#f97316,#f59e0b);color:#fff">
+            <i class="bi bi-cash-coin"></i> <span>Student Fee Payment</span>
+        </button>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<script>
+    // Helper to get grid instance (partial must render #BulkFeeGrid)
+    function grid(){ return $('#BulkFeeGrid').dxDataGrid('instance'); }
+
+    // --- Re-Registration dummy data (as you asked earlier) ---
+    const dummyRows = [
+      { studentCourseFeeID: 9001, studentId: 101, studentName:"Demo Kumar", fatherName:"Test Lal", courseName:"PGDCA", programmeName:"PGDCA", feeType:"Re-Reg", lateFee:0,   mobileNo:"9876500001" },
+      { studentCourseFeeID: 9002, studentId: 102, studentName:"Sample Singh", fatherName:"Ram",     courseName:"B.COM", programmeName:"B.COM", feeType:"Re-Reg", lateFee:200, mobileNo:"9876500002" },
+      { studentCourseFeeID: 9003, studentId: 103, studentName:"Temp Joshi",  fatherName:"Hari",    courseName:"B.SC (IT)", programmeName:"B.SC", feeType:"Re-Reg", lateFee:0, mobileNo:"9876500003" }
+    ];
+
+    // After partial loads, tweak grid options:
+    // - full width/scroll/resizing (all data visible)
+    // - icon-only actions (edit/save/cancel with icons)
+    // - toolbar: search box + "+" Add New icon (no top icons elsewhere)
+    const initTimer = setInterval(()=>{
+      const g = grid();
+      if(!g) return;
+
+      clearInterval(initTimer);
+
+      // Make grid show all columns comfortably
+      g.option({
+        columnAutoWidth: true,
+        columnHidingEnabled: false,
+        allowColumnResizing: true,
+        columnResizingMode: "widget",
+        wordWrapEnabled: false,
+        rowAlternationEnabled: true,
+        hoverStateEnabled: true,
+        scrolling: { useNative: false, columnRenderingMode: "virtual", showScrollbar: "always" },
+        // Icon-only edit buttons
+        editing: Object.assign({}, g.option('editing'), { useIcons: true }),
+        // Add toolbar with search + add-new (+ icon)
+        onToolbarPreparing: function(e){
+          e.toolbarOptions.items.push(
+            {
+              location: "after",
+              widget: "dxTextBox",
+              options: {
+                mode: "search",
+                placeholder: "Search...",
+                width: 320,
+                onInput: (ev)=> g.searchByText(ev.component.option("value"))
+              }
+            },
+            {
+              location: "after",
+              widget: "dxButton",
+              options: {
+                icon: "plus", // + icon only
+                hint: "Add New",
+                onClick: ()=> g.addRow()
+              }
+            }
+          );
+        }
+      });
+
+      // Replace command column buttons with icon-only set.
+      // NOTE: If your partial already defined a Buttons column, keep it; 'useIcons' makes them icon-only.
+      // If not present, you can add via MVC config in partial (recommended).
+
+    }, 150);
+
+    // --- Search should filter rows (handled in toolbar onInput above) ---
+
+    // --- Add/Edit/Save/Cancel inside grid ONLY (no top icons) ---
+    // 'useIcons: true' will ensure icons appear instead of text automatically
+    // If somewhere text still shows due to version, set editing texts empty (optional):
+    function tryIconOnly(){
+      const g = grid(); if(!g) return;
+      const ed = g.option('editing') || {};
+      g.option('editing', Object.assign({}, ed, {
+        useIcons: true,
+        texts: Object.assign({}, ed.texts||{}, {
+          addRow: "", editRow: "", saveRowChanges: "", cancelRowChanges: "", deleteRow: ""
+        })
+      }));
+    }
+    setTimeout(tryIconOnly, 600);
+
+    // --- Toggle registration/re-registration ---
+    function reloadFor(val){
+      const g = grid(); if(!g) return;
+      if(val === "3"){
+        g.option('dataSource', dummyRows);
+      }else{
+        g.option('dataSource', {
+          load: function () {
+            return $.getJSON('/student/_BulkFeePartialView', {
+              StudentId: 0,
+              feeType: val
+            });
+          }
+        });
+      }
+    }
+
+    $('input[name="registrationType"]').on('change', function () {
+      reloadFor($('input[name="registrationType"]:checked').val());
+    });
+    $('input[name="registrationType"]:checked').trigger('change');
+
+    // --- Student Fee Payment (same as before; changed button style only) ---
+    $('#getSelectedBtn').on('click', function () {
+      const g = grid(); if(!g) return;
+      const selectedRows = g.getSelectedRowsData();
+      if (!selectedRows || selectedRows.length === 0) { alert("Please select at least one row."); return; }
+
+      const selectedData = selectedRows.map(row => ({
+        studentCourseFeeID: row.studentCourseFeeID,
+        studentId: row.studentId,
+        feeType: row.feeType
+      }));
+
+      $.ajax({
+        url: '/student/BulkFeePayment',
+        type: 'POST',
+        data: JSON.stringify(selectedData),
+        contentType: 'application/json',
+        success: function () { alert("Successfully submitted."); },
+        error: function () { alert("Error while sending data."); }
+      });
+    });
+</script>

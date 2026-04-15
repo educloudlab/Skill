@@ -1,0 +1,52 @@
+@model AisectOnline.Services.Modules.Accounts.LogOnModel
+
+@{
+    Layout = "~/Views/Shared/LayoutBaseContentHeaderUser.cshtml";
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            
+            $('#menu-main-menu a').on('click', function (e) {
+                debugger;
+                e.preventDefault();
+                var partial = $(this).data('partial');
+                //alert(partial);
+                if (!partial) return;
+                 $('#loader-overlay').show();
+                //$('#menu-main-menu a').removeClass('menu-active');
+            $(this).addClass('menu-active');
+
+            // Show loader
+            $('#loader-overlay').fadeIn(200);
+                $.ajax({
+                    url: '/PartialLoader/LoadPartial',
+                    data: { viewName: partial },
+                    success: function (html) {
+                        $('#content-area').html(html);
+                        $('#loader-overlay').hide();
+                    },
+                    error: function () {
+                        $('#content-area').html('<p>Error loading content.</p>');
+                        $('#loader-overlay').hide();
+                    },
+                    complete: function () {
+                    // Hide loader
+                    $('#loader-overlay').hide();
+                }
+                });
+            });
+
+            // Optionally auto-load default view
+            $('#menu-main-menu a[data-partial="Students"]').click();
+        });
+    </script>
+}
+
+<div id="content-area">
+   
+    Hello
+    @* Loaded partials will appear here *@
+</div>

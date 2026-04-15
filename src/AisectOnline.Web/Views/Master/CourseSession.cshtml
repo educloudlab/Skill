@@ -1,0 +1,82 @@
+﻿@using AisectOnline.Services.Modules.MasterData
+@model IList<SessionMasterDtos>
+
+<script>
+
+
+
+         function onRowUpdating(e) {
+         console.log("RowUpdating fired:", e);       
+         const fullData = { ...e.oldData, ...e.newData };       
+         const payload = {
+             SessionID: e.key,
+             KioskTypeID: fullData.KioskTypeID,
+             KioskServiceID: fullData.KioskServiceID,
+             SessionMasterListID: fullData.SessionMasterListID,
+             SessionStartDate: fullData.SessionStartDate,
+             SessionEndDate: fullData.SessionEndDate,
+             Status: fullData.Status
+         };
+         fetch('/Master/UpdateSession', {
+             method: 'PUT',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload)
+         })
+         .then(response => {
+             if (!response.ok) throw new Error('Network response was not ok');
+             return response.json(); 
+         })
+         .then(data => {
+             console.log('Update successful:', data);
+             DevExpress.ui.notify("Session updated successfully!", "success", 2000);         
+             $("#MasterType").dxDataGrid("instance").refresh();
+         })
+         .catch(error => {
+             console.error('Update failed:', error); 
+             DevExpress.ui.notify("Update failed: " + error.message, "error", 3000);
+             e.cancel = true;
+         });
+     }
+
+
+
+
+    var sessionID = 0;
+
+    function getSessionID()
+    {
+        return sessionID;
+        alert(sessionID);
+    }
+    function onGridRowClick(e) {
+        sessionID = e.data.SessionID;      
+        $("#gvLateFee").dxDataGrid("instance").refresh();        
+    }
+
+
+      function onClickCourseDesign(sessionId) {
+        alert('Session ID: ' + sessionId);
+        var url = '/Master/Course?SessionID=' + sessionId;
+        alert('Redirecting to URL: ' + url);
+        window.location.href = url;
+    }
+
+
+
+
+
+</script>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Master List Grid";
+}
+<div>
+    @Html.Partial("_CourseSessionPartialView", Model)
+</div>
+<div>
+    @Html.Partial("_FeePartialView", Model)
+
+
+</div>
+
+

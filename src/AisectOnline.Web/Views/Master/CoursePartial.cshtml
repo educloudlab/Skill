@@ -1,0 +1,49 @@
+﻿
+@using System.ComponentModel
+@using AisectOnline.Data.Models
+@{
+    var data = Model;
+}
+@(
+    Html.DevExtreme().DataGrid<CourseMaster>()
+        .ID("gvLateFee")
+        .ShowBorders(true)
+        .Paging(p => p.Enabled(false))
+        .HeaderFilter(hf => hf.Visible(true))
+        .Selection(s => s.Mode(SelectionMode.Single))
+        .DataSource(d => d.Mvc()
+            .Controller("Master")
+            .LoadAction("_FeePartialView")
+            .Key("LateFeeId")
+            .LoadParams(new { sessionID = new JS("getSessionID") })
+            
+        )
+        .Columns(columns => {
+            columns.Add().Type(GridCommandColumnType.Buttons)
+                .Caption("Actions")
+                .Width(120)
+                .Buttons(b => {
+                    b.Add().Name(GridColumnButtonName.Edit);
+                    b.Add().Name(GridColumnButtonName.Save);
+                    b.Add().Name(GridColumnButtonName.Cancel);
+                    b.Add().Name(GridColumnButtonName.Delete);
+                });
+            columns.Add().Caption("Session Dates").CssClass("band-header").Columns(c => {
+
+
+
+
+               @*  c.AddFor(m => m.Days).Caption("Late Fee Days");
+                c.AddFor(m => m.LateFeeAmount).Caption("Late Fee Amount");
+                c.AddFor(m => m.IsActive).Caption("Is Active"); *@
+            });
+        })
+        .Sorting(s => s.Mode(GridSortingMode.Multiple))
+        .AllowColumnReordering(true)
+        .AllowColumnResizing(true)
+        .Paging(p => p.PageSize(10))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new int[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        //.Events(events => events.OnInitialized("onLateFeeGridInit"))
+)
+

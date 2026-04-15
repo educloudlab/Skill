@@ -1,0 +1,16 @@
+﻿@using AisectOnline.Services.Modules.Students
+@{
+    Layout = "_Layout";
+}
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link href="~/css/iconfont.css" rel="stylesheet" />
+<link href="~/css/fontroboto.css" rel="stylesheet" />
+<link href="~/css/list/master.css" rel="stylesheet" />
+
+<div class="master-box">
+    <h1 class="page-title">
+        <i class="fas fa-database"></i> Academic Session List
+    </h1>
+    @await Html.PartialAsync("_MasterDataGrid", 22)
+
+</div>

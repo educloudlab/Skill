@@ -3,8 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 ## Ignore MVC project
-src/AisectOnline.Web/
-src/AisectOnline.UI/
 ## Visual Studio
 .vs/
 bin/

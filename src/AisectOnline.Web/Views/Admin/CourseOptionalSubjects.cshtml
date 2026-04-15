@@ -1,0 +1,90 @@
+﻿@using AisectOnline.Services.Modules.MasterData
+@model List<CourseSubjectsOpt>
+
+@{
+    Layout = "_Layout";
+}
+
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link href="~/css/iconfont.css" rel="stylesheet" />
+<link href="~/css/fontroboto.css" rel="stylesheet" />
+<link href="~/css/list/master.css" rel="stylesheet" />
+
+<div class="master-box">
+    <h1 class="page-title">
+        <i class="fas fa-database"></i> Course Optional Subjects List
+    </h1>
+
+    <fieldset class="form-box">
+        <legend></legend>
+        <div class="grid-box">
+
+            @(Html.DevExtreme().DataGrid<CourseSubjectsOpt>()
+                        .ID("courseOptGrid")
+                        .DataSource(ds => ds.Mvc()
+        .Controller("Admin") // or your controller name
+        .LoadAction("GetCourseOptionalSub")
+        .UpdateAction("UpdateCourseOptionalSub") // <--- Update call
+        .Key("CPMMappingID")
+    )
+    .KeyExpr("CPMMappingID")
+                        .Columns(columns =>
+                        {
+                            columns.Add()
+                            .Type(GridCommandColumnType.Buttons)
+                            .Width(120)
+                            .Caption("Actions")
+                            .Buttons(b =>
+                            {
+                                b.Add().Name(GridColumnButtonName.Edit).CssClass("act-edit");
+                                b.Add().Name(GridColumnButtonName.Save).CssClass("icon-save");
+                                b.Add().Name(GridColumnButtonName.Cancel).CssClass("icon-cancel");
+                            });
+                            columns.AddFor(m => m.CourseCategory)
+                            .Caption("Category")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.ProgrammeName)
+                            .Caption("Programme")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.CourseCode)
+                            .Caption("Code")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.CourseName)
+                            .Caption("Name")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.Medium)
+                            .Caption("Medium")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.CPMMappingCode)
+                            .Caption("Mapping Code")
+                            .AllowEditing(false);
+
+                            columns.AddFor(m => m.NoOfOptionalsub)
+                            .Caption("No. of Optional Subjects")
+                            .DataType(GridColumnDataType.Number)
+                            .Format("0") // displays 0 if null
+                            .AllowEditing(true);
+                        })
+                        .Editing(editing =>
+                        {
+                            editing.AllowUpdating(true)
+                            .Mode(GridEditMode.Row); // row editing
+                        })
+                        .ShowBorders(true)
+                        .Pager(pager =>
+                        {
+                            pager.ShowPageSizeSelector(true)
+                            .AllowedPageSizes(new int[] { 10, 20, 50 })
+                            .ShowInfo(true);
+                        })
+                        .Paging(p => p.PageSize(20))
+                       
+                        )
+        </div>
+    </fieldset>
+</div>

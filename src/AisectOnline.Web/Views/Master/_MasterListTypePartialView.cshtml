@@ -1,0 +1,82 @@
+﻿
+<table>
+    <tr>
+        <td style="height:50px"></td>
+    </tr>
+</table>
+
+@using AisectOnline.Services.Modules.MasterData
+@using AisectOnline.Services.Modules.Students
+
+@(
+Html.DevExtreme().DataGrid<MasterListDto>()
+    .ID("MasterType")
+    .ShowBorders(true)
+    .Paging(paging => paging.Enabled(false))
+    .Editing(editing => {
+        editing.Mode(GridEditMode.Row);
+        editing.AllowAdding(true);
+        editing.AllowDeleting(true);
+        editing.AllowUpdating(true);
+    })
+    .Columns(columns => {
+        columns.Add().Type(GridCommandColumnType.Buttons)
+            .Caption("Actions")
+            .Width(120)
+            .Buttons(b => {
+                b.Add().Name(GridColumnButtonName.Edit);
+                b.Add().Name(GridColumnButtonName.Delete);
+                b.Add().Name(GridColumnButtonName.Save);
+                b.Add().Name(GridColumnButtonName.Cancel);
+            });
+        columns.Add()
+           .Caption("Master Details")
+               .CssClass("band-header")
+           .Columns(c =>
+           {
+              c.Add().DataField("TextField").Caption("Description");
+           });
+    })
+    .DataSource(d => d.Mvc()
+        .Controller("Master")      
+        .UpdateAction("Put")
+        .InsertAction("Post")
+        .DeleteAction("Delete")
+        .LoadAction("_MasterListTypePartialView")
+        .Key("ValueField")
+        .LoadParams(new { ID = "26" })
+    )
+    .Sorting(sorting=>sorting.Mode(GridSortingMode.Multiple))
+    .AllowColumnReordering(true)
+    .AllowColumnResizing(true) 
+     //.Selection(s => s.Mode(SelectionMode.Multiple).ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always))
+    .Paging(p => p.PageSize(10))
+    .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new int[] { 10, 20, 50 }))
+    .FilterRow(f => f.Visible(true))
+
+    .OnEditingStart(@<text> function(e) { logEvent("EditingStart"); } </text>)
+    .OnInitNewRow(@<text> function(e) { logEvent("InitNewRow"); } </text>)
+    .OnRowInserting(@<text> function(e) { logEvent("RowInserting"); } </text>)
+    .OnRowInserted(@<text> function(e) { logEvent("RowInserted"); } </text>)
+    .OnRowUpdating(@<text> function(e) { logEvent("RowUpdating"); } </text>)
+    .OnRowUpdated(@<text> function(e) { logEvent("RowUpdated"); } </text>)
+    .OnRowRemoving(@<text> function(e) { logEvent("RowRemoving"); } </text>)
+    .OnRowRemoved(@<text> function(e) { logEvent("RowRemoved"); } </text>)
+    .OnSaving(@<text> function(e) { logEvent("Saving"); } </text>)
+    .OnSaved(@<text> function(e) { logEvent("Saved"); } </text>)
+    .OnEditCanceling(@<text> function(e) { logEvent("EditCanceling"); } </text>)
+    .OnEditCanceled(@<text> function(e) { logEvent("EditCanceled"); } </text>)
+)
+
+<script>
+    function logEvent(eventName) {
+        var logList = $("#events ul"),
+            newItem = $("<li>", { text: eventName });
+
+        logList.prepend(newItem);
+    }
+
+    function onClearClick() {
+        $("#events ul").empty();
+    }
+</script>

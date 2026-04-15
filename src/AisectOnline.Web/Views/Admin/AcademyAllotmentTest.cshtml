@@ -1,0 +1,234 @@
+﻿@model AisectOnline.Services.Modules.Admin.AcademyAllotmentDto
+@{
+    Layout = "_Layout";
+}
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="~/css/allotmentgrid.css" rel="stylesheet" />
+
+<div class="page">
+    <div class="academy-outer">
+        <div class="heading-row">
+            <h2><i class="fa-solid fa-building-columns"></i> Academy Allotment</h2>
+        </div>
+
+        <!-- ===================== TOP TWO PANELS ===================== -->
+        <div class="top-two">
+            <!-- From Academy -->
+            <div class="panel" style="background:#a0815f14;">
+                <strong>Select Academy (From)</strong>
+                <div class="boxed-select" style="margin-top:8px;">
+                    @(Html.DevExtreme().SelectBox()
+                                        .ID("AcademyId1")
+                                        .Name("Academy1")
+                                        .DataSource(Model.Academy)
+                                        .DisplayExpr("TextField")
+                                        .ValueExpr("ValueField")
+                                        .Value(Model.AcademyId1)
+                                        .Placeholder("Please select")
+                                        .Width("100%"))
+                </div>
+                <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+                    @(Html.DevExtreme().Button()
+                                        .ID("loadBtn")
+                                        .Text("Load Programmes")
+                                        .Type(ButtonType.Default)
+                                        .OnClick("Show")
+                                        .Width("160px"))
+                    <button class="action-btn ghost" onclick="clearFrom()" style="width:20%;padding:9px;">Clear</button>
+                </div>
+            </div>
+
+            <!-- To Academy -->
+            <div class="panel" style="background:#5f9ea012;">
+                <strong>Select Academy (To)</strong>
+                <div class="boxed-select" style="margin-top:8px;">
+                    @(Html.DevExtreme().SelectBox()
+                                        .ID("AcademyId2")
+                                        .Name("Academy2")
+                                        .DataSource(Model.Academy)
+                                        .DisplayExpr("TextField")
+                                        .ValueExpr("ValueField")
+                                        .Value(Model.AcademyId2)
+                                        .Placeholder("Please select")
+                                        .Width("100%"))
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== DYNAMIC ALLOTMENT AREA ===================== -->
+        <div id="allotmentContainer" style="margin-top:20px;"></div>
+
+        <!-- ===================== UPDATE BUTTON ===================== -->
+        <div style="text-align:center;">
+            <button id="updateBtn" class="update-btn" onclick="updateAllotment()" style="display:none;">
+                <i class="fa fa-check"></i>&nbsp;&nbsp;Update
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script>
+    var availablePrograms = [], allottedPrograms = [], destPrograms = [];
+
+    function safeLeft(){try{return $("#gridContainer").dxDataGrid("instance");}catch(e){return null;}}
+    function safeRight(){try{return $("#gridContainer2").dxDataGrid("instance");}catch(e){return null;}}
+
+    function notify(msg,type="info",time=1500){
+      DevExpress.ui.notify({
+        message:msg,type:type,displayTime:time,width:220,
+        position:{my:"top right",at:"top right",of:".academy-outer"}
+      });
+    }
+
+    function renderLeft(data){
+      availablePrograms=data||[];
+      $("#gridContainer").dxDataGrid({
+        dataSource:availablePrograms,
+        keyExpr:"ValueField",
+        columns:[{dataField:"TextField",caption:"Programme Name"}],
+        selection:{mode:"multiple",showCheckBoxesMode:"always"},
+        paging:{enabled:false},showBorders:true,height:260
+      });
+    }
+
+    function renderDest(){
+      $("#gridContainer2").dxDataGrid({
+        dataSource: destPrograms.concat(allottedPrograms),
+        keyExpr: "ValueField",
+        columns: [{ dataField: "TextField", caption: "Programme Name" }],
+        selection: { mode: "multiple", showCheckBoxesMode: "always" },
+        paging: { enabled: false }, showBorders: true, height: 260,
+
+        rowPrepared: function(e){
+          if(e.rowType === "data" && destPrograms.some(d => d.ValueField === e.data.ValueField)){
+            e.rowElement.addClass("disabled-row");
+            e.rowElement.find("input[type=checkbox]").prop("disabled", true);
+          }
+        },
+
+        onSelectionChanged: function(e){
+          var disabledKeys = destPrograms.map(d => d.ValueField);
+          var stillSelected = e.selectedRowKeys.filter(k => disabledKeys.includes(k));
+          if(stillSelected.length){
+            e.component.deselectRows(stillSelected);
+            stillSelected.forEach(function(key){
+              var rowIndex = e.component.getRowIndexByKey(key);
+              if(rowIndex >= 0){
+                var rowElement = e.component.getRowElement(rowIndex);
+                rowElement.addClass("disabled-row");
+              }
+            });
+          }
+        },
+
+        onContentReady: function(e){
+          try{
+            var comp = e.component;
+            var visible = comp.getVisibleRows ? comp.getVisibleRows() : [];
+            visible.forEach(function(r){
+              if(r && r.data && destPrograms.some(d => d.ValueField === r.data.ValueField)){
+                var rowEl = comp.getRowElement(r.rowIndex);
+                if(rowEl && rowEl.length){
+                  rowEl.addClass("disabled-row");
+                  rowEl.find("input[type=checkbox]").prop("disabled", true);
+                }
+              }
+            });
+          }catch(ex){}
+        }
+      });
+    }
+
+    // ===================== LOAD AND CLEAR =====================
+    function Show(){
+      var from=$("#AcademyId1").dxSelectBox("instance").option("value");
+      var to=$("#AcademyId2").dxSelectBox("instance").option("value");
+      if(!from){notify("Select Source Academy","warning");return;}
+      if(to && from===to){notify("From & To cannot be same","warning");return;}
+
+      // Dynamically load partial view
+      $("#allotmentContainer").load('@Url.Action("LoadAllotmentArea", "Admin")?academyId=' + from, function(){
+          $.get('@Url.Action("GetCheckBoxList", "Admin")',{AcademyId:to},function(d){
+              destPrograms = d || [];
+              renderDest();
+              $("#updateBtn").show();
+          });
+      });
+    }
+
+    function clearFrom(){
+      try { $('#AcademyId1').dxSelectBox('instance').option('value', null); } catch(e){}
+      $("#allotmentContainer").empty();
+      availablePrograms=[]; allottedPrograms=[]; destPrograms=[];
+      $("#updateBtn").hide();
+    }
+
+    // ===================== ADD / REMOVE FUNCTIONS =====================
+    function addSelected(){
+      var left=safeLeft(); if(!left)return;
+      var rows=left.getSelectedRowsData(); if(!rows.length){notify("Select items to add","warning");return;}
+      rows.forEach(r=>{
+        if(!allottedPrograms.some(a=>a.ValueField===r.ValueField)
+           && !destPrograms.some(a=>a.ValueField===r.ValueField)){
+             allottedPrograms.push(r);
+             availablePrograms=availablePrograms.filter(a=>a.ValueField!==r.ValueField);
+        }
+      });
+      renderLeft(availablePrograms);renderDest();
+    }
+
+    function addAll(){
+      if(!availablePrograms.length){notify("No programmes","warning");return;}
+      availablePrograms.forEach(r=>{
+        if(!allottedPrograms.some(a=>a.ValueField===r.ValueField)
+           && !destPrograms.some(a=>a.ValueField===r.ValueField)){
+             allottedPrograms.push(r);
+        }
+      });
+      availablePrograms=[];renderLeft(availablePrograms);renderDest();
+    }
+
+    function removeSelected(){
+      var right=safeRight(); if(!right)return;
+      var rows=right.getSelectedRowsData(); if(!rows.length){notify("Select items to remove","warning");return;}
+      rows.forEach(r=>{
+        if(allottedPrograms.some(a=>a.ValueField===r.ValueField)){
+          allottedPrograms=allottedPrograms.filter(a=>a.ValueField!==r.ValueField);
+          availablePrograms.push(r);
+        }
+      });
+      renderLeft(availablePrograms);renderDest();
+    }
+
+    function removeAll(){
+      if(!allottedPrograms.length){notify("No new programmes to remove","warning");return;}
+      availablePrograms=availablePrograms.concat(allottedPrograms);
+      allottedPrograms=[];renderLeft(availablePrograms);renderDest();
+    }
+
+    // ===================== UPDATE =====================
+    function updateAllotment(){
+      var to=$("#AcademyId2").dxSelectBox("instance").option("value");
+      if(!to){ notify("Select Destination Academy first","warning"); return;}
+      if(!allottedPrograms.length){ notify("No new programmes to update","warning"); return;}
+
+      var ids=allottedPrograms.map(p=>p.ValueField);
+      var payload={Ids:ids,AcademyId2:to};
+
+      $.ajax({
+        url:'@Url.Action("AllotSelectedPrograms", "Admin")',
+        type:'POST',
+        data:JSON.stringify(payload),
+        contentType:"application/json; charset=utf-8",
+        success:(resp)=>{
+            notify(resp?.message ?? "Update successful","success",1000);
+            setTimeout(()=>window.location.href=resp.redirectUrl,2000);
+        },
+        error:()=>notify("Update failed","error",5000)
+      });
+    }
+</script>

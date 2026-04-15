@@ -1,0 +1,235 @@
+﻿<table>
+    <tr>
+        <td style="height:100px"></td>
+    </tr>
+</table>
+@using AisectOnline.Services.Modules.MasterData
+@using AisectOnline.Services.Modules.Students
+@using Microsoft.EntityFrameworkCore.Metadata.Builders
+@using System.ComponentModel
+
+@(
+Html.DevExtreme().DataGrid<SessionMasterDtos>()
+                .ID("MasterType")
+                .ShowBorders(true)
+                .Paging(paging => paging.Enabled(false))
+                .HeaderFilter(headerFilter => headerFilter.Visible(true))
+                .Selection(s => s.Mode(SelectionMode.Single))
+
+                // ✅ Popup Edit Mode
+                .Editing(editing => {
+                    editing.Mode(GridEditMode.Popup);
+                    editing.AllowAdding(true);
+                    editing.AllowDeleting(true);
+                    editing.AllowUpdating(true);
+
+                    // Configure popup window
+                    editing.Popup(p => {
+                        p.Title("Session Details");
+                        p.ShowTitle(true);
+                        p.Width(600);
+                        p.Height(400);
+                    });
+
+                    // Configure fields inside popup
+                    editing.Form(f =>
+            {
+                f.ColCount(2); // two columns inside popup form
+                f.Items(items =>
+                {
+                    items.AddSimpleFor(m => m.KioskServiceID).Editor(e =>
+                   {
+                       return e.SelectBox()
+                    .DataSource(ds => ds.Mvc()
+                         .Controller("Master")
+                         .LoadAction("KioskServiceType")
+                     )
+                    .ValueExpr("ValueField")
+                    .DisplayExpr("TextField");
+                    });
+                    items.AddSimpleFor(m => m.KioskTypeID).Editor(e =>
+                    {
+                       return e.SelectBox()
+                      .DataSource(ds => ds.Mvc()
+                                     .Controller("Master")
+                                     .LoadAction("GetKioskServices")
+                                     .LoadParams(new { kioskTypeId = 1 })
+                                 )
+                                 .ValueExpr("ValueField")
+                                 .DisplayExpr("TextField");
+                     });
+                    items.AddSimpleFor(m => m.SessionMasterListID).Editor(e =>
+      {
+          return e.SelectBox()
+         .DataSource(ds => ds.Mvc()
+.Controller("Master")
+.LoadAction("GetSessionList")
+.LoadParams(new { Id = 28 })
+                     )
+         .ValueExpr("ValueField")
+         .DisplayExpr("TextField");
+      });
+
+                    items.AddSimpleFor(m => m.SessionStartDate);
+                    items.AddSimpleFor(m => m.SessionEndDate);                   
+                    items.AddSimpleFor(m => m.Status).Editor(e =>
+        {
+            return e.SelectBox()
+         .DataSource(ds => ds.Mvc()
+  .Controller("Master")
+  .LoadAction("GetSessionList")
+  .LoadParams(new { Id = 30 })
+                     )
+         .ValueExpr("ValueField")
+         .DisplayExpr("TextField");
+        });
+
+                });
+            });
+
+                })
+                 .DataSource(d => d.Mvc()
+                    .Controller("Master")
+                    .UpdateAction("UpdateSession")
+                    .InsertAction("PostSession")
+                    .DeleteAction("Delete")
+                    .LoadAction("_CourseSessionPartialView")
+                    .Key("SessionID")
+                    .LoadParams(new { sessionID = (int?)null, role = "Admin" })
+                )
+              
+    .Columns(columns => {
+        // Action buttons column
+        columns.Add().Type(GridCommandColumnType.Buttons)
+            .Caption("Actions")
+            .Width(120)
+            .Buttons(b => {
+                b.Add().Name(GridColumnButtonName.Edit);
+                b.Add().Name(GridColumnButtonName.Save);
+                b.Add().Name(GridColumnButtonName.Cancel);
+                b.Add().Name(GridColumnButtonName.Delete);
+            });
+            columns.Add().Caption("Session Details").CssClass("band-header").Columns(c => {
+            c.AddFor(m => m.KioskTypeID)
+                .Caption("Type")
+                .Width(80)
+                .Lookup(lookup => lookup
+                    .DataSource(ds => ds.Mvc()
+                        .Controller("Master")
+                        .LoadAction("KioskServiceType") 
+                    )
+                    .ValueExpr("ValueField")   
+                    .DisplayExpr("TextField")  
+                )
+                .ValidationRules(r => {
+                    r.AddRequired().Message("Type is required");
+                });
+
+           c.AddFor(m => m.KioskServiceID)
+                .Caption("Services")
+                .Width(80)
+                .Lookup(lookup => lookup
+                    .DataSource(ds => ds.Mvc()
+                        .Controller("Master")
+                        .LoadAction("GetKioskServices") 
+                        .LoadParams(new { kioskTypeId = 1 })
+                    )
+                    .ValueExpr("ValueField")   
+                    .DisplayExpr("TextField")  
+                )
+                .ValidationRules(r => {
+                    r.AddRequired().Message("Type is required");
+                });
+
+
+                  c.AddFor(m => m.SessionMasterListID)
+                .Caption("Session")
+                .Width(80)
+                .Lookup(lookup => lookup
+                    .DataSource(ds => ds.Mvc()
+                        .Controller("Master")
+                        .LoadAction("GetSessionList") 
+                        .LoadParams(new { Id = 28 })
+                    )
+                    .ValueExpr("ValueField")   
+                    .DisplayExpr("TextField")  
+                )
+                .ValidationRules(r => {
+                    r.AddRequired().Message("Type is required");
+                });
+        });
+
+        // ✅ Session Dates Band
+        columns.Add().Caption("Session Dates").CssClass("band-header").Columns(c => {
+            c.AddFor(m => m.SessionStartDate)
+              .Caption("Start Date")
+              .DataType(GridColumnDataType.Date)
+              .Format("MM/dd/yyyy");
+
+            c.AddFor(m => m.SessionEndDate)
+              .Caption("End Date")
+              .DataType(GridColumnDataType.Date)
+              .Format("MM/dd/yyyy");
+        });
+
+        // ✅ Approval Info Band
+        columns.Add().Caption("Approval Info").CssClass("band-header").Columns(c => {
+            c.AddFor(m => m.ReviewBy).Caption("Review By");
+            c.AddFor(m => m.ReviewDate).Caption("Review Date");
+        });
+
+        // ✅ Approval/Rejection Info Band
+        columns.Add().Caption("Approval/Rejection Info").CssClass("band-header").Columns(c => {
+            c.AddFor(m => m.AppRejByName).Caption("Approver/Rej By");
+            c.AddFor(m => m.AppRejDate).Caption("Approval/Rej Date");
+        });
+ 
+columns.Add()
+  .Caption("Course Design")
+  .Width(120)
+  .CellTemplate(@<text>
+      <% if (data.StatusID != 0) { %>
+          <a href="javascript:void(0);" 
+             onclick="onClickCourseDesign(<%-data.SessionID %>)" 
+             class="grid-button">
+             Course Design
+          </a>
+      <% } else { %>
+          &nbsp;
+      <% } %>
+  </text>);
+
+              columns.Add().Caption("Status Info").CssClass("band-header").Columns(c => {
+
+             c.AddFor(m => m.Status)
+                .Caption("Status")
+                .Width(80)
+                .Lookup(lookup => lookup
+                    .DataSource(ds => ds.Mvc()
+                        .Controller("Master")
+                        .LoadAction("GetSessionList") 
+                        .LoadParams(new { Id = 30 })
+                    )
+                    .ValueExpr("ValueField")   
+                    .DisplayExpr("TextField")  
+                )
+                .ValidationRules(r => {
+                    r.AddRequired().Message("Type is required");
+                });
+           @*  c.AddFor(m => m.Status).Caption("Status");
+            c.AddFor(m => m.IsOpen).Caption("Is Open"); *@
+        });
+    })
+    .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+    .AllowColumnReordering(true)
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(10))
+    .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new int[] { 10, 20, 50 }))
+    .FilterRow(f => f.Visible(true))
+    .OnRowClick("_FeePartialView")
+    .OnRowClick("onGridRowClick")
+   .OnRowUpdating("onRowUpdating")
+)
+
+
+

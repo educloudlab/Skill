@@ -1,0 +1,472 @@
+﻿@using AisectOnline.Data.Models
+@using DevExtreme.AspNet.Mvc
+@using AisectOnline.Services.Modules.MasterData
+@model AisectOnline.Services.Modules.MasterData.KioskServiceListDto
+
+@{
+    Layout = "_Layout";
+}
+
+<!-- External Styles -->
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link href="~/css/iconfont.css" rel="stylesheet" />
+<link href="~/css/fontroboto.css" rel="stylesheet" />
+<link href="~/css/list/master.css" rel="stylesheet" />
+
+<div class="master-box">
+    <h1 class="page-title"><i class="fas fa-database"></i> Kiosk Data List</h1>
+
+    <fieldset class="form-box">
+        <legend>Select Option</legend>
+        <label>Choose Master Data:</label>
+        @(Html.DevExtreme().SelectBox()
+                .ID("KioskServiceList")
+                .DataSource(Model.KioskServiceList)
+                .DisplayExpr("TextField")
+                .ValueExpr("ValueField")
+                .Value(Model.KioskServiceList?.FirstOrDefault()?.ValueField)
+                .Placeholder("Please Select")
+                .OnValueChanged("onKioskServiceChanged")
+                )
+    </fieldset>
+
+    <fieldset class="form-box">
+        <legend>Master Data List</legend>
+        <div class="grid-box">
+            @(Html.DevExtreme().DataGrid<KioskServicesListDto>()
+                        .ID("servicesGrid")
+                        .KeyExpr(nameof(KioskServicesListDto.KIOSKServiceID))
+                        .Columns(columns =>
+                        {
+                            columns.Add().DataField(nameof(KioskServicesListDto.ServiceName)).Caption("Name");
+
+                            columns.Add().DataField(nameof(KioskServicesListDto.ImagePath)).Caption("Image")
+                            .CellTemplate(@<text>
+                                               <img src="/ServiceLogo/Services<%= data.KIOSKServiceID %><%= data.ImagePath.substring(data.ImagePath.lastIndexOf('.')) %>"
+                                                    style="width:40px;height:40px;object-fit:contain;" />
+                                           </text>)
+                            .AllowEditing(false)
+                            .Width(80);
+
+                            columns.Add().DataField(nameof(KioskServicesListDto.IsActive)).Caption("Status");
+                            columns.Add().DataField(nameof(KioskServicesListDto.IsFinancialService)).Caption("IsFinancialService").Visible(false);
+
+                            columns.Add().Type(GridCommandColumnType.Buttons)
+                            .Caption("Actions").Width(150).Alignment(HorizontalAlignment.Center)
+                            .Buttons(b =>
+                            {
+                                b.Add().Name(GridColumnButtonName.Edit).CssClass("act-edit");
+                                b.Add().Name(GridColumnButtonName.Save).CssClass("icon-save");
+                                b.Add().Name(GridColumnButtonName.Cancel).CssClass("icon-cancel");
+                            });
+                        })
+                        .Editing(e => e
+                        .Mode(GridEditMode.Popup)
+                        .AllowAdding(true)
+                        .AllowUpdating(true)
+                        .Popup(p => p.Title("Edit Kiosk Service").ShowTitle(true).Width(1000).Height(600))
+                        .Form(f => f.Items(items =>
+                        {
+                            items.AddGroup().ColCount(1).Items(groupItems =>
+                            {
+                                groupItems.AddSimple().DataField(nameof(KioskServicesListDto.ServiceName))
+                            .Label(l => l.Text("Service Name")).CssClass("fi service-row");
+
+                                groupItems.AddSimple().DataField(nameof(KioskServicesListDto.IsActive))
+                            .Label(l => l.Text("IsActive"))
+                            .Editor(ed => ed.CheckBox())
+                            .CssClass("fi status-row");
+
+                                groupItems.AddSimple().DataField(nameof(KioskServicesListDto.IsFinancialService))
+                            .Label(l => l.Text("IsFinancialService"))
+                            .Editor(ed => ed.CheckBox())
+                            .CssClass("fi status-row");
+
+                                // Image Upload
+                                groupItems.AddSimple().DataField(nameof(KioskServicesListDto.ImagePath))
+                            .Label(l => l.Text("Image"))
+                            .Template(@<text>
+                                           <div class="upload-inline-wrap">
+                                               <input type="file" id="imageUpload" accept="image/*,.pdf,.txt,.doc,.docx" class="upload-input-real" onchange="handleImageUpload(event)" />
+                                               <button type="button" class="upload-btn-inline" onclick="document.getElementById('imageUpload').click()">Choose File</button>
+                                               <span id="imageFileName" class="file-name-inline">default.jpg</span>
+                                               <img id="previewArea" class="file-preview-inline" src="/ServiceLogo/default.jpg" style="width:60px;height:60px;object-fit:contain;" />
+                                           </div>
+                                       </text>)
+                            .CssClass("fi image-row");
+                            });
+                        }))
+                        )
+                        .Paging(p => p.PageSize(10))
+                        .ShowBorders(true)
+                        .LoadPanel(lp => lp.Enabled(true).Text("Loading…"))
+                        .ErrorRowEnabled(false)
+                        .OnDataErrorOccurred("onGridError")
+                        .OnToolbarPreparing("gridToolbarPreparing")
+                        .OnInitialized("onGridInitialized")
+                        .OnEditingStart("onEditingStart")
+                        )
+        </div>
+    </fieldset>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    $(function () {
+        const selectBox = $("#KioskServiceList").dxSelectBox("instance");
+        if (selectBox.option("value")) onKioskServiceChanged({ value: selectBox.option("value") });
+    });
+
+    toastr.options = { closeButton: true, progressBar: true, timeOut: "3000", preventDuplicates: true };
+
+    function toastNearAdd(msg, type) {
+        toastr.options.target = "#gridToastSlot";
+        toastr.options.positionClass = "toast-in-slot";
+        const $t = toastr[type || "success"](msg);
+        setTimeout(() => { $t.addClass("show"); }, 0);
+        toastr.options.target = "body";
+    }
+
+    function gridToolbarPreparing(e) {
+        e.toolbarOptions.items = (e.toolbarOptions.items || []).filter(i => i.name !== "addRowButton");
+        e.toolbarOptions.items.push({ location: "before", template: () => $("<div id='gridToastSlot'></div>") });
+        e.toolbarOptions.items.push({
+            location: "after",
+            template: function () {
+                const $btn = $('<button type="button" class="btn-add-new"><span class="material-icons">add</span> Add New</button>');
+                $btn.on("click", function () { $("#servicesGrid").dxDataGrid("instance").addRow(); });
+                return $btn;
+            }
+        });
+    }
+
+    /* ===== CustomStore ===== */
+    function buildStore(masterId) {
+        return new DevExpress.data.CustomStore({
+            key: "KIOSKServiceID",
+            load: function () {
+                return $.ajax({
+                    url: '@Url.Action("GetKioskServiceList", "Master")',
+                    data: { Id: masterId },
+                    method: 'GET',
+                    dataType: 'json'
+                });
+            },
+            insert: function (values) {
+                const fileInput = document.getElementById("imageUpload");
+                const file = fileInput?.files[0];
+
+                const formData = new FormData();
+                formData.append("ServiceName", values.ServiceName);
+                formData.append("IsActive", values.IsActive);
+                formData.append("IsFinancialService", values.IsFinancialService);
+                formData.append("MasterDataTypeId", masterId);
+
+                if (file) formData.append("ImageFile", file);
+
+                return $.ajax({
+                    url: '@Url.Action("CreateKioskService", "Master")',
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                }).done(() => {
+                    toastNearAdd("✅ Data created", "success");
+                    if (fileInput) fileInput.value = "";
+                });
+            },
+            update: function (key, values) {
+                const grid = $("#servicesGrid").dxDataGrid("instance");
+                const row = grid.getVisibleRows().find(r => r.key === key);
+                const current = row ? row.data : {};
+                const merged = { ...current, ...values };
+
+                const fileInput = document.getElementById("imageUpload");
+                const file = fileInput?.files[0];
+
+                const formData = new FormData();
+                formData.append("ServiceName", merged.ServiceName ?? "");
+                formData.append("IsActive", (merged.IsActive === true).toString());
+                formData.append("IsFinancialService", (merged.IsFinancialService === true).toString());
+                formData.append("MasterDataTypeId", masterId);
+
+                if (file) formData.append("ImageFile", file);
+
+                return $.ajax({
+                    url: '@Url.Action("UpdateKioskService", "Master")?ServiceID=' + encodeURIComponent(key),
+                    method: "PUT",
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                }).done(() => {
+                    toastNearAdd("✅ Data updated", "success");
+                    if (fileInput) fileInput.value = "";
+                });
+            }
+        });
+    }
+
+    function onKioskServiceChanged(e) {
+        const grid = $("#servicesGrid").dxDataGrid("instance");
+        if (!grid) return;
+        const id = e && e.value;
+        if (!id) { grid.option("dataSource", []); return; }
+
+        grid.beginCustomLoading("Loading…");
+        const ds = buildStore(id);
+        grid.option("dataSource", ds);
+        ds.load()
+            .then(() => { grid.endCustomLoading(); grid.refresh(); })
+            .catch(err => { grid.endCustomLoading(); toastNearAdd('❌ ' + err, 'error'); });
+    }
+
+    function onGridInitialized(e) {
+        const selectBox = $("#KioskServiceList").dxSelectBox("instance");
+        if (selectBox && selectBox.option("value")) {
+            onKioskServiceChanged({ value: selectBox.option("value") });
+        }
+    }
+
+    function onGridError(e) {
+        const msg = (e && e.error) ? (e.error.message || e.error) : 'Operation failed';
+        toastNearAdd('❌ ' + msg, 'error');
+    }
+
+    /* ===== Image Preview ===== */
+    function handleImageUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        const nameSpan = document.getElementById("imageFileName");
+        const previewArea = document.getElementById("previewArea");
+
+        if (!file) { resetPreview(); return; }
+
+        if (nameSpan) nameSpan.textContent = file.name;
+        if (previewArea) previewArea.innerHTML = "";
+
+        if (file.type && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewArea.innerHTML = `<img src="${e.target.result}" style="width:60px;height:60px;object-fit:contain;" />`;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewArea.innerHTML = `<span class="non-image-badge">No preview</span>`;
+        }
+
+    }
+
+    function resetPreview() {
+        const nameSpan = document.getElementById("imageFileName");
+        if (nameSpan) nameSpan.textContent = "No file chosen";
+        const previewArea = document.getElementById("previewArea");
+        if (previewArea) previewArea.innerHTML = "";
+    }
+
+    function setImagePreview(rowData) {
+        const nameSpan = document.getElementById("imageFileName");
+        const previewArea = document.getElementById("previewArea");
+
+        if (!rowData || !rowData.ImagePath) {
+            resetPreview();
+            return;
+        }
+
+        if (nameSpan) nameSpan.textContent = rowData.ImagePath.split("/").pop();
+        if (previewArea) {
+            const ext = rowData.ImagePath.substring(rowData.ImagePath.lastIndexOf('.'));
+            previewArea.src = `/ServiceLogo/Services${rowData.KIOSKServiceID}${ext}`;
+        }
+    }
+
+    function onEditingStart(e) {
+        setTimeout(() => setImagePreview(e.data), 0); // show preview in popup
+    }
+</script>
+
+<style>
+    /* Popup Title */
+    .dx-popup-title {
+        background: linear-gradient(90deg, #1f2937 0%, #3b82f6 100%);
+        color: #fff;
+        padding: 16px !important;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        text-align: center;
+    }
+
+        .dx-popup-title .dx-toolbar-label .dx-toolbar-label-text {
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 18px;
+            text-align: center;
+            width: 100%;
+        }
+
+    /* Form rows: label left | editor full */
+    .dx-form .fi.dx-field-item {
+        display: grid !important;
+        grid-template-columns: 170px minmax(0,1fr);
+        align-items: flex-start;
+        gap: 14px;
+        padding: 6px 12px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        background: #fafafa;
+        margin-bottom: 14px;
+        width: 654px;
+        box-sizing: border-box;
+    }
+    /* ----- Force Popup Size Overrides ----- */
+    .dx-popup-content {
+        height: 212.708px !important;
+    }
+
+    .dx-overlay-content.dx-popup-normal.dx-popup-draggable.dx-resizable {
+        height: 451px !important;
+        width: 700px !important;
+    }
+
+    .dx-form .fi .dx-field-item-label {
+        margin: 0 !important;
+    }
+
+    .dx-form .fi .dx-field-item-label-text {
+        font-weight: 700;
+        color: #111827;
+        font-size: 14px;
+    }
+
+    .dx-form .fi .dx-field-item-content,
+    .dx-form .fi .dx-field-item-content > .dx-widget,
+    .dx-form .dx-texteditor, .dx-form .dx-texteditor-input-container,
+    .dx-form .dx-texteditor-input, .dx-form input[type="file"] {
+        width: 100% !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .status-row .dx-field-item-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .status-row .dx-checkbox {
+        transform: scale(1.05);
+    }
+
+    /* Inline upload + RIGHT preview */
+    .upload-inline-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .upload-input-real {
+        display: none;
+    }
+
+    .upload-btn-inline {
+        padding: 8px 16px;
+        background: #1e40af;
+        color: #fff;
+        border-radius: 6px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background .2s ease;
+    }
+
+        .upload-btn-inline:hover {
+            background: #2563EB;
+        }
+
+    .file-name-inline {
+        font-size: 14px;
+        color: #374151;
+    }
+
+    .file-preview-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .preview-wrap {
+        position: relative;
+        display: inline-block;
+    }
+
+        .preview-wrap img {
+            max-width: 80px;
+            max-height: 80px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            display: block;
+        }
+
+    .remove-preview {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+
+    .non-image-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* Centered Save / Cancel */
+    .dx-popup-bottom {
+        padding: 20px;
+        display: flex;
+        justify-content: center !important;
+        gap: 16px;
+    }
+
+        .dx-popup-bottom .dx-button {
+            min-width: 110px;
+            height: 48px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .dx-popup-bottom .dx-button-mode-contained {
+            background: #3B82F6;
+            color: #fff;
+            border: none;
+        }
+
+            .dx-popup-bottom .dx-button-mode-contained:hover {
+                background: #2563EB;
+            }
+
+        .dx-popup-bottom .dx-button-mode-outlined {
+            border-color: #9CA3AF;
+            color: #374151;
+            background: #fff;
+        }
+
+            .dx-popup-bottom .dx-button-mode-outlined:hover {
+                background: #F3F4F6;
+            }
+</style>
