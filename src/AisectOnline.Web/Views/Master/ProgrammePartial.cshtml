@@ -1,0 +1,61 @@
+﻿@using AisectOnline.Data.Models
+@using AisectOnline.Services.Modules.MasterData
+@using AisectOnline.Services.Modules.Students
+@using Microsoft.EntityFrameworkCore.Metadata.Builders
+@using System.ComponentModel
+@{
+    var data = Model;
+}
+@(
+    Html.DevExtreme().DataGrid<ProgrammeDto>()
+        .ID("gvProgrammeFee")
+        .ShowBorders(true)
+        .Paging(p => p.Enabled(false))
+        .HeaderFilter(hf => hf.Visible(true))
+        .Selection(s => s.Mode(SelectionMode.Single))
+        .DataSource(d => d.Mvc()
+            .Controller("Master")
+            .LoadAction("_FeePartialView")
+            .Key("ProgrammeID")
+
+            .LoadParams(new { sessionID = new JS("getSessionID") })
+            
+        )
+        .Columns(columns => {
+            columns.Add().Type(GridCommandColumnType.Buttons)
+                .Caption("Actions")
+                .Width(120)
+                .Buttons(b => {
+                    b.Add().Name(GridColumnButtonName.Edit);
+                    b.Add().Name(GridColumnButtonName.Save);
+                    b.Add().Name(GridColumnButtonName.Cancel);
+                    b.Add().Name(GridColumnButtonName.Delete);
+                });
+            columns.Add().Caption("Session Dates").CssClass("band-header").Columns(c => {
+
+                c.AddFor(m => m.ProgrammeName).Caption("ProgrammeName");
+                c.AddFor(m => m.NoOfCourse).Caption("NoOfCourse");
+                c.AddFor(m => m.Skill).Caption("Skill");
+
+                   c.AddFor(m => m.Eligibillity).Caption("Eligibillity");
+                c.AddFor(m => m.Remarks).Caption("Remarks");
+                c.AddFor(m => m.CourseCategoryID).Caption("CourseCategoryID");
+
+                   c.AddFor(m => m.ProgrammeName).Caption("Reviewed");
+                c.AddFor(m => m.DepartmentName).Caption("DepartmentName");
+                c.AddFor(m => m.DeptId).Caption("DeptId");
+
+                  c.AddFor(m => m.CourseCategory).Caption("CourseCategory");
+                c.AddFor(m => m.StudyMaterialYN).Caption("StudyMaterialYN");
+
+            });
+        })
+        .Sorting(s => s.Mode(GridSortingMode.Multiple))
+        .AllowColumnReordering(true)
+        .AllowColumnResizing(true)
+        .Paging(p => p.PageSize(10))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new int[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        //.Events(events => events.OnInitialized("onLateFeeGridInit"))
+)
+

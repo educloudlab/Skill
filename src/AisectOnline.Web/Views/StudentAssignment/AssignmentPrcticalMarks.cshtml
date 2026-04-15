@@ -1,0 +1,634 @@
+﻿@model AisectOnline.Services.Modules.StudentAssignment.StudentDetailDto
+
+@using DevExtreme.AspNet.Mvc
+@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+</style>
+
+<style>
+            /* Styling for the progress bar */
+            #progressBarContainer {
+                width: 100%;
+                background-color: #f3f3f3;
+                border: 1px solid #ccc;
+                margin-top: 20px;
+                display: none;  /* Initially hidden */
+            }
+
+            #progressBar {
+                width: 0%;
+                height: 30px;
+                background-color: #4caf50;
+                text-align: center;
+                color: black;
+            }
+
+            .checkbox-container {
+        display: flex;
+        align-items: center; /* Center the checkbox and label vertically */
+        margin: 10px 10px 10px 10px; /* Add some space above and below */
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 10px; /* Add space between the checkbox and label */
+        width: 20px; /* Set the width of the checkbox */
+        height: 20px; /* Set the height of the checkbox */
+    }
+
+    .checkbox-container label {
+        font-size: 16px; /* Set the font size of the label */
+        color: #333; /* Set the color of the label */
+        cursor: pointer; /* Change the cursor to pointer when hovering over the label */
+    }
+
+
+
+</style>
+@using (Html.BeginForm("AssignmentPrcticalMarks", "StudentAssignment", FormMethod.Post))
+{
+    <table style="widht:100%;">
+        <tr>
+            <td style="height:80px" colspan="4"></td>
+        </tr>
+        <tr>
+            <td style="height:30px" colspan="4">
+
+                <img src="../../Images/img2.gif" id="img" style="display:none; width:100%; height:50px" />
+            </td>
+        </tr>
+        <tr>
+
+
+            <td style="margin-top:50px;width:30%">
+                <label asp-for="UniversitySelect" style="font-size:16px; font-weight:bold">University Name:</label>
+                @Html.DropDownListFor(
+                model => model.UniversitySelect,
+                        new SelectList(Model.listservice, "KIOSKServiceID", "ServiceName", Model.UniversitySelect),
+                        "-- Select a University --",
+                        new { @class = "form-control", style = "width:300px;height:43px" }
+                        )
+
+           </td>
+
+        <td style="margin-top:50px;width:30%">
+            <label asp-for="CategorySelect" style="font-size:16px; font-weight:bold">Academy Name:</label>
+            @Html.DropDownListFor(
+                        model => model.CategorySelect,
+                        new SelectList(Model.listcategory, "CourseCategoryID", "CourseCategory", Model.CategorySelect),
+                        "-- Select a Category --",
+                        new { @class = "form-control", style = "width:300px;height:43px" }
+                        )
+        </td>
+
+
+
+        <td style="margin-top:50px;width:30%">
+            <label asp-for="courseSelect" style="font-size:16px; font-weight:bold">Course Name:</label>
+            @Html.DropDownListFor(
+                        model => model.courseSelect,
+                        new SelectList(Model.listcoursename, "CourseID", "Name", Model.listcoursename),
+                        "-- Select a Category --",
+                        new { @class = "form-control", style = "width:300px;height:43px" }
+                        )
+        </td>
+
+  
+           @*  <td style="margin-top:50px;width:60%">
+
+                <label for="studentType" style="font-size:16px; font-weight:bold">Type:</label>
+                <select id="AssignmentType" name="AssignmentType" style="width:200px;height:43px">
+                    <option value="">-- Select a Type --</option>
+                    <option value="Assignment">Assignment</option>
+                    <option value="Practical">Practical</option>
+                </select>
+            </td> *@
+
+
+        <td style="margin-top:50px;width:60%">
+            <label asp-for="AssignmentType" style="font-size:16px; font-weight:bold">Type:</label>
+            @Html.DropDownListFor(model => model.AssignmentType,
+                        new List<SelectListItem>
+                        {
+                        new SelectListItem { Value = "", Text = "-- Select a Type --" },
+                        new SelectListItem { Value = "Assignment", Text = "Assignment" },
+                        new SelectListItem { Value = "Practical", Text = "Practical" }
+                        },
+                        new { @id = "AssignmentType", @style = "width:200px;height:43px" })
+        </td>
+
+
+
+
+        </tr>
+
+    </table>
+    <div id="studentTableContainer">
+        <table id="studentTable">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        <input type="hidden" id="hdncount" name="hdncount" value="">
+        <input type="hidden" id="hdnStudentcount" name="hdnStudentcount" value="">
+        <input type="hidden" id="hdncoursename" name="hdncoursename" value="">
+        <input type="hidden" id="hdnType" name="hdnType" value="">
+        <input type="hidden" id="hdnAssignmentType" name="hdnAssignmentType" value="">
+        <input type="hidden" id="hdnUniversitySelect" name="hdnUniversitySelect" value="">
+        <input type="hidden" id="hdnkioskid" name="hdnkioskid" value='@TempData["CourseKioskID"]'>
+
+
+
+
+    </div>
+
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="enableCheckbox" name="enableCheckbox" data-course-index="0" disabled />   <label for="enableCheckbox">All Student Data Fill Please Check &nbsp;&nbsp;&nbsp;&nbsp;</label>&nbsp;
+        <button id="saveBtn" type="button" style="background-color:#8be22b; font-weight:bold; font-size:16px; width:400px; height:36px;border:groove">Data Save</button>
+    </div>
+    <style>
+        #studentTableContainer {
+          max-height: 600px; /* Set the maximum height of the table container */
+          overflow-y: auto;  /* Enable vertical scrolling */
+          border: 1px solid #ddd; /* Optional: Add a border for visibility */
+        }
+
+        /* Optional: Style table to fit within container */
+        #studentTable {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        #studentTable th, #studentTable td {
+          padding: 8px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+          font-weight:bold;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+                $(document).ready(function(){
+
+                   $('#saveBtn').css('display', 'none');
+
+
+                    $('#UniversitySelect').change(function () {
+
+                         const ServiceID = $('#UniversitySelect').val();
+                         $('#hdnUniversitySelect').val(ServiceID);
+                         $('#CategorySelect').val("");
+                          $.ajax({
+                                url: '@Url.Action("GetCategorybyID", "StudentAssignment")',
+                                type: 'GET',
+                                dataType: 'json',
+                                data: { ServiceID: ServiceID },
+                                success: function (data) {
+
+                                    var $CategorySelect = $('#CategorySelect');
+                                    $CategorySelect.empty();
+                                    $CategorySelect.append('<option value="">Select a Academy Name</option>');
+                                    $.each(data, function (index, item) {
+                                      $CategorySelect.append($('<option>').val(item.CourseCategoryId).text(item.CourseCategory1));
+                                    });
+                                }
+                             });
+                    });
+
+                  $('#CategorySelect').change(function () {
+
+
+                          let isValid = true;
+                         const CategoryVal = $('#CategorySelect').val();
+                         const CategoryText = $('#CategorySelect').find('option:selected').text().trim();
+                         const ServiceID = $('#hdnUniversitySelect').val();
+
+                           const UniversitySelectText = $('#UniversitySelect').find('option:selected').text().trim();
+
+
+
+                                 if(UniversitySelectText == "-- Select a University --") {
+                                       alert("Please Select a University Name");
+                                       isValid = false;
+                                       event.preventDefault(); // Prevent form submission
+                                       return false;
+                                      }
+
+
+
+
+                          if (CategoryVal) {
+
+                            @*  var kioskid= @TempData["CourseKioskID"]
+                      alert(kioskid); 
+*@
+                                $.ajax({
+                                url: '@Url.Action("GetAcdemyByCourse", "StudentAssignment")',
+                                type: 'GET',
+                                dataType: 'json',
+                                data: { CategoryID: CategoryVal,ServiceID: ServiceID },
+                                success: function (data) {
+
+                                    var $courseSelect = $('#courseSelect');
+                                    $courseSelect.empty();
+                                    $courseSelect.append('<option value="">Select a Course</option>');
+                                    $.each(data, function (index, item) {
+                                        $courseSelect.append($('<option>').val(item.CourseID).text(item.Name));
+                                    });
+                                }
+                             });
+
+
+                          }
+                           else {
+                            $('#courseSelect').empty().append('<option value="">Select District</option>');
+                           }
+                   });
+
+
+
+
+                   $('#courseSelect').change(function () {
+
+
+
+                   const courseSelect = $('#courseSelect').val();
+                   $('#hdnType').val(courseSelect);
+                   const courseSelectText = $('#courseSelect').find('option:selected').text();
+                     $('#AssignmentType').val("");
+                    $('#hdncoursename').val(courseSelectText);
+                   });
+
+
+
+              $('#AssignmentType').change(function () {
+
+                @* //const kioskid=$('#hdnkioskid').val()*@
+
+
+
+                const ServiceID = $('#hdnUniversitySelect').val();
+                const CategoryVal = $('#CategorySelect').val();
+
+                 let isValid = true;
+                 const AssignmentT =  $(this).val();
+                 const AssignmentText =  $(this).find('option:selected').text().trim();
+
+                 $('#hdnAssignmentType').val(AssignmentText);
+
+                   const CourseVal =  $('#hdnType').val();
+                  const CourseText = $('#courseSelect').find('option:selected').text().trim();
+
+                 if(CourseText === "Select a Course") {
+                alert("Please Select a Course Name");
+                isValid = false;
+                event.preventDefault(); // Prevent form submission
+                return false;
+                }
+                 if(AssignmentText =="-- Select a Type --")
+                 {
+                    alert("Please Select a Course Name");
+                    isValid = false;
+                    return false;
+                 }
+
+                 $('#enableCheckbox').prop('disabled', false);
+                   $('#img').show();
+
+                    setTimeout(function () {
+                        $('#img').hide();
+                     }, 200000);
+
+            $('#progressBarContainer').show();
+            var progress = 0;
+            $('#progressBar').css('width', '0%').text('0%');
+            var interval = setInterval(function () {
+                progress += 20;
+                $('#progressBar').css('width', progress + '%').text(progress + '%');
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 500);
+
+            const selectedCourseId = $('#hdnType').val();
+             const selectedCourseText=  $('#hdncoursename').val();
+            if (selectedCourseText) {
+                $.ajax({
+                    url: '@Url.Action("GetStudentscourse", "StudentAssignment")',
+                    type: 'GET',
+                    @* data: { course: selectedCourseText , ExamType:AssignmentT}, *@
+
+                    data: { CourseId: selectedCourseId , ExamType:AssignmentT},
+                        
+                    success: function (courses) {
+
+                        $('#studentTable thead').empty();
+                        $('#studentTable tbody').empty();
+                        $('#hdncount').val(courses.length);
+
+                        if (courses.length > 0) {
+                            let headerRow = '<tr>';
+                            @*headerRow += '<th><input type="checkbox" id="enableCheckbox" name="enableCheckbox" data-course-index="0" value=""/> All </th>';*@
+                            headerRow += '<th>.</th>';
+                            headerRow += '<th>StudentID</th>';
+                            headerRow += '<th>Registration No.</th>';
+                            headerRow += '<th>Student Name</th>';
+                                alert(AssignmentT);
+                                                if (AssignmentT === 'Practical') {
+
+                courses.forEach(course => {
+                    headerRow += '<th>' + course.Paper + '<br/>_' + AssignmentT + '-' + course.PracticalMax + '</th>';
+                });
+            } else {
+                courses.forEach(course => {
+                    headerRow += '<th>' + course.Paper + '<br/>_' + AssignmentT + '-' + course.AssignmentMax + '</th>';
+                });
+            }
+
+                               @* headerRow += '<th>' + course.Paper  + '</br>'+ '&' +'Assignment'+ '('+course.session+')' + '</th>'; *@// Assuming 'Paper' is the course field name
+                            
+                            headerRow += '</tr>';
+                            $('#studentTable thead').append(headerRow);
+
+                        } else {
+                            $('#studentTable thead').append('<tr><td colspan="3">No data found</td></tr>');
+                        }
+                        const kioskid=$('#hdnkioskid').val();
+
+                        if (selectedCourseId) {
+                            $.ajax({
+                                url: '@Url.Action("GetStudents", "StudentAssignment")',
+                                type: 'GET',
+                                data: { courseId: selectedCourseId,kioskid:kioskid,ServiceID:ServiceID,CategoryID:CategoryVal},
+                                success: function (students) {
+                                    debugger;
+                                    var count = $('#hdncount').val();
+                                    $('#hdnStudentcount').val(students.length);
+                                    if (students.length > 0 && courses.length > 0) {
+                                        students.forEach((student, index) => {
+
+                                                let newRow = `<tr>
+                                                 @*  <td>${index + 1}</td>*@
+                                                <td><input type="button" class="Button save-btn" data-student-id="${student.StudentID}" value="Save"/></td>
+                                                <td>${student.StudentID}</td>
+                                                <td>${student.RegistrationNo}</td>
+                                                <td>${student.Student_Name}</td>`;
+                                            for (let i = 0; i < count; i++) {
+                                                newRow += `<td><input type="text" class="courseInput" data-course-index="0" value=""/></td>`;
+                                            }
+
+                                            newRow += '</tr>';
+                                            $('#studentTable tbody').append(newRow);
+
+                                            $('#img').hide();
+
+                                        });
+
+                                    } else {
+                                        $('#studentTable tbody').append('<tr><td colspan="3">No data found</td></tr>');
+                                          $('#img').hide();
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                });
+            }
+        });
+
+
+
+        $('#saveBtn').click(function () {
+
+            $('#img').show();
+            let studentData = [];
+            let isValid = true;
+
+            // Loop through each row in the student table body
+            $('#studentTable tbody tr').each(function () {
+                let student = {};
+                student.StudentID = $(this).find('td:eq(1)').text().trim();
+                student.RegistrationNo = $(this).find('td:eq(2)').text().trim();
+                student.Student_Name = $(this).find('td:eq(3)').text().trim();
+                student.Course = $('#hdncoursename').val();
+                student.TypeAssignment = $('#hdnAssignmentType').val();
+                student.Courses = [];
+                student.SubjectNames = [];
+
+                var coursecount = $('#hdncount').val();
+
+                // Validate student fields
+                if (!student.StudentID || !student.RegistrationNo || !student.Student_Name || !student.Course) {
+                    alert('Please fill all required fields for each student.');
+                    isValid = false;
+                    $('#img').hide();
+                    return false;
+                }
+
+                // Collect Subject Names from the header row
+                $('#studentTable thead tr').each(function () {
+                    for (let i = 4; i < coursecount + 4; i++) {
+                        let Papername = $(this).find('th').eq(i).text().split('_')[0].trim();
+                        student.SubjectNames.push(Papername);
+                    }
+                });
+
+                // Validate and gather courses data
+                $(this).find('input.courseInput').each(function (index) {
+                    let courseInput = $(this);  // Current input
+                    let courseValue = courseInput.val().trim();
+                    let Papername2 = parseInt($('#studentTable thead tr th').eq(index + 4).text().split('-')[1].trim());
+                    let Papermarks = parseInt(Papername2);
+                    let courseInputValue = parseInt(courseValue);
+
+                    // Clear previous border
+                    courseInput.css('border', '');
+
+                    // Validate course input
+                    if (courseInputValue > Papermarks) {
+                        alert('Error: Paper marks cannot exceed ' + Papername2 + ' for ' + student.SubjectNames[index]);
+                        courseInput.css('border', '2px solid red');
+                        isValid = false;
+                        $('#img').hide();
+                        return false;
+                    }
+
+                    if (!courseValue || isNaN(courseInputValue)) {
+                        courseInput.css('border', '2px solid red');
+                        isValid = false;
+                        $('#img').hide();
+                        return false;
+                    }
+
+                    // Add valid course value
+                    student.Courses[index] = courseValue;
+                });
+
+                // If the row is valid, push student data to the array
+                if (isValid) {
+                    studentData.push(student);
+                }
+            });
+
+            // If validation failed, stop further execution
+            if (!isValid) {
+                $('#img').hide();
+                return;
+            }
+
+            console.log(JSON.stringify(studentData));
+
+            $.ajax({
+                url: '@Url.Action("SaveStudentCourses", "StudentAssignment")',
+                type: 'POST',
+                data: JSON.stringify(studentData),
+                contentType: 'application/json',
+                success: function (response) {
+                    $('#img').hide();  // Hide the loading image on success
+                    alert('Data saved successfully!');
+
+                    $('#studentTable tbody tr').each(function () {
+                        $(this).hide();  // Hide the row
+                    });
+
+                    $('#enableCheckbox').prop('checked', false);
+                    $('#saveBtn').css('display', 'none');
+                },
+                error: function (error) {
+                    $('#img').hide();
+                    alert('Error saving data');
+                }
+            });
+        });
+
+
+
+
+        $(document).on('keypress', 'input.courseInput', function (event) {
+              $(this).css('border', '1px solid gray');
+            var charCode = event.which;
+            if (charCode != 8 && charCode != 46 && (charCode < 48 || charCode > 57)) {
+                event.preventDefault();
+            }
+        });
+                                     $(document).on('change', '#enableCheckbox', function() {
+
+                                    if ($(this).is(':checked')) {
+                                        alert("Please fill all textbox values and click data save Button");
+                                        $('#saveBtn').css('display', 'block');
+                                    } else {
+                                        $('#saveBtn').css('display', 'none');
+                                         $('#studentTable tbody tr').find('input.courseInput').each(function() {
+                                           $(this).css('border', '1px solid gray');
+                                            });
+                                          isValid = true;
+                                    }
+                                });
+
+
+         $(document).on('click', '.save-btn', function () {
+
+            $('#img').show();
+            const studentId = $(this).data('student-id');
+            const row = $(this).closest('tr');
+            const courses = [];
+            const SubjectNames = [];
+            var coursecount = $('#hdncount').val();
+            const Course = $('#hdncoursename').val();
+            const TypeAssignment = $('#hdnAssignmentType').val();
+            const RegistrationNo = row.find('td:eq(2)').text().trim();
+            const Student_Name = row.find('td:eq(3)').text().trim();
+                   let isValid = true;
+                    row.find('.courseInput').each(function () {
+                    const courseValue = $(this).val().trim();
+                    const Papername2 = parseInt($('#studentTable thead tr th').eq(5).text().split('-')[1].trim());
+                    const Papermarks = parseInt(Papername2);
+                if (!courseValue) {
+                  $(this).css('border', '2px solid red');
+                     $('#img').hide();
+                      isValid = false;
+                      return false;
+                }
+
+                if (parseInt(courseValue) > parseInt(Papermarks)) {
+                    alert("Error: Assignment marks input value must not be greater than " + parseInt(Papermarks));
+                     $('#img').hide();
+                    $(this).css('border', '2px solid red');
+                    isValid = false;
+                    return false;
+                }
+                courses.push(courseValue);
+            });
+            if (!isValid) {
+                return;
+            }
+            $('#studentTable thead tr').each(function (index) {
+                for (let i = 4; i < coursecount + 4; i++) {
+                    let Papername = $(this).find('th').eq(i).text().split('_')[0].trim();
+                    SubjectNames.push(Papername);
+                }
+            });
+
+            const studentData = {
+                StudentID: studentId,
+                RegistrationNo: RegistrationNo,
+                StudentName: Student_Name,
+                Courses: courses,
+                SubjectNames: SubjectNames,
+                Course: Course,
+                TypeAssignment: TypeAssignment
+            };
+
+            $.ajax({
+                url: '@Url.Action("SaveStudent", "StudentAssignment")', // Your action method
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(studentData),
+                success: function (response) {
+                       $('#img').hide();
+                      alert('Data saved successfully!');
+                      row.hide();
+                  @*  //alert(response.message);*@ 
+            },
+
+                error: function (error) {
+            $('#img').hide();
+            alert('An error occurred while saving the data.');
+        }
+
+
+            });
+        });
+
+
+                });
+
+
+
+
+    </script>
+
+
+
+    <link href="~/css/select2.min.css" rel="stylesheet" />
+    <script src="~/css/select2.min.js"></script>
+}
+
+
+
+
+

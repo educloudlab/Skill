@@ -1,0 +1,36 @@
+﻿@model AisectOnline.Services.Modules.Skill.StudentDetail
+
+@{
+    ViewData["Title"] = "Student Information";
+}
+
+
+
+@*@using (Html.BeginForm("StudentDetailInformation", "StudentDetails", FormMethod.Post))
+{
+<div style="height:100px"></div>
+
+
+<div>
+    <label for="StudentName">Student Name:</label>
+    @Html.TextBoxFor(model => model.Student_Name, new { @class = "form-control", placeholder = "Enter student name" })
+</div>
+
+<div>
+      <input type="submit" id="btnsave" name="btnsave"  value="Submit"/>
+</div>
+
+}*@
+@using(Html.BeginForm("StudentDetailInformation", "StudentDetails", FormMethod.Post))
+{
+    <div style="height:100px"></div>
+    <div>
+        <label for="StudentName">Student Name:</label>
+        @Html.TextBox("StudentName", null, new { @class = "form-control", placeholder = "Enter student name" })
+    </div>
+
+    <div>
+        <input type="submit" id="btnsave" name="btnsave" value="Submit" class="btn btn-primary"/>
+    </div>
+
+}

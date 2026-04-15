@@ -1,0 +1,139 @@
+﻿<!-- DevExtreme CSS (CDN) -->
+<link rel="stylesheet" href="~/css/devextreme/dx.light.css" />
+
+<!-- jQuery and DevExtreme JS (CDN) -->
+<script src="~/js/devextreme/jquery.min.js">@Model.</script>
+<script src="~/js/devextreme/jquery.min.js">@Model.</script>
+<script src="~/js/devextreme/dx.all.js">@Model.</script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.data.js">@Model.</script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js">@Model.</script>
+
+<div style="background: #ffc4f44f; padding: 10px; text-align: center; font-size: 18px; font-weight: 500; color: #1a237e; border-bottom: 1px solid #ddd; margin-bottom: 20px;     margin-top: -20px;
+}">
+    Student Summary
+</div>
+<table class="summarytable">
+    <tr>@Model.<th colspan="6" class="summaryheading">Course   </th>@Model.</tr>
+    <tr>
+        <td class="summarytd">Session</td>
+        <td class="summarytd">@Model.Session</td>
+        <td class="summarytd">Faculty/Academy.</td>
+        <td class="summarytd">@Model.CourseCategory</td>
+        <td class="summarytd"> Program Name</td>
+        <td class="summarytd">@Model.ProgrammeName</td>
+    </tr>
+    <tr>
+        <td class="summarytd">University Scheme</td>
+        <td class="summarytd">@Model.CourseScheme</td>
+        <td class="summarytd">Course Type</td>
+        <td class="summarytd">@Model.</td>
+        <td class="summarytd">Preferd Course Medium</td>
+        <td class="summarytd">@Model.CourseMedium</td>
+    </tr>
+
+
+    <tr>@Model.<th colspan="6" class="summaryheading">Personal Detail</th>@Model.</tr>
+    <tr>
+        <td class="summarytd">First Name</td>
+        <td class="summarytd">@Model.FirstName</td>
+        <td class="summarytd">Last Name</td>
+        <td class="summarytd">@Model.LastName</td>
+        <td class="summarytd">Father/Husband Name</td>
+        <td class="summarytd">@Model.FatherName</td>
+    </tr>
+    <tr>
+        <td class="summarytd">Mother Name</td>
+        <td class="summarytd">@Model.MotherName</td>
+        <td class="summarytd">DOB</td>
+        <td class="summarytd">@Model.Dob</td>
+        <td class="summarytd">Email</td>
+        <td class="summarytd">@Model.EmailAddress</td>
+    </tr>
+    <tr>
+        <td class="summarytd">Mobile Number</td>
+        <td class="summarytd">@Model.MobileNo</td>
+        <td class="summarytd">Fax</td>
+        <td class="summarytd">@Model.</td>
+        <td class="summarytd">Gender</td>
+        <td class="summarytd">@Model.Sex</td>
+    </tr>
+    <tr>
+        <td class="summarytd">Category</td>
+        <td class="summarytd">@Model.Category</td>
+        <td class="summarytd">License Type</td>
+        <td class="summarytd"> </td>
+        <td class="summarytd">Aadhar Number</td>
+        <td class="summarytd">@Model.AadharNo</td>
+
+
+    </tr>
+
+    <tr>@Model.<th colspan="6" class="summaryheading">Permanent Address (As per attached document)</th>@Model.</tr>
+    <tr>
+        <td class="summarytd">Permanent Address</td>
+        <td class="summarytd">@Model.ContactAddress</td>
+        <td class="summarytd">City</td>
+        <td class="summarytd">@Model.VillageTownCity</td>
+        <td class="summarytd">Pin Code</td>
+        <td class="summarytd">@Model.Pin</td>
+    </tr>
+    <tr>
+        <td class="summarytd">State</td>
+        <td class="summarytd">@Model.State</td>
+        <td class="summarytd">District</td>
+        <td class="summarytd" colspan="4">@Model.District</td>
+    </tr>
+
+    <tr>@Model.<th colspan="6" class="summaryheading">Correspondance Address (Same as Permananent Address)</th>@Model.</tr>
+    <tr>
+        <td class="summarytd">Parmanant Address</td>
+        <td class="summarytd">@Model.ContactAddress</td>
+        <td class="summarytd">City</td>
+        <td class="summarytd">@Model.VillageTownCity</td>
+        <td class="summarytd">Pin Code</td>
+        <td class="summarytd">@Model.Pin</td>
+    </tr>
+    <tr>
+        <td class="summarytd">State</td>
+        <td class="summarytd">@Model.State</td>
+        <td class="summarytd">District</td>
+        <td class="summarytd" colspan="4">@Model.District</td>
+    </tr>
+
+
+
+    <tr>@Model.<th colspan="6" class="summaryheading">Academic Detail</th>@Model.</tr>
+    <tr>
+        <td class="summarytd">Academic Qualification </td>
+        <td class="summarytd">@Model.AcademicQualification</td>
+        <td class="summarytd">Main Subject</td>
+        <td class="summarytd">@Model.MainSubject</td>
+        <td class="summarytd">Year Of Passing</td>
+        <td class="summarytd">@Model.YearOfPassing</td>
+    </tr>
+    <tr>
+        <td class="summarytd">Division * (1,2,3,4 for Pass)</td>
+        <td class="summarytd">@Model.Division</td>
+        <td class="summarytd">% of Marks</td>
+        <td class="summarytd">@Model.MarksPercentage</td>
+        <td class="summarytd">Board</td>
+        <td class="summarytd">@Model.BoardCode</td>
+    </tr>
+    <tr>
+        <td class="summarytd">Education Medium </td>
+        <td class="summarytd">@Model.Medium</td>
+        <td class="summarytd">DEB Id</td>
+        <td class="summarytd"></td>
+        <td class="summarytd"></td>
+        <td class="summarytd"></td>
+    </tr>
+    <tr>
+        <td class="summarytd">Belongs To</td>
+        <td class="summarytd"></td>
+        <td class="summarytd">Nationality </td>
+        <td class="summarytd">@Model.Nationality</td>
+        <td class="summarytd">Family Income </td>
+        <td class="summarytd">@Model.FamilyIncomeYearly</td>
+    </tr>
+
+</table>

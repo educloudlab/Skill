@@ -1,0 +1,226 @@
+﻿@using AisectOnline.Services.Modules.Skill;
+
+@{
+    ViewData["Title"] = "Student Information";
+} 
+<h2></h2>
+<br /><br /><br />
+<br />
+
+<style type="text/css">
+    .form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .9rem + 2px);
+    padding: .45rem .9rem;
+    font-size: .8rem;
+    font-weight: 400;
+    line-height: 1.5;
+   
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #000;
+    border-radius: .2rem;
+    -webkit-transition: border-color .15s ease-in-out, -webkit-box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out, -webkit-box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out, -webkit-box-shadow .15s ease-in-out;
+}
+.form-border {
+        border: 2px solid #e9dddd; /* Customize the border color */
+        padding: 15px;
+        border-radius: 8px; /* Optional: Rounded corners */
+        margin: 10px 0;
+        background-color: #f9f9f9; /* Optional: Background color */
+    }
+
+
+    .btn {
+    color: #fff;
+    font-family: Montserrat, sans-serif;
+}
+.btn-primary1 {
+    color: #fff;
+    background-color: #33225c;
+    border-color: #33225c;
+}
+.text-end11 {
+    text-align: left !important;
+}
+
+[type=button], [type=reset], [type=submit], button {
+    -webkit-appearance: button;
+}
+
+
+</style>
+
+<style>
+   /* .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 100vh; 
+    }
+
+    .form-border {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 80%;
+    }*/
+
+    .tempdata-message {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        margin-left: 0px;
+        color: maroon;
+        text-align: center;
+        background-color:#dae8bd;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">    
+<!-- Border for all form controls -->
+    <div class="form-container">
+   @* <div class="tempdata-message">@TempData["msg"]</div>*@
+  @if (TempData["msg"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @TempData["msg"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+   
+<div style="font-size:18px; font-weight:bold;color:white; background-color:#004b80;padding:0%; text-align:center; vertical-align:central">Student Details Report</div>
+
+    <form method="post" class="form" id="studentDataForm" asp-action="SubmitAndExport">
+    <div class="form-border">
+        <!-- Row 1: From Date, To Date, and State Name -->
+        <div class="form-group row mb-2 mx-2 align-items-center">
+            <label for="fromdate" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1"> From Date:<span style="color:red">*</span></label>
+            <div class="col-md-3">
+                <input type="date" id="fromdate" name="fromdate" class="form-control" required>
+            </div>
+            <label for="todate" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1"> To Date:<span style="color:red">*</span></label>
+            <div class="col-md-3">
+                <input type="date" id="todate" name="todate" class="form-control" required>
+            </div>
+            <label for="stateDropdown" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">State Name:</label>
+            <div class="col-md-3">
+                <select id="stateDropdown" name="stateDropdown" class="form-control" onchange="loadDistricts(this.value)">
+                    <option value="">-- Select State --</option>
+                    @foreach (var state in ViewBag.States)
+                    {
+                        <option value="@state.Value">@state.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 2: District Name, Zone, and SKP Name -->
+        <div class="form-group row mb-2 mx-2 align-items-center">
+            <label for="districtDropdown" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">District Name:</label>
+            <div class="col-md-3">
+                <select id="districtDropdown" name="districtId" class="form-control" onchange="loadSKPs(this.value)">
+                    <option value="">-- Select District --</option>
+                    @foreach (var district in ViewBag.Districts)
+                    {
+                        <option value="@district.Value">@district.Text</option>
+                    }
+                </select>
+            </div>
+            <label for="txtZone" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">Zone:</label>
+            <div class="col-md-3">
+                <input type="text" id="txtZone" name="txtZone" class="form-control" placeholder="ZONE">
+            </div>
+            <label for="skpDropdown" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">SKP Name:</label>
+            <div class="col-md-3">
+                <select id="skpDropdown" name="skpDropdown" class="form-control">
+                    <option value="">-- Select SKP --</option>
+                    @foreach (var skp in ViewBag.SKPs)
+                    {
+                        <option value="@skp.Value">@skp.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 3: Funded By, Aisect Entity, and Assessment Mode -->
+        <div class="form-group row mb-2 mx-2 align-items-center">
+            <label for="txtfundedby" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">Funded By:</label>
+            <div class="col-md-3">
+                <input type="text" id="txtfundedby" name="txtfundedby" class="form-control" placeholder="Funded By">
+            </div>
+            <label for="txtEntity" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">Aisect Entity:</label>
+            <div class="col-md-3">
+                <input type="text" id="txtEntity" name="txtEntity" class="form-control" placeholder="Aisect Entity">
+            </div>
+            <label for="txtAssisment" class="col-md-1 col-form-label fw-bold text-dark text-end1 pe-1">Assessment Mode:</label>
+            <div class="col-md-3">
+                <input type="text" id="txtAssisment" name="txtAssisment" class="form-control" placeholder="Assessment Mode">
+            </div>
+        </div>
+
+        <!-- Row 4: Submit Button -->
+        <div class="form-group row mb-2 mx-2 align-items-center">
+            <div class="col-md-1"></div>
+            <div class="col-md-11 text-end11">
+                <button type="submit" class="btn btn-primary">Download Excel File</button>
+                <input type="hidden" id="skpDropdownText" name="skpDropdownText" />
+            </div>
+        </div>
+    </div>
+</form>
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        function loadDistricts(stateId) {
+            $.getJSON('@Url.Action("GetDistricts", "StudentDetails")', { stateId: stateId }, function (data) {
+                var districtDropdown = $('#districtDropdown');
+                districtDropdown.empty();
+                districtDropdown.append('<option value="">-- Select District --</option>');
+                $.each(data, function (index, item) {
+                    districtDropdown.append('<option value="' + item.DistrictId + '">' + item.DistrictName + '</option>');
+                });
+            });
+        }
+
+        function loadSKPs(districtId) {
+            $.getJSON('@Url.Action("GetKiosksByDistrict", "StudentDetails")', { districtId: districtId }, function (data) {
+                var skpDropdown = $('#skpDropdown');
+                skpDropdown.empty();
+                skpDropdown.append('<option value="">-- Select SKP --</option>');
+                $.each(data, function (index, item) {
+                    skpDropdown.append('<option value="' + item.KIOSKID + '">' + item.KioskCode + '</option>');
+                });
+            });
+        }
+
+
+     document.getElementById('skpDropdown').addEventListener('change', function() {     
+    var selectedText = this.options[this.selectedIndex].text;	
+    document.getElementById('skpDropdownText').value = selectedText;
+        });
+
+    </script>
+}
+
+<!-- Table to display selected data -->
+
+
+

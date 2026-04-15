@@ -1,0 +1,49 @@
+﻿@{
+     Layout = "~/Views/Shared/LayoutBaseContentUser.cshtml";
+}
+@using AisectOnline.Services.Modules.Students
+@using DevExtreme.AspNet.Mvc
+
+@{
+    ViewData["Title"] = "Students Grid";
+}
+<div style="margin-top:80px;margin-bottom:80px">
+    
+@if (!string.IsNullOrEmpty(ViewBag.Message as string))
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </div>
+}
+
+<h2 style="text-align:center">Students</h2>
+@(Html.DevExtreme().DataGrid<StudentFeeDto>()
+    .ID("studentsGrid")
+    .DataSource(ds => ds
+        .Mvc()
+        .Controller("Student")
+        .LoadAction("GetLoadData")
+        .Key("seq_No")
+    )
+    .Columns(columns => {
+        columns.Add().DataField("studentName").AllowEditing(false);
+        columns.Add().DataField("fatherName");
+        columns.Add().DataField("courseName");
+        columns.Add().DataField("programmeName");
+@*         columns.Add().DataField("dob").DataType(GridColumnDataType.Date); *@
+        columns.Add().DataField("feeType");
+        columns.Add().DataField("lateFee");
+        columns.Add().DataField("mobileNo");
+    })
+    .Editing(e => e
+        .Mode(GridEditMode.Popup)
+        .AllowAdding(true)
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+    )
+    .SearchPanel(sp => sp.Visible(true).Width(240).Placeholder("Search..."))
+    .FilterRow(fr => fr.Visible(true))
+    .Paging(p => p.PageSize(15))
+    .ShowBorders(true)
+)
+</div>

@@ -1,0 +1,77 @@
+﻿@model AisectOnline.Services.Modules.Accounts.LogOnModel
+
+@{
+    Layout = "~/Views/Shared/LayoutBaseContent.cshtml";
+}
+<script type="text/javascript">
+function validateCaptcha() {
+    const userInput = document.getElementById("captcha-input").value;
+    const actualCaptcha = document.getElementById("captcha-text").dataset.value;
+    if (userInput === actualCaptcha) {
+      alert("Captcha verified. Proceeding with login...");
+
+    } else {
+      alert("Incorrect captcha. Please try again.");
+      generateCaptcha();
+    }
+  }
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<div class="modal" id="login-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeLogin()" role="button" aria-label="Close">&times;</span>
+
+        <img src="https://aisectonline.com/images/logo.png" alt="Logo">
+
+        <h2>SIGN IN</h2>
+        <p>Login to your Admin account</p>
+
+        @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new { id = "login-form" }))
+        {
+            @Html.AntiForgeryToken()
+
+           
+            <label>Login ID</label>
+            @Html.TextBoxFor(m => m.UserName, new
+            {
+                placeholder = "john@deo.com",
+                type = "text",
+                required = "required",style="width:320px;height:45px;"
+                })
+
+        <!-- Password -->
+        <label>
+            Password
+            <a href="#" style="float:right;font-size:12px">Forgot your password?</a>
+        </label>
+        @Html.PasswordFor(m => m.Password, new
+                {
+                placeholder = "Enter your password",
+                required = "required"
+                })
+
+        <!-- Captcha -->
+       @*  <label>Captcha</label>
+        <div class="captcha-box" style="display: flex; align-items: center;">
+            <div class="captcha-image" id="captcha-text" style="padding: 5px 10px; border: 1px solid #ccc;"></div>
+            <button type="button" onclick="generateCaptcha()" style="margin-left: 10px; padding: 5px 10px;">⟳</button>
+        </div>
+        <input type="text" id="captcha-input" name="CaptchaInput" placeholder="Enter captcha here" required /> *@
+
+        <!-- Remember me -->
+        <div class="remember-forgot">
+            <label>
+                @Html.CheckBoxFor(m => m.RememberMe)
+                Remember me
+            </label>
+        </div>
+
+        <!-- Sign In Button -->
+        <button type="submit" class="sign-in-btn" >Sign In</button> 
+                }
+    </div>
+</div>
+
+@* onclick="return validateCaptcha()" *@

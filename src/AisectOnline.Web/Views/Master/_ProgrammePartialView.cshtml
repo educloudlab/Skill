@@ -1,0 +1,27 @@
+﻿@using AisectOnline.Services.Modules.MasterData
+@(Html.DevExtreme().DataGrid<ProgrammeDto>()
+    .ID("ProgrammeGrid")
+    .ShowBorders(true)
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .SearchPanel(s => s.Visible(true))
+    .DataSource(ds => ds.Mvc()
+        .Controller("Master")   // change if your controller is User
+        .LoadAction("_ProgrammePartialView")
+        .Key("ProgrammeID")
+    )
+    .Columns(columns => {
+        columns.AddFor(m => m.ProgrammeID);
+        columns.AddFor(m => m.ProgrammeName);
+        columns.AddFor(m => m.NoOfCourse);
+        columns.AddFor(m => m.Skill);
+        columns.AddFor(m => m.Eligibillity);
+        columns.AddFor(m => m.Remarks);
+        columns.AddFor(m => m.CourseCategoryID);
+        columns.AddFor(m => m.CourseCategory);
+        columns.AddFor(m => m.DepartmentName);
+        columns.AddFor(m => m.DeptId);
+        columns.AddFor(m => m.Reviewed);
+        columns.AddFor(m => m.StudyMaterialYN).DataType(GridColumnDataType.Boolean);
+    })
+)

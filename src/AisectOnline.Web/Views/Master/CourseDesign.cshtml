@@ -1,0 +1,1545 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Course Design";
+}
+
+<link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/23.2.3/css/dx.material.orange.light.css">
+
+<style>
+
+
+
+    :root {
+        --wrap-w: 82%;
+        --max-w: 1200px;
+        --blue: #2563eb;
+        --green: #059669;
+        --orange: #ea580c;
+        --indigo: #4338ca;
+        --violet: #7c3aed;
+        --edge: #e5e7eb;
+        --card-radius: 12px;
+        --soft-shadow: 0 6px 18px rgba(0,0,0,.06);
+    }
+
+    /* Page */
+    body {
+        background: #f9fafc;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        margin: 0;
+        padding: 24px;
+        color: #0f172a;
+    }
+
+    .wrap {
+        width: var(--wrap-w);
+        max-width: var(--max-w);
+        margin: 0 auto;
+    }
+
+    /* Page + corner polygon design */
+    .page {
+        margin: 20px auto;
+        max-width: 100%;
+        font-family: "Segoe UI", Roboto, Arial;
+        color: #0b335f;
+        position: relative;
+    }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            top: -19px;
+            left: 184px;
+            width: 300px;
+            height: 412px;
+            background: conic-gradient( rgba(0,114,255,0.12) 0deg 90deg, rgba(0,198,255,0.1) 90deg 180deg, rgba(255,107,107,0.12) 180deg 270deg, rgba(252,211,77,0.12) 270deg 360deg );
+            clip-path: polygon(0 0, 100% 0, 70% 70%, 0 100%);
+            z-index: 0;
+        }
+
+        .page::after {
+            content: "";
+            position: absolute;
+            bottom: -79px;
+            right: 173px;
+            width: 280px;
+            height: 280px;
+            background: conic-gradient( rgba(34,197,94,0.12) 0deg 120deg, rgba(59,130,246,0.12) 120deg 240deg, rgba(244,63,94,0.12) 240deg 360deg );
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 70%);
+            z-index: 0;
+        }
+
+        .page > * {
+            position: relative;
+            z-index: 1;
+        }
+
+    /* Header */
+    .header-box {
+        background: linear-gradient(180deg,#fff,#fbfdff);
+        border: 1px solid #e6edf9;
+        border-radius: 12px;
+        padding: 6px 0;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(11,63,255,0.06);
+        margin-bottom: 12px;
+    }
+
+        .header-box .title {
+            font-weight: 800;
+            font-size: 20px;
+            color: #ff6a00;
+        }
+
+        .header-box .underline {
+            width: 120px;
+            height: 2px;
+            margin: 6px auto 8px;
+            border-radius: 6px;
+            background: linear-gradient(90deg,#ff9a3c,#ff6a00);
+        }
+
+
+    .pill-row {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .pill {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 13px;
+        background: #fff;
+        border: 1px solid rgba(15,23,42,0.06);
+        box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+    }
+
+        .pill.blue {
+            color: var(--blue);
+            background: linear-gradient(180deg,#eff6ff,#f8fbff);
+            border-color: #bfdbfe;
+        }
+
+        .pill.green {
+            color: var(--green);
+            background: linear-gradient(180deg,#ecfdf5,#f7fffb);
+            border-color: #bbf7d0;
+        }
+
+        .pill.orange {
+            color: var(--orange);
+            background: linear-gradient(180deg,#fff7ed,#fffdf7);
+            border-color: #fed7aa;
+        }
+
+        .pill.indigo {
+            color: var(--indigo);
+            background: linear-gradient(180deg,#eef2ff,#f8f7ff);
+            border-color: #c7d2fe;
+        }
+
+        .pill.violet {
+            color: var(--violet);
+            background: linear-gradient(180deg,#faf5ff,#fff);
+            border-color: #e9d5ff;
+        }
+
+    .divider {
+        height: 1px;
+        background: linear-gradient(90deg, rgba(37,99,235,0.12), rgba(249,115,22,0.06));
+        margin: 18px 0;
+        border-radius: 2px;
+    }
+
+    /* Stage / breadcrumbs */
+    .stage-chips {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    .stage {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 13px;
+        background: #fff;
+        border: 1px solid transparent;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+
+        .stage.blue {
+            color: var(--blue);
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .stage.green {
+            color: var(--green);
+            background: #ecfdf5;
+            border-color: #bbf7d0;
+        }
+
+        .stage.orange {
+            color: var(--orange);
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .stage.indigo {
+            color: var(--indigo);
+            background: #eef2ff;
+            border-color: #c7d2fe;
+        }
+
+        .stage.violet {
+            color: var(--violet);
+            background: #f5f3ff;
+            border-color: #e9d5ff;
+        }
+
+    .breadcrumb-container {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 10px;
+        background: #fbfbff;
+        border: 1px dashed var(--edge);
+        overflow-x: auto;
+        white-space: nowrap; /* Prevent line breaks */
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        margin-bottom: 12px;
+        max-height: 88px;
+    }
+
+    .chip {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 13px;
+        background: #fff;
+        border: 1px solid transparent;
+        white-space: nowrap; /* Prevents chip's text wrapping */
+        transition: background 0.14s, color 0.14s;
+        margin-right: 0;
+        box-shadow: 0 2px 7px rgba(140,140,200,0.06);
+    }
+
+        /* Add hover for nice effect */
+        .chip.clickable:hover {
+            background: var(--blue);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Optional: stronger background for color difference */
+        .chip.blue {
+            background: linear-gradient(90deg, #e0e7ff, #f1f5ff);
+            color: var(--blue);
+            border-color: #bfdbfe;
+        }
+
+        .chip.green {
+            background: linear-gradient(90deg, #d1fae5, #ecfdf5);
+            color: var(--green);
+            border-color: #bbf7d0;
+        }
+
+        .chip.orange {
+            background: linear-gradient(90deg, #ffedd5, #fffbeb);
+            color: var(--orange);
+            border-color: #fdba74;
+        }
+
+        .chip.indigo {
+            background: linear-gradient(90deg, #e0e7ff, #f3e8ff);
+            color: var(--indigo);
+            border-color: #c7d2fe;
+        }
+
+        .chip.violet {
+            background: linear-gradient(90deg, #ede9fe, #faf5ff);
+            color: var(--violet);
+            border-color: #e9d5ff;
+        }
+
+    /* compact fieldset rows (one-line) */
+    fieldset.fs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        margin: 10px 0;
+        background: #fff;
+        border-radius: 10px;
+        border-left: 4px solid #ddd;
+        box-shadow: var(--soft-shadow);
+    }
+
+    .fs .title {
+        font-weight: 800;
+        font-size: 14px;
+        min-width: 110px;
+    }
+
+    .fs .value {
+        font-weight: 500;
+        font-size: 13px; /* smaller font for DCA text */
+        padding: 6px 12px;
+        border-radius: 14px;
+        margin-right: auto;
+        max-width: 68%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    .fs {
+        cursor: pointer; /* poora box clickable */
+        transition: background 0.2s ease;
+    }
+
+        .fs:hover {
+            background: #f9fafc;
+        }
+
+    #fsProgramme {
+        border-left-color: var(--blue);
+    }
+
+        #fsProgramme .value {
+            background: #eff6ff;
+            color: var(--blue);
+        }
+
+    #fsCourse {
+        border-left-color: var(--green);
+    }
+
+        #fsCourse .value {
+            background: #ecfdf5;
+            color: var(--green);
+        }
+
+    #fsCourseFee {
+        border-left-color: var(--orange);
+    }
+
+        #fsCourseFee .value {
+            background: #fff7ed;
+            color: var(--orange);
+        }
+
+    #fsCourseFeeType {
+        border-left-color: var(--indigo);
+    }
+
+        #fsCourseFeeType .value {
+            background: #eef2ff;
+            color: var(--indigo);
+        }
+
+    #fsFeeTypeDetail {
+        border-left-color: var(--violet);
+    }
+
+        #fsFeeTypeDetail .value {
+            background: #f5f3ff;
+            color: var(--violet);
+        }
+
+    /* icon button */
+    .icon-btn {
+        margin-left: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 30px;
+        border-radius: 999px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        cursor: pointer;
+        transition: .14s;
+    }
+
+    .icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* grid card and internal scroll */
+    .grid-card {
+        display: none;
+        width: 100%;
+        background: #fff;
+        border: 1px solid var(--edge);
+        border-radius: var(--card-radius);
+        box-shadow: var(--soft-shadow);
+        padding: 8px;
+        margin: 8px 0;
+    }
+
+    .grid-body {
+        max-height: 360px;
+        overflow: auto;
+        border-radius: 8px;
+    }
+    /* both X/Y scroll if needed */
+
+    #programmeGridWrap.grid-body {
+        max-height: 300px;
+    }
+
+    /* Make grid header sticky inside grid-body */
+    .grid-body .dx-datagrid-headers {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: #fff3e0 !important;
+        border-bottom: 1px solid var(--edge);
+    }
+
+        .grid-body .dx-datagrid-headers th {
+            color: #0f172a;
+            font-weight: 700;
+            text-align: center;
+            padding: 10px 12px;
+        }
+
+  
+
+
+
+    .no-data-msg {
+        padding: 12px;
+        color: #6b7280;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .error-msg {
+        padding: 12px;
+        color: #b91c1c;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .debug-box {
+        font-size: 12px;
+        color: #374151;
+        padding: 8px;
+        border-radius: 6px;
+        background: #fff;
+        border: 1px dashed #e6eefc;
+        margin-bottom: 8px;
+        white-space: pre-wrap;
+        display: none;
+    }
+
+    #programmeGridWrap.grid-body {
+        max-height: 500px;
+        /*         overflow-y: scroll !important;
+             */
+        /* Keep pagination outside scroll, see HTML below if needed */
+    }
+
+    .dx-datagrid-scrollbar-vertical {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* 🔍 Toolbar container (right aligned) */
+    .dx-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        padding-right: 10px;
+        animation: fadeUp 0.35s ease forwards;
+    }
+
+    /* ➕ Add button */
+    .dx-button {
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        background: #fff;
+        border: 1.4px solid #e5e7eb;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        transition: all 0.25s ease;
+    }
+
+        .dx-button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff7b00, #ffa94d);
+            color: #fff;
+            border-color: #ff7b00;
+            box-shadow: 0 4px 10px rgba(255,123,0,0.35);
+        }
+
+    /* 🔍 Search box */
+    .dx-searchbox {
+        height: 30px !important;
+        min-width: 170px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+    }
+
+        .dx-searchbox:hover,
+        .dx-searchbox.dx-state-focused {
+            border-color: #ff7b00 !important;
+            box-shadow: 0 0 0 2px rgba(255,123,0,0.15);
+        }
+
+        /* Input styling */
+        .dx-searchbox input {
+            font-size: 13px !important;
+            padding: 4px 10px 4px 28px !important;
+            color: #0f172a;
+            height: 100%;
+        }
+
+        /* Modern search icon */
+        .dx-searchbox .dx-icon-search {
+            color: #ff7b00 !important;
+            font-size: 15px !important;
+            left: 8px;
+            top: 7px;
+            position: absolute;
+            transition: transform 0.2s ease;
+        }
+
+        .dx-searchbox:hover .dx-icon-search {
+            transform: scale(1.2);
+        }
+
+    /* Modern Blue Search Bar with Right-Side Inner Icon */
+    .dx-searchbox {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 270px !important;
+        height: 38px !important;
+        border-radius: 999px !important;
+        background: linear-gradient(90deg, #5162ff, #7a8bff);
+        padding: 3px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        border: none !important;
+        overflow: hidden;
+        transition: all 0.25s ease;
+    }
+
+        /* White input area */
+        .dx-searchbox input {
+            flex: 1;
+            border: none !important;
+            outline: none !important;
+            height: 100%;
+            border-radius: 999px;
+            background: #fff;
+            padding: 0 68px 0 42px; /* space for right icon */
+            font-size: 14px;
+            color: #0f172a;
+            font-weight: 500;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Hide DevExtreme placeholder duplication */
+        .dx-searchbox .dx-placeholder {
+            display: none !important;
+        }
+
+        /* Placeholder text visible */
+        .dx-searchbox input::placeholder {
+            color: #6b7280 !important;
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        /* Add small gray icon to right inside the input */
+        .dx-searchbox input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236b7280' viewBox='0 0 24 24'%3E%3Cpath d='M10 2a8 8 0 1 1 4.906 14.32l4.387 4.387a1 1 0 0 1-1.414 1.414l-4.387-4.387A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12a6 6 0 0 0 0-12Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: right 16px center; /* ✅ icon inside right end */
+        }
+
+        /* Left outer blue circle icon */
+        .dx-searchbox .dx-icon-search {
+            position: absolute;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #3b4bff;
+            color: #fff !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+            cursor: pointer;
+        }
+
+        /* Hide duplicate DevExtreme icon */
+        .dx-searchbox .dx-texteditor-input-container > .dx-icon-search {
+            display: none !important;
+        }
+
+        /* Optional: clear (X) icon */
+        .dx-searchbox .dx-icon-clear {
+            display: none !important; /* hide to avoid clutter */
+        }
+
+        /* Subtle hover glow */
+        .dx-searchbox:hover {
+            box-shadow: 0 4px 10px rgba(81,98,255,0.25);
+        }
+
+    .icon-btn:hover {
+        background: #f1f5ff;
+        border-color: #3b4bff;
+    }
+    /* 🔷 Visible selection line highlight */
+    .dx-datagrid .dx-row.dx-selection {
+        position: relative;
+        background: #f0f6ff !important;
+    }
+
+        .dx-datagrid .dx-row.dx-selection::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid #2563eb;
+            border-radius: 4px;
+            pointer-events: none;
+            box-shadow: 0 0 6px rgba(37,99,235,0.35);
+        }
+    /* =============================
+                   🔸 Popup Heading - Modern Soft Gradient Look
+                ============================= */
+    .dx-popup-title {
+        background: linear-gradient(90deg, #ff9f43, #ff7b00) !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        font-size: 18px !important;
+        letter-spacing: 0.4px;
+        text-align: center !important;
+        padding: 14px 22px !important;
+        border: none !important;
+        border-radius: 10px 10px 0 0 !important;
+        box-shadow: 0 3px 10px rgba(255, 123, 0, 0.25) !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: #fff !important;
+            opacity: 0.9;
+            transition: 0.2s;
+        }
+
+        .dx-popup-title .dx-closebutton:hover .dx-icon {
+            transform: scale(1.15);
+            color: #fff !important;
+        }
+
+    /* =============================
+                   🔸 Dropdown Always Opens Below
+                ============================= */
+    .dx-dropdowneditor-overlay {
+        top: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+    }
+
+        /* Dropdown panel look */
+        .dx-dropdowneditor-overlay .dx-overlay-content {
+            margin-top: 8px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid #f1f1f1 !important;
+            overflow: hidden !important;
+            background: #fff !important;
+        }
+
+
+    /* Dropdown focus state */
+    .dx-selectbox.dx-state-focused {
+        border-color: #ff7b00 !important;
+        box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.2) !important;
+    }
+
+    .dx-closebutton .dx-icon {
+        color: #2563eb !important; /* 👈 blue icon */
+        opacity: 1 !important;
+        font-size: 15px !important;
+        transition: 0.2s ease;
+    }
+
+    .dx-button-content {
+        background-color: cornflowerblue;
+    }
+
+    /* =============================
+                   🔸 Popup Heading - Modern Soft Gradient Look
+                ============================= */
+    .dx-popup-title {
+        background: linear-gradient(90deg, #ff9f43, #ff7b00) !important;
+        color: #fff !important;
+        font-weight: 700 !important;
+        font-size: 17px !important;
+        letter-spacing: 0.4px;
+        text-align: left !important;
+        padding: 10px 20px !important;
+        border: none !important;
+        border-radius: 10px 10px 0 0 !important;
+        box-shadow: 0 3px 10px rgba(255, 123, 0, 0.25) !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 46px !important; /* 👈 fixed compact height */
+    }
+
+       
+
+    /* =============================
+                   🔸 Dropdown Always Opens Below
+                ============================= */
+    .dx-dropdowneditor-overlay {
+        top: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+    }
+
+        /* Dropdown panel look */
+        .dx-dropdowneditor-overlay .dx-overlay-content {
+            margin-top: 8px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid #f1f1f1 !important;
+            overflow: hidden !important;
+            background: #fff !important;
+        }
+
+    /* Dropdown list items */
+    .dx-list-item {
+        font-size: 13px !important;
+        color: #333 !important;
+        padding: 1px 14px !important;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f3f3f3 !important;
+    }
+
+        .dx-list-item:last-child {
+            border-bottom: none !important;
+        }
+
+        /* Hover effect */
+        .dx-list-item:hover {
+            background: linear-gradient(90deg, #fff4e6, #ffe6cc) !important;
+            color: #d35400 !important;
+            font-weight: 600 !important;
+        }
+
+    /* Dropdown focus state */
+    .dx-selectbox.dx-state-focused {
+        border-color: #ff7b00 !important;
+        box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.2) !important;
+    }
+
+    /* Optional: All popup action buttons */
+    .dx-button-content {
+        background-color: cornflowerblue !important;
+        color: #fff !important;
+        font-weight: 600 !important;
+        border-radius: 6px !important;
+        transition: 0.2s ease;
+    }
+
+        .dx-button-content:hover {
+            background-color: #2563eb !important;
+        }
+
+    .dx-texteditor .dx-texteditor-buttons-container:last-child > .dx-dropdowneditor-button:last-child {
+        margin-inline-end: 0px;
+    }
+
+    .dx-field-item-label-location-top {
+        margin-left: -11px;
+    }
+
+
+    .dx-texteditor,
+    .dx-texteditor-input {
+        height: 35px !important;
+        line-height: 60px !important;
+    }
+
+    .dx-placeholder {
+        top: -7px !important;
+    }
+
+
+
+    .dx-layout-manager .dx-field-item:not(.dx-first-row) {
+        padding-top: 0px !important;
+    }
+
+
+    /* Remarks textarea scroll  */
+    .dx-textarea,
+    .dx-field-item-content .dx-textarea {
+        height: 60px !important;
+        min-height: 80px !important;
+        max-height: 80px !important;
+        overflow-y: auto !important;
+        resize: vertical; /* User textarea size adjust  */
+    }
+
+        /* ✅ Fix Remarks textarea text not filling full height */
+        .dx-textarea .dx-texteditor-input-container {
+            height: 100% !important;
+        }
+
+        .dx-textarea .dx-texteditor-input {
+            height: 100% !important;
+            min-height: inherit !important;
+            overflow-y: auto !important;
+            line-height: 1.5 !important;
+            padding: 8px 10px !important;
+            box-sizing: border-box !important;
+        }
+
+    .dx-popup-bottom.dx-toolbar .dx-toolbar-items-container {
+        margin: -26px 0px 6px 0px !important;
+    }
+
+    .dx-link-edit .dx-icon-edit {
+        color: #ff6a00 !important;
+    }
+
+  
+</style>
+
+
+
+
+<div class="page">
+
+
+    <div class="wrap" style="background-color:#f9fafc">
+        <!-- Heading -->
+        <div class="header-box" role="banner">
+            <div class="title">Course Design</div>
+            <div class="underline" aria-hidden="true"></div>
+        </div>
+
+        <div class="divider"></div>
+
+
+        <!-- Breadcrumbs -->
+        <div id="breadcrumb" class="breadcrumb-container">
+            <span class="chip blue clickable" onclick="resetAll()">Home</span>
+        </div>
+
+        <!-- Programme -->
+        <fieldset id="fsProgramme" class="fs" style="display:none">
+            <span class="title">Programme</span>
+            <span class="value" id="fsProgrammeText"></span>
+            <button class="icon-btn hiding" onclick="toggleBox(this,'programmeCard')" title="Show">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 5c5.5 0 10 4.5 10 7s-4.5 7-10 7S2 14.5 2 12s4.5-7 10-7Zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /></svg>
+            </button>
+        </fieldset>
+        <div id="programmeCard" class="grid-card" style="display:block;height:400px">
+            <div id="programmeGridWrap" class="grid-body">
+                <div id="programmeGrid"></div>
+            </div>
+            <div id="programmePager"></div>
+        </div>
+
+
+        <!-- Course -->
+        <fieldset id="fsCourse" class="fs" style="display:none">
+            <span class="title">Course</span>
+            <span class="value" id="fsCourseText"></span>
+            <button class="icon-btn hiding" onclick="toggleBox(this,'courseCard')" title="Show">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 5c5.5 0 10 4.5 10 7s-4.5 7-10 7S2 14.5 2 12s4.5-7 10-7Zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /></svg>
+            </button>
+        </fieldset>
+        <div id="courseCard" class="grid-card"><div class="grid-body"><div id="courseGrid"></div></div></div>
+
+        <!-- Course Fee -->
+        <fieldset id="fsCourseFee" class="fs" style="display:none">
+            <span class="title">Course Fee</span>
+            <span class="value" id="fsCourseFeeText"></span>
+            <button class="icon-btn hiding" onclick="toggleBox(this,'courseFeeCard')" title="Show">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 5c5.5 0 10 4.5 10 7s-4.5 7-10 7S2 14.5 2 12s4.5-7 10-7Zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /></svg>
+            </button>
+        </fieldset>
+        <div id="courseFeeCard" class="grid-card"><div class="grid-body"><div id="courseFeeGrid"></div></div></div>
+
+        <!-- Fee Type -->
+        <fieldset id="fsCourseFeeType" class="fs" style="display:none">
+            <span class="title">Fee Type</span>
+            <span class="value" id="fsCourseFeeTypeText"></span>
+            <button class="icon-btn hiding" onclick="toggleBox(this,'courseFeeTypeCard')" title="Show">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 5c5.5 0 10 4.5 10 7s-4.5 7-10 7S2 14.5 2 12s4.5-7 10-7Zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /></svg>
+            </button>
+        </fieldset>
+        <div id="courseFeeTypeCard" class="grid-card"><div class="grid-body"><div id="courseFeeTypeGrid"></div></div></div>
+
+        <div id="feeTypeDebug" class="debug-box" style="display:none"></div>
+
+        <!-- Fee Type Detail -->
+        <fieldset id="fsFeeTypeDetail" class="fs" style="display:none">
+            <span class="title">Fee Type Detail</span>
+            <span class="value" id="fsFeeTypeDetailText"></span>
+            <button class="icon-btn hiding" onclick="toggleBox(this,'feeTypeDetailCard')" title="Show">
+                <svg viewBox="0 0 24 24" class="icon"><path d="M12 5c5.5 0 10 4.5 10 7s-4.5 7-10 7S2 14.5 2 12s4.5-7 10-7Zm0 3.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" /></svg>
+            </button>
+        </fieldset>
+        <div id="feeTypeDetailCard" class="grid-card"><div class="grid-body"><div id="feeTypeDetailGrid"></div></div></div>
+    </div>
+</div>
+
+<script>
+
+            /*
+            var jq = document.createElement('script'); jq.src = "https://code.jquery.com/jquery-3.6.0.min.js"; document.head.appendChild(jq);
+            var dx = document.createElement('script'); dx.src = "https://cdn3.devexpress.com/jslib/23.2.3/js/dx.all.js"; document.head.appendChild(dx);
+            */
+
+            /* ---------- State ---------- */
+            let currentProgrammeId = null, currentCourseId = null, currentCourseFeeId = null, currentCourseFeeTypeId = null;
+
+            /* ---------- Helpers ---------- */
+            function toggleBox(btn, targetId){
+              const $btn = $(btn), $box = $("#" + targetId);
+              if($box.is(":visible")){
+                $box.slideUp(140);
+                $btn.removeClass("showing").addClass("hiding").attr("title","Show");
+              } else {
+                $box.slideDown(140);
+                $btn.removeClass("hiding").addClass("showing").attr("title","Hide");
+              }
+            }
+
+            function disposeGrid(selector){
+              try{
+                const inst = $(selector).dxDataGrid("instance");
+                if(inst){ inst.dispose(); $(selector).empty(); }
+              }catch(e){}
+            }
+
+            function resetAll(){
+              // hide FS and cards
+              $(".fs").hide();
+              $(".grid-card").hide();
+              $("#breadcrumb").html(`<span class="chip blue clickable" onclick="resetAll()">Home</span>`);
+              $("#programmeCard").slideDown(120);
+              $(".icon-btn").removeClass("showing").addClass("hiding").attr("title","Show");
+              disposeGrid("#programmeGrid"); disposeGrid("#courseGrid"); disposeGrid("#courseFeeGrid"); disposeGrid("#courseFeeTypeGrid"); disposeGrid("#feeTypeDetailGrid");
+              $("#feeTypeDebug").hide().text("");
+              initProgrammeGrid();
+            }
+
+            function addChip(txt,color,target){
+              $("#breadcrumb").append(`<span class="chip ${color} clickable" onclick="$('#${target}').slideDown(100)">${txt}</span>`);
+            }
+
+            /* ---------- Grids ---------- */
+
+              function initProgrammeGrid() {
+          disposeGrid("#programmeGrid");
+
+          $("#programmeGrid").dxDataGrid({
+            dataSource: new DevExpress.data.CustomStore({
+              key: "ProgrammeID",
+              load: function () {
+                return $.getJSON("/Master/_ProgrammePartialView");
+              },
+              insert: function (values) {
+                return $.ajax({
+                  url: "/Master/SaveProgramme",
+                  method: "POST",
+                  contentType: "application/json",
+                  data: JSON.stringify(values)
+                });
+              },
+              update: function (key, values) {
+                var grid = $("#programmeGrid").dxDataGrid("instance");
+                var rowData = grid.getDataSource().items().find(x => x.ProgrammeID === key);
+                var fullData = $.extend({}, rowData, values);
+                return $.ajax({
+                  url: "/Master/SaveProgramme",
+                  method: "POST",
+                  contentType: "application/json",
+                  data: JSON.stringify(fullData)
+                });
+              }
+            }),
+
+            showBorders: true,
+            rowAlternationEnabled: false,
+            hoverStateEnabled: true,
+            columnAutoWidth: true,
+            allowColumnResizing: true,
+
+            searchPanel: {
+              visible: true,
+              highlightCaseSensitive: true,
+              placeholder: "Search..."
+            },
+
+            // ✅ Popup Edit + Dropdown Functionality
+            editing: {
+              mode: "popup",
+              allowAdding: true,
+              allowUpdating: true,
+              useIcons: true,
+             popup: {
+      title: "Programme Details",
+      showTitle: true,
+      width: 720,
+      height: 520,
+      position: { my: "center", at: "center", of: window },
+      animation: {
+        show: {
+          type: "slide",
+          from: { top: -100, opacity: 0 },
+          to: { top: 0, opacity: 1 },
+          duration: 350,
+          easing: "easeOutCubic"
+        },
+        hide: {
+          type: "fade",
+          from: 1,
+          to: 0,
+          duration: 250
+        }
+      }
+    },
+
+              form: {
+                colCount: 2,
+                labelLocation: "top",
+                items: [
+                  {
+                    dataField: "ProgrammeName",
+                    label: { text: "Programme Name" },
+                    validationRules: [{ type: "required" }]
+                  },
+                  {
+                    dataField: "NoOfCourse",
+                    label: { text: "No. of Courses" },
+                    editorType: "dxNumberBox",
+                    validationRules: [{ type: "required" }]
+                  },
+                  {
+                    dataField: "CourseCategoryID",
+                    label: { text: "Course Category" },
+                    editorType: "dxSelectBox",
+                    editorOptions: {
+                      dataSource: new DevExpress.data.CustomStore({
+                        key: "ValueField",
+                        loadMode: "raw",
+                        load: function () {
+                          return $.getJSON("/Master/GetCourseCategories");
+                        }
+                      }),
+                      valueExpr: "ValueField",
+                      displayExpr: "TextField",
+                      searchEnabled: true,
+                      showClearButton: true,
+                      deferRendering: false
+                    }
+                  },
+                  {
+                    dataField: "DeptId",
+                    label: { text: "Department" },
+                    editorType: "dxSelectBox",
+                    editorOptions: {
+                      dataSource: new DevExpress.data.CustomStore({
+                        key: "ValueField",
+                        loadMode: "raw",
+                        load: function () {
+                          return $.getJSON("/Master/GetDepartments");
+                        }
+                      }),
+                      valueExpr: "ValueField",
+                      displayExpr: "TextField",
+                      searchEnabled: true,
+                      showClearButton: true,
+                      deferRendering: false
+                    }
+                  },
+                  {
+                    dataField: "Skill",
+                    label: { text: "Skill" },
+                    editorType: "dxSelectBox",
+                    editorOptions: {
+                      dataSource: [
+                        { ValueField: "NSDC", TextField: "NSDC" },
+                        { ValueField: "NON-NSDC", TextField: "NON-NSDC" }
+                      ],
+                      valueExpr: "ValueField",
+                      displayExpr: "TextField",
+                      placeholder: "Select Skill"
+                    }
+                  },
+                  {
+                    dataField: "StudyMaterialYN",
+                    label: { text: "Study Material?" },
+                    editorType: "dxSelectBox",
+                    editorOptions: {
+                      dataSource: [
+                        { ValueField: true, TextField: "Yes" },
+                        { ValueField: false, TextField: "No" }
+                      ],
+                      valueExpr: "ValueField",
+                      displayExpr: "TextField",
+                      placeholder: "Select Option"
+                    }
+                  },
+                  { dataField: "Eligibillity", label: { text: "Eligibility" } },
+                  {
+                    dataField: "Remarks",
+                    label: { text: "Remarks" },
+                    editorType: "dxTextArea",
+                    colSpan: 2
+
+                  }
+                ]
+              }
+            },
+
+            paging: { pageSize: 15 },
+            pager: {
+              showPageSizeSelector: true,
+              allowedPageSizes: [10, 15, 20, 50, 100, 460],
+              visible: true
+            },
+
+            loadPanel: { enabled: true, shading: false, showPane: false },
+            scrolling: { mode: "standard", showScrollbar: "always" },
+            height: 400,
+
+               columns: [
+          {
+            type: "buttons",
+            width: 60,
+            buttons: ["edit"], // same DevExtreme orange edit icon
+          },
+          { dataField: "ProgrammeID", caption: "ID", width: 80, allowEditing: false },
+          { dataField: "ProgrammeName", caption: "Programme Name" },
+          { dataField: "CourseCategory", caption: "Course Category", allowEditing: false },
+          { dataField: "DepartmentName", caption: "Department", allowEditing: false },
+          { dataField: "CourseCategoryID", visible: false },
+          { dataField: "DeptId", visible: false },
+          { dataField: "NoOfCourse", caption: "Courses", width: 100 },
+          { dataField: "Skill", caption: "Skill", width: 100 },
+          { dataField: "Remarks", caption: "Remarks", width: 120 },
+          { dataField: "Eligibillity", caption: "Eligibility" },
+          {
+            dataField: "StudyMaterialYN",
+            caption: "Study Material (Y/N)",
+            width: 140,
+            customizeText: function (cellInfo) {
+              return cellInfo.value ? "Yes" : "No";
+            }
+          }
+        ],
+
+
+            onRowClick: function (e) {
+              currentProgrammeId = e.data.ProgrammeID;
+
+              $("#courseCard,#courseFeeCard,#courseFeeTypeCard,#feeTypeDetailCard").hide();
+              $("#fsCourse,#fsCourseFee,#fsCourseFeeType,#fsFeeTypeDetail").hide();
+
+              $("#fsProgrammeText").text(e.data.ProgrammeName);
+              $("#fsProgramme").show();
+
+              $("#programmeCard").slideUp(100);
+              $("#courseCard").slideDown(100);
+              $("#fsCourse").show();
+
+              $("#fsProgramme .icon-btn")
+                .removeClass("hiding")
+                .addClass("showing")
+                .attr("title", "Hide");
+
+              $("#fsCourse .icon-btn")
+                .removeClass("showing")
+                .addClass("hiding")
+                .attr("title", "Show");
+
+              addChip("Programme: " + e.data.ProgrammeName, "green", "programmeCard");
+              disposeGrid("#courseGrid");
+              initCourseGrid(e.data.ProgrammeID);
+            }
+          });
+        }
+
+            function getPopupEditingConfig(title, formItems) {
+            return {
+                mode: "popup",
+                allowAdding: true,
+                allowUpdating: true,
+                useIcons: true,
+                popup: {
+                    title: title,
+                    showTitle: true,
+                    width: 720,
+                    height: 520,
+                    position: { my: "center", at: "center", of: window }
+                },
+                form: {
+                    colCount: 2,
+                    labelLocation: "top",
+                    items: formItems
+                }
+            };
+        }
+
+
+            function initCourseGrid(programmeId){
+              disposeGrid("#courseGrid");
+              $("#courseGrid").dxDataGrid({
+                dataSource: DevExpress.data.AspNet.createStore({ key:"CourseID", loadUrl:"/Master/GetCourseList?programmeId=" + programmeId }),
+                showBorders:true,
+                rowAlternationEnabled:false,
+                hoverStateEnabled:true,
+                columnAutoWidth:true,
+                allowColumnResizing:true,
+                    toolbar: {
+      items: [
+        {
+          location: "before",
+          widget: "dxButton",
+          options: {
+            icon: "plus",
+            hint: "Add New Course",
+            onClick: function () {
+              const grid = $("#courseGrid").dxDataGrid("instance");
+              grid.addRow();
+            },
+            elementAttr: {
+              style: `
+                background: linear-gradient(135deg,#5162ff,#7a8bff);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 38px;
+                height: 38px;
+                box-shadow: 0 4px 10px rgba(81,98,255,0.25);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `
+            }
+          }
+        },
+        { location: "after", name: "searchPanel" }
+      ]
+    },
+    searchPanel: {
+      visible: true,
+      placeholder: "Search..."
+    },
+
+
+                loadPanel:{ enabled:true, shading:false, showPane:false },
+                // internal scroll + pager hidden (we use internal scroll; but program pagination requested for programme not course)
+                scrolling:{ mode:"virtual" },
+                height:null,
+                columns:[
+                  { dataField:"CourseID", caption:"ID", width:80 },
+                  { dataField:"Name", caption:"Course Name" },
+                  { dataField:"ShortName", caption:"Short Name", width:120 },
+                  { dataField:"CourseCode", caption:"Code", width:100 },
+                  { dataField:"Duration", caption:"Duration", width:100 },
+                  { dataField:"CourseCategoryID", caption:"CourseCategoryID", width:120 },
+                  { dataField:"CourseCategory", caption:"CourseCategory", width:120 }
+                ],
+                onRowClick:function(e){
+                  $("#fsCourseText").text(e.data.Name); $("#fsCourse").show();
+                  $("#courseCard").slideUp(100);
+                  $("#courseFeeCard").slideDown(100); $("#fsCourseFee").show();
+                  $("#fsCourse .icon-btn").removeClass("hiding").addClass("showing").attr("title","Hide");
+                  $("#fsCourseFee .icon-btn").removeClass("showing").addClass("hiding").attr("title","Show");
+                  addChip("Course: "+e.data.Name,"orange","courseCard");
+
+                  currentCourseId = e.data.CourseID;
+                  disposeGrid("#courseFeeGrid");
+                  initCourseFeeGrid(e.data.CourseID);
+                }
+              });
+            }
+
+            function initCourseFeeGrid(courseId){
+              disposeGrid("#courseFeeGrid");
+              $("#courseFeeGrid").dxDataGrid({
+                dataSource: DevExpress.data.AspNet.createStore({ key:"CourseFeeID", loadUrl:"/Master/GetCourseFeeList?courseId=" + courseId + "&sessionId=221" }),
+                showBorders:true,
+                rowAlternationEnabled:false,
+                hoverStateEnabled:true,
+                columnAutoWidth:true,
+                allowColumnResizing:true,
+
+                    toolbar: {
+      items: [
+        {
+          location: "before",
+          widget: "dxButton",
+          options: {
+            icon: "plus",
+            hint: "Add New Course Fee",
+            onClick: function () {
+              const grid = $("#courseFeeGrid").dxDataGrid("instance");
+              grid.addRow();
+            },
+            elementAttr: {
+              style: `
+                background: linear-gradient(135deg,#5162ff,#7a8bff);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 38px;
+                height: 38px;
+                box-shadow: 0 4px 10px rgba(81,98,255,0.25);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `
+            }
+          }
+        },
+        { location: "after", name: "searchPanel" }
+      ]
+    },
+    searchPanel: {
+      visible: true,
+      placeholder: "Search..."
+    },
+
+                loadPanel:{ enabled:true, shading:false, showPane:false },
+                scrolling:{ mode:"virtual" },
+                height:null,
+                columns:[
+                  { dataField:"CourseFeeID", caption:"Fee ID", width:90 },
+                  { dataField:"CourseFeeName", caption:"Course Fee Name" },
+                  { dataField:"Fee", caption:"Fee", dataType:"number", format:{ type:"fixedPoint", precision:2 }, width:120 },
+                  { dataField:"CourseScheme", caption:"Scheme", width:140 }
+                ],
+                onRowClick:function(e){
+                  $("#fsCourseFeeText").text(e.data.CourseFeeName); $("#fsCourseFee").show();
+                  $("#courseFeeCard").slideUp(100);
+                  $("#courseFeeTypeCard").slideDown(100); $("#fsCourseFeeType").show();
+                  $("#fsCourseFee .icon-btn").removeClass("hiding").addClass("showing").attr("title","Hide");
+                  $("#fsCourseFeeType .icon-btn").removeClass("showing").addClass("hiding").attr("title","Show");
+                  addChip("Fee: "+e.data.CourseFeeName,"indigo","courseFeeCard");
+
+                  currentCourseFeeId = e.data.CourseFeeID;
+                  disposeGrid("#courseFeeTypeGrid");
+                  initCourseFeeTypeGrid(e.data.CourseFeeID);
+                }
+              });
+            }
+
+            function initCourseFeeTypeGrid(courseFeeId){
+              disposeGrid("#courseFeeTypeGrid");
+              $("#courseFeeTypeGrid").dxDataGrid({
+                dataSource: DevExpress.data.AspNet.createStore({ key:"CourseFeeTypeID", loadUrl:"/Master/GetCourseFeeTypeList?courseFeeId=" + courseFeeId }),
+                showBorders:true,
+                rowAlternationEnabled:false,
+                hoverStateEnabled:true,
+                columnAutoWidth:true,
+                allowColumnResizing:true,
+
+                    toolbar: {
+      items: [
+        {
+          location: "before",
+          widget: "dxButton",
+          options: {
+            icon: "plus",
+            hint: "Add New Fee Type",
+            onClick: function () {
+              const grid = $("#courseFeeTypeGrid").dxDataGrid("instance");
+              grid.addRow();
+            },
+            elementAttr: {
+              style: `
+                background: linear-gradient(135deg,#5162ff,#7a8bff);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 38px;
+                height: 38px;
+                box-shadow: 0 4px 10px rgba(81,98,255,0.25);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `
+            }
+          }
+        },
+        { location: "after", name: "searchPanel" }
+      ]
+    },
+    searchPanel: {
+      visible: true,
+      placeholder: "Search..."
+    },
+
+                loadPanel:{ enabled:true, shading:false, showPane:false },
+                scrolling:{ mode:"virtual" },
+                height:null,
+                columns:[
+                  { dataField:"CourseFeeTypeID", caption:"Type ID", width:90 },
+                  { dataField:"CourseFeeID", caption:"Course Fee ID", width:110 },
+                  { dataField:"CourseFeeName", caption:"Course Fee Name" },
+                  { dataField:"FeeTypeID", caption:"Type ID", width:90 },
+                  { dataField:"FeeType", caption:"Type" },
+                  { dataField:"Fee", caption:"Fee", dataType:"number", format:{ type:"fixedPoint", precision:2 }, width:110 },
+                  { dataField:"PaymentModelId", caption:"Payment Model", width:140 },
+                  { dataField:"FeeTypeAdded", caption:"Added", dataType:"boolean", width:100 }
+                ],
+                onRowClick:function(e){
+                  $("#fsCourseFeeTypeText").text(e.data.FeeType); $("#fsCourseFeeType").show();
+                  $("#courseFeeTypeCard").slideUp(100);
+                  $("#feeTypeDetailCard").slideDown(100); $("#fsFeeTypeDetail").show();
+                  $("#fsCourseFeeType .icon-btn").removeClass("hiding").addClass("showing").attr("title","Hide");
+                  $("#fsFeeTypeDetail .icon-btn").removeClass("showing").addClass("hiding").attr("title","Show");
+                  addChip("Type: "+e.data.FeeType,"blue","courseFeeTypeCard");
+
+                  currentCourseFeeTypeId = e.data.CourseFeeTypeID;
+                  disposeGrid("#feeTypeDetailGrid");
+                  initFeeTypeDetailGrid(e.data.CourseFeeTypeID, courseFeeId);
+                }
+              });
+            }
+
+            function initFeeTypeDetailGrid(courseFeeTypeId, fallbackCourseFeeId){
+              disposeGrid("#feeTypeDetailGrid");
+              $("#feeTypeDebug").hide().text("");
+
+              $("#feeTypeDetailGrid").dxDataGrid({
+                dataSource: new DevExpress.data.CustomStore({
+                  key: "CourseFeeTypeID",
+                  load: function(){
+                    const urlA = "/Master/GetFeeTypeDetailList?courseFeeTypeId=" + encodeURIComponent(courseFeeTypeId || "");
+                    const urlB = "/Master/GetFeeTypeDetailList?courseFeeId=" + encodeURIComponent(fallbackCourseFeeId || "");
+                    // Try A, if empty try B.
+                    return $.getJSON(urlA).then(function(aData){
+                      if(Array.isArray(aData) && aData.length>0) return aData;
+                      return $.getJSON(urlB).then(function(bData){ return bData; });
+                    }).catch(function(){
+                      return $.getJSON(urlB).then(function(bData){ return bData; }).catch(function(err){
+                        return $.Deferred().reject(err);
+                      });
+                    });
+                  }
+                }),
+                showBorders:true,
+                rowAlternationEnabled:false,
+                hoverStateEnabled:true,
+                columnAutoWidth:true,
+                allowColumnResizing:true,
+                    toolbar: {
+      items: [
+        {
+          location: "before",
+          widget: "dxButton",
+          options: {
+            icon: "plus",
+            hint: "Add New Fee Type Detail",
+            onClick: function () {
+              const grid = $("#feeTypeDetailGrid").dxDataGrid("instance");
+              grid.addRow();
+            },
+            elementAttr: {
+              style: `
+                background: linear-gradient(135deg,#5162ff,#7a8bff);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 38px;
+                height: 38px;
+                box-shadow: 0 4px 10px rgba(81,98,255,0.25);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `
+            }
+          }
+        },
+        { location: "after", name: "searchPanel" }
+      ]
+    },
+    searchPanel: {
+      visible: true,
+      placeholder: "Search..."
+    },
+
+
+                loadPanel:{ enabled:true, shading:false, showPane:false },
+                // Paging as requested (10-15 range). Pager visible below.
+                paging:{ pageSize:15 },
+                pager:{ visible:true, showPageSizeSelector:true, allowedPageSizes:[10,15,20,50,100] },
+                allowColumnResizing:true,
+                height:null,
+                scrolling:{ mode:"standard" },
+                onContentReady: (function(){
+                  let ran=false;
+                  return function(e){
+                    if(ran) return;
+                    ran=true;
+                    const comp = e.component;
+                    comp.getDataSource().load().then(function(items){
+                      $("#feeTypeDetailGrid .dx-datagrid-nodata, #feeTypeDetailGrid .error-msg").remove();
+                      if(!items || items.length===0){
+                        $("#feeTypeDetailGrid").append('<div class="no-data-msg">No details found for this Fee Type.</div>');
+                        console.log("FeeTypeDetail: no rows returned.");
+                      } else {
+                        console.log("FeeTypeDetail: rows returned:", items.length);
+                      }
+                    }).catch(function(err){
+                      $("#feeTypeDebug").show().text("Error loading Fee Type Detail — check console/network.\n" + (err && err.statusText ? err.statusText : JSON.stringify(err)));
+                      $("#feeTypeDetailGrid").append('<div class="error-msg">Error loading details — check console / network.</div>');
+                      console.error("FeeTypeDetail: both requests failed:", err);
+                    });
+                  };
+                })()
+              });
+            }
+
+            /* ---------- Init ---------- */
+            $(function(){ resetAll(); });
+        // Add this after page load
+      $(document).on("click", "fieldset.fs", function(e) {
+        if ($(e.target).closest(".icon-btn").length) return;
+        $(this).find(".icon-btn").trigger("click");
+    });
+
+
+</script>

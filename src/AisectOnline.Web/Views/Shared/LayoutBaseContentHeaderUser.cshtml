@@ -1,0 +1,297 @@
+﻿@using Microsoft.AspNetCore.Http
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Aisect Insurance &#8211;  &amp; SEO Service </title>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/uploads/elementor/css/custom-frontend-legacy.min.css?ver=3.7.8' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/uploads/elementor/css/custom-frontend.min.css?ver=1665725119' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/plugins/dreamit-elementor-extension/assets/css/widgets-style.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/plugins/dreamit-elementor-extension/assets/css/flaticon.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/plugins/elementor/assets/lib/font-awesome/css/all.min.css?ver=3.7.8' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/meanmenu.min.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/uploads/elementor/css/post-10039.css?ver=1665725119' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/uploads/elementor/css/post-9191.css?ver=1666855523' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/bootstrap.min.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/animate.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/owl.carousel.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/font-awesome.min.css?ver=6.1.3' type='text/css' media='all'>
+
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/theme-default.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/widget.css?ver=6.1.3' type='text/css' media='all'>
+
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/style.css?ver=6.1.3' type='text/css' media='all'>
+    <link rel='stylesheet' href='/LayoutFolder/wp-content/themes/insurance/assets/css/responsive.css?ver=6.1.3' type='text/css' media='all'>
+
+    <script type='text/javascript' src='/LayoutFolder/wp-includes/js/jquery/jquery.min.js?ver=3.6.1' id='jquery-core-js'></script>
+
+    <script type='text/javascript' src='/LayoutFolder/wp-includes/js/my.js'></script>
+    <link rel='stylesheet' href='/LayoutFolder/wp-includes/css/my.css' type='text/css' media='all'>
+    @RenderSection("Scripts", required: false)
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function CheckLink()
+        {
+            $.ajax({
+                        url: '@Html.Raw(Url.Action("GetBalance", "Account"))',
+                        type: 'GET',
+                        success: function (data) {
+                            document.getElementById('myLink').textContent = data.balance;
+                            //link.textContent = data.balance;
+                        },
+                        error: function () {
+                            alert('Error retrieving balance');
+                        }
+                    });
+        }
+        function resetBalanceText() {
+             // Get the link element
+             var link = document.getElementById('myLink');
+
+             // Reset the link text to "Click me"
+             link.textContent = 'Show';
+         }
+
+
+
+
+
+
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+                    $('#userModal a').on('click', function (e) {
+                        e.preventDefault();
+                        var partial = $(this).data('partial');
+                        if (!partial) return;
+                        $('#loader-overlay').show();
+                        $.ajax({
+                            url: '/PartialLoader/LoadPartial',
+                            data: { viewName: partial },
+                            success: function (html) {
+                                $('#content-area').html(html);
+                                toggleModal();
+                                $('#loader-overlay').hide();
+                            },
+                            error: function () {
+                                $('#content-area').html('<p>Error loading content.</p>');
+                            }
+                        });
+                    });
+
+                    // Optionally auto-load default view
+                    $('#userModal a[data-partial="Students"]').click();
+                });
+    </script>
+
+    <style>
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-wrapper img {
+            width: 64px;
+            height: 64px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0%
+
+        {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+
+        }
+    </style>
+    <script>
+        $(window).on('load', function () {
+            $('#loader-overlay').hide();
+        });
+    </script>
+</head>
+
+<body onclick="resetBalanceText()">
+    <!-- MAIN WRAPPER START -->
+    <div class="wrapper">
+        <div class="em40_header_area_main">
+
+            <!-- HEADER TOP AREA -->
+
+            <div class="mobile_logo_area d-sm-block d-md-block d-lg-none">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div class="mobile_menu_logo text-center">
+                                <a href="index.htm" title="Insurance">
+                                    <img src="/LayoutFolder/wp-content/uploads/2022/10/insurance-logo.png" alt="Insurance">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- START HEADER MAIN MENU AREA -->
+            <!-- HEADER TRANSPARENT MENU -->
+            <div class="insurance-main-menu d-md-none d-lg-block d-sm-none d-none transprent-menu">
+                <div class="trp_nav_area1">
+                    <div class="container">
+                        <div class="row logo-left align-items-center">
+                            <!-- LOGO -->
+                            <div class="col-md-3 col-sm-3 col-xs-4">
+
+
+                                <div class="logo">
+                                    <a class="standard-logo" href="index.htm" title="Insurance">
+                                        <img src="/LayoutFolder/wp-content/uploads/2022/10/logo-insurance-white.png" alt="Insurance">
+                                    </a>
+                                    <a class="stiky-logo-transparent" href="index.htm" title="Insurance">
+                                        <img src="/LayoutFolder/wp-content/uploads/2022/10/insurance-logo.png" alt="Insurance">
+                                    </a>
+                                </div>
+
+                            </div>
+                            <div class="col-md-9 col-sm-9 col-xs-8">
+                                <nav class="insurance_menu main-search-menu">
+                                    <ul id="menu-main-menu" class="sub-menu">
+                                        <li>
+                                            <a href="#" data-partial="_StudentIndex">Student</a>
+
+                                        </li>
+                                        <li><a href="#" data-partial="_KioskIndex">Kiosk</a></li>
+                                        <li>
+                                            <a href="#">Kiosk Renewal</a>
+
+                                        </li>
+                                        <li>
+                                            <a href="#" data-partial="_ReportIndex">Reports</a>
+
+                                        </li>
+
+                                        <li><a href="#">Downloads</a></li>
+                                    </ul>															<div class="donate-btn-header">
+                                        <div class="profile-ewallet">
+                                            <div class="profile-icon" onclick="toggleDropdown()">👤</div>
+                                            <button class="ewallet-btn" onclick="toggleModal()">
+                                                <span>+</span> Advance Pay
+                                            </button>
+                                            @if (Context.Session.GetString("IUSERTYPE") == "Admin")
+                                            {
+                                                <div class="user-dropdown" id="userDropdown">
+
+                                                    <p>Welcome @Context.Session.GetString("ICHILDROLE")</p>
+                                                    @* <p>Last Login: @Context.Session.GetString("LastLoginDate")</p>
+                                                    <p>Expires In: @Context.Session.GetString("ExpiredDays") days</p> *@
+                                                    <div class="logout-btn">
+                                                        @Html.ActionLink("⟲ Logout", "LogOff", "Account", null, new { @class = "link2-black" })
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                                {
+                                                <div class="user-dropdown" id="userDropdown">
+                                                    <h4><i class="fas fa-user-circle"></i> User Account</h4>
+                                                    <p class="profile"><i class="fas fa-id-card"></i> Profile</p>
+                                                    <p class="welcome"><i class="fas fa-handshake"></i> Welcome @Context.Session.GetString("KIOSKCode")</p>
+                                                    <p class="login"><i class="fas fa-sign-in-alt"></i> Last Login: @Context.Session.GetString("LastLoginDate")</p>
+                                                    <p class="expires"><i class="fas fa-hourglass-half"></i> Expires In: @Context.Session.GetString("ExpiredDays") days</p>
+                                                    <div class="logout-btn">
+                                                        <i class="fas fa-sign-out-alt"></i>
+                                                        @Html.ActionLink("Logout", "LogOff", "Account", null, new { @class = "link2-black" })
+                                                    </div>
+                                                </div>
+                                                }
+                                        </div>
+                                    </div>
+
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="user-modal" id="userModal">
+                <div class="user-modal-content">
+                    <button class="closed-btn" onclick="toggleModal()">✖</button>
+                    <h2 style="color: #eee;">BALANCE <span>AMOUNT</span> ?</h2>
+                    <a href="javascript:void(0)" id="myLink" class="amount" onclick="CheckLink();">Show</a>
+                    @*  <button class="amount">16500.00</button> *@
+                    <a href="#" class="manage-btn" data-partial="_WalletIndex">Manage Wallet</a>
+                    @*  <button class="manage-btn">Manage Wallet</button> *@
+                </div>
+            </div>
+            <div class="main-content">
+                @RenderBody()
+            </div>
+            <!-- MOBILE MENU AREA -->
+            <div class="home-2 mbm d-sm-block d-md-block d-lg-none header_area main-menu-area">
+                <div class="menu_area mobile-menu">
+                    <nav>
+                        <ul id="menu-main-menu" class="sub-menu">
+                            <li>
+                                <a href="#">Student</a>
+
+                            </li>
+                            <li><a href="#"> Kiosk </a></li>
+                            <li>
+                                <a href="#">Kiosk Renewal</a>
+
+                            </li>
+                            <li>
+                                <a href="#">Reports</a>
+
+                            </li>
+
+                            <li><a href="#">Downloads</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- END MOBILE MENU AREA  -->
+        </div>
+    </div>
+    @* <script>
+        $(document).ready(function () {
+            $('#menu-main-menu a').on('click', function (e) {
+                e.preventDefault();
+                var partial = $(this).data('partial');
+
+                if (!partial) return;
+
+                $.ajax({
+                    url: '/PartialLoader/LoadPartial',
+                    data: { viewName: partial },
+                    success: function (html) {
+                        $('#content-area').html(html);
+                    },
+                    error: function () {
+                        $('#content-area').html('<p>Error loading content.</p>');
+                    }
+                });
+            });
+        });
+    </script> *@
+    <div id="loader-overlay">
+        <div class="loader-wrapper">
+            <img src="~/images/loader.gif" alt="Loading..." />
+        </div>
+    </div>
+</body>

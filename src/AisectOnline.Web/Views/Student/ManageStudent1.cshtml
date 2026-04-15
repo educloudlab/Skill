@@ -1,0 +1,186 @@
+﻿@using AisectOnline.Services.Modules.Students
+@model StudentSearchDto
+@{
+    Layout = "_Layout";
+}
+<div class="card p-4 shadow-sm">
+    <h4>Student Search</h4>
+    <form id="searchForm">
+        <!-- Row 1 -->
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label>Name</label>
+                @(Html.DevExtreme().TextBox()
+                                .ID("NameID")
+                                .Name("Name")
+                                .Value(Model.Name)
+                                .Placeholder("Enter name")
+                                .InputAttr("aria-label", "Name")
+                                )
+            </div>
+
+            <div class="col-md-4">
+                <label>Registration No</label>
+                @(Html.DevExtreme().TextBox()
+                                .ID("RegistrationNumberID")
+                                .Name("RegistrationNumber")
+                                .Value(Model.RegistrationNumber)
+                                .Placeholder("Enter Registration No")
+                                .InputAttr("aria-label", "Registration Number")
+                                )
+            </div>
+
+            <div class="col-md-4">
+                <label>Status</label>
+                @(Html.DevExtreme().SelectBox()
+                                .ID("StatusID")
+                                .Name("Status")
+                                .DataSource(Model.StatusList)
+                                .DisplayExpr("TextField")
+                                .ValueExpr("ValueField")
+                                .Placeholder("-- Select Status --")
+                                .ShowClearButton(true)
+                                .InputAttr("aria-label", "Status")
+                                )
+            </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label>Center Code</label>
+                @(Html.DevExtreme().Lookup()
+                                .ID("CenterCodeID")
+                                .DataSource(ds => ds.Mvc().Controller("Student").LoadAction("GetKiosks").Key("ValueField"))
+                                .DisplayExpr("TextField").ValueExpr("ValueField")
+                                .SearchEnabled(true).MinSearchLength(2)
+                                .PageLoadMode(ListPageLoadMode.ScrollBottom)
+                                .DropDownOptions(o => o.Height(400))
+                                .SearchTimeout(500)
+                                .OnValueChanged("function(e){ OnChangeCenterCodeID(e); }")
+                                )
+            
+            </div>
+
+            <div class="col-md-4">
+                <label>Course</label>
+                @(Html.DevExtreme().SelectBox()
+                                .ID("CourseId")
+                                .DisplayExpr("textField")
+                                .ValueExpr("valueField")
+                                .Placeholder("-- Select Course --")
+                                .ShowClearButton(true)
+                                .InputAttr("aria-label", "Course")
+                                )
+            </div>
+
+            <div class="col-md-4">
+                <label>Session</label>
+                @(Html.DevExtreme().TagBox()
+                                .ID("SessionID")
+                                .Name("Session")
+                                .DataSource(Model.SessionList)
+                                .DisplayExpr("TextField")
+                                .ValueExpr("TextField")
+                                .ShowSelectionControls(true)
+                                .Placeholder("-- Select Session(s) --")
+                                .ApplyValueMode(EditorApplyValueMode.UseButtons)
+                                .InputAttr("aria-label", "Session")
+                                )
+            </div>
+        </div>
+
+        <!-- Row 3 (Button aligned right) -->
+        <div class="row mt-4">
+            <div class="col-md-12 text-end">
+                @(Html.DevExtreme().Button()
+                                .ID("btnSearch")
+                                .Text("Search")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                .ElementAttr("class", "btn-primary")
+                              @*   .OnClick("onSearchClick") *@
+                                )
+            </div>
+        </div>
+    </form>
+</div>
+
+<hr />
+
+<div id="resultContainer"></div>
+
+
+    <script>
+        $("#btnSearch").click(function () {
+          const nameValue = $("#NameID").dxTextBox("instance").option("value");
+const registrationNumber = $("#RegistrationNumberID").dxTextBox("instance").option("value");
+const status = $("#StatusID").dxSelectBox("instance").option("value");
+const centerCode = $("#CenterCodeID").dxLookup("instance").option("value");
+const courseId = $("#CourseId").dxSelectBox("instance").option("value");
+const selectedSessions = $("#SessionID").dxTagBox("instance").option("value");
+debugger;
+$.ajax({
+    url: '@Url.Action("Search", "Student")',
+    type: 'POST',
+           data: {
+            Name: nameValue,
+            RegistrationNumber: registrationNumber,
+            Status: status,
+            CenterCode: centerCode,
+            Course: courseId,
+            Session: selectedSessions
+        },
+                traditional: true, 
+    success: function (result) {
+        $("#resultContainer").html(result);
+    },
+    error: function (xhr, status, error) {
+        console.error("Error:", error);
+    }
+});
+
+        });
+
+
+
+       function OnChangeCenterCodeID(e) {
+        const CenterCodeID = $("#CenterCodeID").dxLookup("instance").option("value");
+        debugger;
+        if (!CenterCodeID) {
+            DevExpress.ui.notify("Please select both Center and Kiosk.", "warning", 2000);
+            return;
+        }
+
+           $.ajax({
+        url: '/Student/GetCoursesByCentreCodeID',
+        type: 'GET',
+        data: { KioskId: CenterCodeID },
+        success: function (data) {
+            console.log("data:", data);
+            if (Array.isArray(data) && data.length > 0) {
+                const courseSelect = $("#CourseId").dxSelectBox("instance");
+                if (courseSelect) {
+                    courseSelect.option({
+                        dataSource: data,
+                        valueExpr: "ValueField",   // adjust if field name differs
+                        displayExpr: "TextField",
+                        value: null
+                    });
+                } else {
+                    console.warn("CourseId SelectBox not initialized.");
+                }
+            } else {
+                DevExpress.ui.notify("No courses found for this center.", "info", 2000);
+                const courseSelect = $("#CourseId").dxSelectBox("instance");
+                if (courseSelect) courseSelect.option("dataSource", []);
+            }
+        },
+        error: function (xhr) {
+            console.error(xhr);
+            DevExpress.ui.notify("Failed to load courses.", "error", 2000);
+        }
+    });
+
+    }
+</script>

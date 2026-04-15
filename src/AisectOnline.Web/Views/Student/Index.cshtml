@@ -1,0 +1,53 @@
+﻿ @{
+    Layout = "_Layout";
+}
+@using AisectOnline.Services.Modules.Students
+@using DevExtreme.AspNet.Mvc
+@model IEnumerable<StudentDto>
+
+@{
+    ViewData["Title"] = "Students Grid";
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Message as string))
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </div>
+}
+
+<h2>Students</h2>
+@(Html.DevExtreme().DataGrid<StudentDto>()
+    .ID("studentsGrid")
+    .DataSource(ds => ds
+        .Mvc()
+        .Controller("Student")
+        .LoadAction("GetLoadData")
+        .Key("studentId")
+    )
+    .Columns(columns => {
+        columns.Add().DataField("studentId").AllowEditing(false);
+        columns.Add().DataField("firstName");
+        columns.Add().DataField("lastName");
+        columns.Add().DataField("fatherName");
+        columns.Add().DataField("dob").DataType(GridColumnDataType.Date);
+        columns.Add().DataField("mobileNo");
+        columns.AddFor(m => m.FatherName);
+        columns.AddFor(m => m.MotherName);
+        columns.AddFor(m => m.Dob).DataType(GridColumnDataType.Date);
+        columns.AddFor(m => m.MobileNo); 
+    })
+    .Editing(e => e
+        .Mode(GridEditMode.Popup)
+        .AllowAdding(true)
+        .AllowUpdating(true)
+        .AllowDeleting(true)
+    )
+    .SearchPanel(sp => sp.Visible(true).Width(240).Placeholder("Search..."))
+    .FilterRow(fr => fr.Visible(true))
+    .Paging(p => p.PageSize(15))
+    .ShowBorders(true)
+)
+<<<<<<< .mine =======
+
+>>>>>>> .theirs

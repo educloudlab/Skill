@@ -1,0 +1,56 @@
+﻿@using DevExtreme.AspNet.Mvc
+@using AisectOnline.Services.Modules.Students
+@model AisectOnline.Services.Modules.MasterData.MasterDataListDto
+@{
+    Layout = "_Layout";
+}
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link href="~/css/iconfont.css" rel="stylesheet" />
+<link href="~/css/fontroboto.css" rel="stylesheet" />
+<link href="~/css/list/master.css" rel="stylesheet" />
+
+<div class="master-box">
+    <h1 class="page-title">
+        <i class="fas fa-database"></i> Master Data List
+    </h1>
+
+    <fieldset class="form-box">
+        <legend>Select Option</legend>
+        <label>Choose Master Data:</label>
+
+        @(Html.DevExtreme().SelectBox()
+                .ID("MasterDataTypeList")
+                .DataSource(Model.MasterDataTypeList)
+                .DisplayExpr("TextField")
+                .ValueExpr("ValueField")
+                .Value(Model.MasterDataTypeList?.FirstOrDefault()?.ValueField)
+                .Placeholder("Please Select")
+                .OnValueChanged("onMasterDataChanged")
+                )
+    </fieldset>
+ 
+    <div id="gridContainer"></div>
+
+    
+</div>
+
+<script>
+    function onMasterDataChanged(e) {
+        var selectedId = e.value;
+        if (!selectedId) return;
+        $.get('@Url.Action("_MasterDataGrid", "Admin")', { typeId: selectedId })
+            .done(function (html) {
+               debugger
+                $("#gridContainer").html(html);
+            })
+            .fail(function () {
+                DevExpress.ui.notify("Failed to load data", "error", 2000);
+            });
+
+    }
+          $(function(){
+      const selectBox = $("#MasterDataTypeList").dxSelectBox("instance");
+      if(selectBox.option("value")) onMasterDataChanged({ value: selectBox.option("value") });
+    });
+
+</script>

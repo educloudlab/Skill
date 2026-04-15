@@ -1,0 +1,156 @@
+﻿@using DevExtreme.AspNet.Mvc
+@using AisectOnline.Services.Modules.Students
+@model AisectOnline.Services.Modules.MasterData.MasterDataListDto
+@{
+    Layout = "_Layout";
+}
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link href="~/css/iconfont.css" rel="stylesheet" />
+<link href="~/css/fontroboto.css" rel="stylesheet" />
+
+<link href="~/css/list/master.css" rel="stylesheet" />
+
+
+<div class="master-box">
+    <h1 class="page-title">
+        <i class="fas fa-database"></i> Master Data List
+    </h1>
+
+    <fieldset class="form-box">
+        <legend>Select Option</legend>
+        <label>Choose Master Data:</label>
+
+        @(Html.DevExtreme().SelectBox()
+            .ID("MasterDataTypeList")
+            .DataSource(Model.MasterDataTypeList)
+            .DisplayExpr("TextField")
+            .ValueExpr("ValueField")
+            .Value(Model.MasterDataTypeList?.FirstOrDefault()?.ValueField)
+            .Placeholder("Please Select")
+            .OnValueChanged("onMasterDataChanged")
+        )
+    </fieldset>
+
+    <fieldset class="form-box">
+        <legend>Master Data List</legend>
+        <div class="grid-box">
+            @(Html.DevExtreme().DataGrid<ListItems>()
+                .ID("gridContainer")
+                .KeyExpr("ValueField")
+                .Columns(columns => {
+                    columns.Add().DataField("TextField").Caption("Description");
+
+                    columns.Add().Type(GridCommandColumnType.Buttons)
+                        .Caption("Actions").Width(160).Alignment(HorizontalAlignment.Center)
+                        .Buttons(b => {
+                            b.Add().Name(GridColumnButtonName.Edit).CssClass("act-edit");
+                            b.Add().Name(GridColumnButtonName.Delete).CssClass("act-delete");
+                            b.Add().Name(GridColumnButtonName.Save).CssClass("icon-save");
+                            b.Add().Name(GridColumnButtonName.Cancel).CssClass("icon-cancel");
+                        });
+                })
+                .Editing(e => e
+                    .Mode(GridEditMode.Row)
+                    .AllowAdding(true)
+                    .AllowUpdating(true)
+                    .AllowDeleting(true)
+                    .ConfirmDelete(true)
+                    .Texts(t => t
+                        .ConfirmDeleteTitle("Confirm Delete")
+                        .ConfirmDeleteMessage("Are you sure you want to delete this record?")
+                    )
+                )
+                .Paging(p => p.PageSize(10))
+               .ShowBorders(true)
+                .ErrorRowEnabled(false)
+                .OnDataErrorOccurred("onGridError")
+                .OnToolbarPreparing("gridToolbarPreparing")
+            )
+        </div>
+    </fieldset>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+<script>
+toastr.options = { closeButton:true, progressBar:true, timeOut:"3000", preventDuplicates:true };
+function toastNearAdd(msg, type){
+  toastr.options.target = "#gridToastSlot";
+  toastr.options.positionClass = "toast-in-slot";
+  const $t = toastr[type || "success"](msg);
+  setTimeout(()=>{ $t.addClass("show"); },0);
+  toastr.options.target = "body";
+}
+
+function gridToolbarPreparing(e){
+  e.toolbarOptions.items = (e.toolbarOptions.items || []).filter(i => i.name !== "addRowButton");
+  e.toolbarOptions.items.push({ location: "before", template: () => $("<div id='gridToastSlot'></div>") });
+  e.toolbarOptions.items.push({
+    location: "after",
+    template: function(){
+      const $btn = $('<button type="button" class="btn-add-new"><span class="material-icons">add</span> Add New</button>');
+      $btn.on("click", function(){ $("#gridContainer").dxDataGrid("instance").addRow(); });
+      return $btn;
+    }
+  });
+}
+
+function onGridError(e){
+  const msg = (e && e.error && (e.error.message || e.error.responseText)) || 'Operation failed';
+  toastNearAdd('❌ ' + msg, 'error');
+}
+
+function onMasterDataChanged(e){
+  const grid = $("#gridContainer").dxDataGrid("instance");
+  if(!e.value){ grid.option("dataSource", []); return; }
+
+  const store = new DevExpress.data.CustomStore({
+    key: "ValueField",
+
+    load: () => $.getJSON('@Url.Action("GetMasterDataList","Master")',{ Id:e.value }),
+
+    insert: values => $.ajax({
+      url:'@Url.Action("CreateMasterData","Master")'+'?MasterDataTypeId='+e.value,
+      method:"POST", contentType:"application/json",
+      data: JSON.stringify(values)
+    }).done(()=> toastNearAdd("✅ Data created","success"))
+      .fail(xhr=> toastNearAdd("❌ "+(xhr.responseText||xhr.statusText||"Create failed"),"error")),
+
+    update: (key, values) => {
+      values.valueField = key; values.ValueField = key;
+      return $.ajax({
+        url:'@Url.Action("UpdateMasterData","Master")'+'?MasterDataTypeId='+e.value,
+        method:"PUT", contentType:"application/json",
+        data: JSON.stringify(values)
+      }).done(()=> toastNearAdd("✅ Data updated","success"))
+        .fail(xhr=> toastNearAdd("❌ "+(xhr.responseText||xhr.statusText||"Update failed"),"error"));
+    },
+
+    remove: function (key) {
+      const dfd = $.Deferred();
+      $.ajax({
+        url:'@Url.Action("DeleteMasterData","Master")'+'?MasterDataTypeId='+e.value,
+        method:'DELETE', contentType:'application/json; charset=utf-8',
+        data: JSON.stringify({ MasterDataTypeId: e.value, ValueField: key, valueField: key })
+      }).done(function(){
+        toastNearAdd('🗑️ Deleted successfully','success');
+        dfd.resolve();
+      }).fail(function(xhr){
+        const msg = (xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.error))
+                    || xhr.responseText || xhr.statusText || 'Delete failed';
+        toastNearAdd('❌ ' + msg,'error');
+        dfd.reject(msg);
+      });
+      return dfd.promise();
+    }
+  });
+  grid.option("dataSource", store);
+}
+
+$(function(){
+  const selectBox = $("#MasterDataTypeList").dxSelectBox("instance");
+  if(selectBox.option("value")) onMasterDataChanged({ value: selectBox.option("value") });
+});
+</script>

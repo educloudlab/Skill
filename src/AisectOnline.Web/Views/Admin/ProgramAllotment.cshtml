@@ -1,0 +1,728 @@
+﻿@model AisectOnline.Services.Modules.MasterData.ProgrammeAllotment
+@using AisectOnline.Services.Modules.MasterData
+@using DevExtreme.AspNet.Mvc
+
+@{
+    Layout = "_Layout";
+}
+<link href="~/css/templatecss/programallotment.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+<link href="~/css/devextreme/dx.light.css" rel="stylesheet" />
+<link href="~/css/allotmentgrid.css" rel="stylesheet" />
+
+<div class="page">
+    <div class="header-box">
+        <div class="title">Program Allocate</div>
+        <div class="underline"></div>
+        <div class="subtitle">Allocate / Reallocate programmes to KIOSK</div>
+    </div>
+
+    <div class="tabs" role="tab">
+        <div id="tabKiosk" class="tab" data-tab="KIOSK" onclick="openTab('KIOSK')">Kiosk Service</div>
+        <div id="tabProgramme" class="tab" data-tab="Programme" onclick="openTab('Programme')">Programme</div>
+    </div>
+
+    <!-- ================= KIOSK (ORIGINAL) ================= -->
+    <div id="kioskCard" class="master-card" style="display:none;">
+        <div class="prog-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <label style="font-weight:800;">Program</label>
+                <button id="toggleOptionsBtn" type="button" onclick="toggleOptions()"
+                        style="display:none;border:0;background:#e8fff1;color:#11a84b;padding:6px 12px;border-radius:999px;font-weight:700;cursor:pointer;">
+                    <i class="fa fa-eye"></i> Show/Hide
+                </button>
+            </div>
+
+            <div id="programOptions">
+                <div class="pill-title">Programme Options</div>
+                <div class="pill-group" id="pillGroup">
+                    <label class="pill-radio" id="pillMulti" onclick="selectPill(this, 'MultiService')">
+                        <input type="radio" name="progPill" value="MultiService" />
+                        <span class="pill-dot"></span><span class="pill-text">MultiService Only</span>
+                    </label>
+                    <label class="pill-radio" id="pillEdu" onclick="selectPill(this, 'Educational')">
+                        <input type="radio" name="progPill" value="Educational" />
+                        <span class="pill-dot"></span><span class="pill-text">Educational (Assigned later MultiService)</span>
+                    </label>
+                </div>
+
+                <div id="inlineDropdown" class="inline-dropdown" style="display:none;">
+                    <div class="_kiosk-title">KIOSK</div>
+                    @(Html.DevExtreme().Lookup()
+                                        .ID("KioskID")
+                                        .DataSource(ds => ds.Mvc().Controller("Admin").LoadAction("GetKioskList").Key("ValueField"))
+                                        .DisplayExpr("TextField").ValueExpr("ValueField")
+                                        .SearchEnabled(true).MinSearchLength(2)
+                                        .PageLoadMode(ListPageLoadMode.ScrollBottom)
+                                        .DropDownOptions(o => o.Height(400))
+                                        .SearchTimeout(500)
+                                        .OnValueChanged("function(e){ OnChangeKioskId(e); }")
+                                        )
+                </div>
+
+                <div id="servicesBlock" class="inline-dropdown" style="display:none">
+                    <div class="_kiosk-title">University</div>
+                    @(Html.DevExtreme().SelectBox()
+                                        .ID("Services").Name("Services").DataSource(new JS("[]"))
+                                        .DisplayExpr("TextField").ValueExpr("ValueField")
+                                        .Placeholder("Please Select")
+                                        .ValidationRules(r => { r.AddRequired().Message("Services is required."); })
+                                        .OnValueChanged("function(e){ OnChangeServices(e); }")
+                                        )
+                </div>
+
+                <div id="facultyBlock" class="inline-dropdown" style="display:none">
+                    <div class="_kiosk-title">Faculty/Academy</div>
+                    @(Html.DevExtreme().SelectBox()
+                                        .ID("FacultyId").Name("FacultyId").DataSource(new JS("[]"))
+                                        .DisplayExpr("TextField").ValueExpr("ValueField")
+                                        .Placeholder("Please Select")
+                                        .ValidationRules(r => { r.AddRequired().Message("Services is required."); })
+                                        .OnValueChanged("function(e){ OnChangeFaculty(e); }")
+                                        )
+                </div>
+            </div>
+
+            <!-- KIOSK breadcrumbs -->
+            <div id="progInfo" class="prog-info" style="display:none;">
+                <div class="chips">
+                    <span id="chipKiosk" class="chip chip-k">Kiosk: –</span>
+                    <span id="chipUniv" class="chip chip-u">University: –</span>
+                    <span id="chipFac" class="chip chip-f">Faculty: –</span>
+                </div>
+                <div class="counts">
+                    <span class="badge" id="badgeAvail">Available: 0</span>
+                    <span class="badge" id="badgeAllot">Allotted: 0</span>
+                </div>
+            </div>
+
+            <div class="actions-row" id="kioskActions" style="display:none;">
+                @(Html.DevExtreme().Button().ID("loadBtn").Text("Load Programmes").Type(ButtonType.Default).OnClick("Show").Width("160px"))
+                <button class="btn msc" onclick="mscAllot()">MSC &amp; FI Allotment</button>
+            </div>
+        </div>
+
+        <div id="kioskBlock" class="grid-wrap" aria-live="polite"></div>
+
+        <div class="allot-area" id="allotArea" style="display:none;">
+            <div class="left-panel">
+                <h4 class="panel-title">Available Programmes</h4>
+                <div id="gridContainer"></div>
+            </div>
+
+            <div class="actions-col">
+                <button class="action-btn primary" onclick="addSelected()">Add ►</button>
+                <button class="action-btn primary" onclick="addAll()">Add All ►►</button>
+                <button class="action-btn ghost" onclick="removeSelected()">◄ Remove</button>
+                <button class="action-btn ghost" onclick="removeAll()">◄◄ Remove All</button>
+            </div>
+
+            <div class="right-panel">
+                <h4 class="panel-title">Alloted Program List</h4>
+                <div id="gridContainer2"></div>
+            </div>
+        </div>
+
+        
+    </div>
+     <!-- ================= PROGRAMME (dummy) ================= -->
+    <div id="programmeCard" class="master-card" style="display:none;">
+        <div class="prog-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <label style="font-weight:800;">Programme Options</label>
+
+                <!-- NEW: Programme Show/Hide button (works like kiosk's) -->
+                <button id="toggleProgOptionsBtn" type="button" onclick="toggleProgrammeOptions()"
+                        style="display:none;border:0;background:#e8fff1;color:#11a84b;padding:6px 12px;border-radius:999px;font-weight:700;cursor:pointer;">
+                    <i class="fa fa-eye"></i> Show/Hide
+                </button>
+            </div>
+
+            <div class="pill-group" id="pPillGroup">
+                <label class="pill-radio" id="pPillMulti" onclick="selectProgrammeType('MultiService')">
+                    <input type="radio" name="pProgPill" value="MultiService" />
+                    <span class="pill-dot"></span><span class="pill-text">MultiService</span>
+                </label>
+                <label class="pill-radio" id="pPillEdu" onclick="selectProgrammeType('Educational')">
+                    <input type="radio" name="pProgPill" value="Educational" />
+                    <span class="pill-dot"></span><span class="pill-text">Educational</span>
+                </label>
+            </div>
+
+            <div id="programmeDropdownBlock" class="inline-dropdown" style="display:none;margin-top:10px;">
+                <div class="_kiosk-title">PROGRAMME</div>
+                @(Html.DevExtreme().Lookup()
+                                .ID("ProgrammeSelect")
+                                .DataSource(ds => ds.Mvc().Controller("Admin").LoadAction("GetAllPrograms1").Key("ValueField"))
+                                .DisplayExpr("TextField").ValueExpr("ValueField")
+                                .SearchEnabled(true).MinSearchLength(2)
+                                .PageLoadMode(ListPageLoadMode.ScrollBottom)
+                                .DropDownOptions(o => o.Height(400))
+                                .SearchTimeout(500)
+                                )
+            </div>
+
+            <div class="actions-row" id="programmeActions" style="display:none;">
+                @(Html.DevExtreme().Button().ID("pLoadBtn").Text("Load Programmes").Type(ButtonType.Default).OnClick("Show").Width("160px"))
+            </div>
+        </div>
+
+        <!-- PROGRAMME breadcrumbs -->
+        <div id="pProgInfo" class="prog-info" style="display:none; margin-top:10px;">
+            <div class="chips">
+                <span id="pChipProgramme" class="chip chip-k">Programme: –</span>
+            </div>
+            <div class="counts">
+                <span class="badge" id="pBadgeAvail">Available: 0</span>
+                <span class="badge" id="pBadgeAllot">Allotted: 0</span>
+                <span class="attach-pill" id="pAttachPill"><i class="fa fa-paperclip"></i>&nbsp;1 Attachment</span>
+            </div>
+        </div>
+
+        <!-- Grids side-by-side like Kiosk -->
+        <div class="allot-area" id="pAllotArea" style="display:none;">
+            <div class="left-panel">
+                <h4 class="panel-title">Available Programmes</h4>
+                <div id="pGridLeft"></div>
+            </div>
+
+            <div class="actions-col">
+                <button class="action-btn primary" onclick="pAddSelected()">Add ►</button>
+                <button class="action-btn primary" onclick="pAddAll()">Add All ►►</button>
+                <button class="action-btn ghost" onclick="pRemoveSelected()">◄ Remove</button>
+                <button class="action-btn ghost" onclick="pRemoveAll()">◄◄ Remove All</button>
+            </div>
+
+            <div class="right-panel">
+                <h4 class="panel-title">Alloted Program List</h4>
+                <div id="pGridRight"></div>
+            </div>
+            
+        </div>
+        @* <div style="text-align:center;">
+            <button id="updateBtn2" class="update-btn" onclick="updateAllotment()" style="display:none;">
+                <i class="fa fa-check"></i>&nbsp;&nbsp;Update
+            </button>
+        </div> *@
+    </div>
+    <div style="text-align:center;">
+        <button id="updateBtn" class="update-btn" onclick="updateAllotment()" style="display:none;">
+            <i class="fa fa-check"></i>&nbsp;&nbsp;Update
+        </button>
+    </div>
+
+</div>
+
+<script>
+           function updateAllotment(){
+                      const activeTab = getActiveTab();
+    if(activeTab === 'KIOSK'){
+                                  var KioskID=DevExpress.ui.dxLookup.getInstance(document.getElementById("KioskID")).option("value");
+           var ServiceID=DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Services")).option("value");
+           var CourseCategeryId= DevExpress.ui.dxSelectBox.getInstance(document.getElementById("FacultyId")).option("value");
+           debugger;
+           if(!KioskID||!ServiceID||!CourseCategeryId){ notify("Select Kiosk Service and  Faculty/Academy ","warning"); return;}
+         // var ids=allottedPrograms.map(p=>p.ValueField);
+         // ✅ Get all program IDs (already allotted + newly added)
+         var ids = destPrograms.concat(allottedPrograms).map(p => p.ValueField);
+           var payload={Ids:ids,KioskID:KioskID,ServiceId:ServiceID,CourseCategeryId:CourseCategeryId};
+           debugger
+           $.ajax({
+             url:'@Url.Action("ProgramAllotmentPost", "Admin")',
+             type:'POST',
+             data:JSON.stringify(payload),
+             contentType:"application/json; charset=utf-8",
+             success:(resp)=>{
+                 notify(resp?.message ?? "Update successful","success",1000);
+                 setTimeout(()=>window.location.href=resp.redirectUrl,2000);
+             },
+             error:()=>notify("Update failed","error",5000)
+           });
+           }
+           else{
+                        var ProgramId=DevExpress.ui.dxLookup.getInstance(document.getElementById("ProgrammeSelect")).option("value");
+                              var ids=pAllotted.map(p=>p.ValueField);
+                                            var payload={Ids:ProgramId,KioskID:ids,ServiceId:0,CourseCategeryId:0};
+               debugger
+               $.ajax({
+                 url:'@Url.Action("ProgramAllotmentPost", "Admin")',
+                 type:'POST',
+                 data:JSON.stringify(payload),
+                 contentType:"application/json; charset=utf-8",
+                 success:(resp)=>{
+                     notify(resp?.message ?? "Update successful","success",1000);
+                     setTimeout(()=>window.location.href=resp.redirectUrl,2000);
+                 },
+                 error:()=>notify("Update failed","error",5000)
+               });
+
+                   }
+
+
+        }
+
+    // ---------- helpers ----------
+    function notify(msg,type="info",time=1500){
+      DevExpress.ui.notify({message:msg,type,displayTime:time,width:220,position:{my:"top right",at:"top right",of:window}});
+    }
+    function getDxVal(id, type){
+      try{
+        if(type==='lookup') return DevExpress.ui.dxLookup.getInstance(document.getElementById(id)).option('value');
+        return DevExpress.ui.dxSelectBox.getInstance(document.getElementById(id)).option('value');
+      }catch(e){ return null; }
+    }
+    function getDxText(id, type){
+      try{
+        if(type==='lookup') return DevExpress.ui.dxLookup.getInstance(document.getElementById(id)).option('displayValue');
+        const inst = DevExpress.ui.dxSelectBox.getInstance(document.getElementById(id));
+        return inst.option('text');
+      }catch(e){ return ""; }
+    }
+
+    /* ================= KIOSK (original logic) ================= */
+    var availablePrograms=[], allottedPrograms=[], destPrograms=[], destGridInst=null;
+
+    function safeLeft(){ try{return $("#gridContainer").dxDataGrid("instance");}catch(e){return null;} }
+    function safeRight(){ try{return $("#gridContainer2").dxDataGrid("instance");}catch(e){return null;} }
+
+    function setCounts(){
+      document.getElementById('badgeAvail').textContent="Available: "+(availablePrograms?.length||0);
+      document.getElementById('badgeAllot').textContent="Allotted: "+((destPrograms?.length||0)+(allottedPrograms?.length||0));
+    }
+
+    function updateKioskBreadcrumbs(show=true){
+      document.getElementById('chipKiosk').textContent = "Kiosk: " + (getDxText("KioskID",'lookup') || "–");
+      document.getElementById('chipUniv').textContent  = "University: " + (getDxText("Services",'select') || "–");
+      document.getElementById('chipFac').textContent   = "Faculty: " + (getDxText("FacultyId",'select') || "–");
+      document.getElementById('progInfo').style.display = show ? 'flex' : 'none';
+    }
+
+    function renderLeft(data){
+      availablePrograms=data||[];
+      $("#gridContainer").dxDataGrid({
+        dataSource:availablePrograms, keyExpr:"ValueField",
+        searchPanel:{visible:true,placeholder:"Search programmes..."},
+        columns:[
+          {caption:"S.No.",width:70,alignment:"center",calculateCellValue:r=>availablePrograms.findIndex(x=>x.ValueField===r.ValueField)+1},
+          {dataField:"TextField",caption:"Programme Name"}
+        ],
+        selection:{mode:"multiple",showCheckBoxesMode:"always"},
+        paging:{enabled:false}, showBorders:true, height:300, onContentReady:setCounts
+      });
+    }
+    function renderDest(){
+      const data=destPrograms.concat(allottedPrograms);
+      destGridInst=$("#gridContainer2").dxDataGrid({
+        dataSource:data, keyExpr:"ValueField",
+        selection:{mode:"multiple",showCheckBoxesMode:"always"},
+        columns:[
+          {caption:"S.No.",width:70,alignment:"center",calculateCellValue:r=>data.findIndex(x=>x.ValueField===r.ValueField)+1},
+          {dataField:"TextField",caption:"Programme Name"}
+        ],
+        paging:{enabled:false}, showBorders:true, height:300,
+        onContentReady:e=>{ setCounts(); e.component.selectRows(allottedPrograms.map(r=>r.ValueField),false); },
+        onRowPrepared:e=>{
+          if(e.rowType==="data" && destPrograms.some(dp=>dp.ValueField===e.data.ValueField)){
+            e.rowElement.css({backgroundColor:"#f3f4f6",color:"#9ca3af",pointerEvents:"none"});
+            e.rowElement.find(".dx-select-checkbox").hide();
+          }
+        }
+      }).dxDataGrid("instance");
+    }
+
+    // ---------- Show() (loads data into grids) ----------
+    function Show(){
+      const activeTab = getActiveTab();
+      if(activeTab === 'KIOSK'){
+        const kioskId=getDxVal("KioskID",'lookup');
+        const serviceId=getDxVal("Services",'select');
+        const facultyId=getDxVal("FacultyId",'select');
+        if(!kioskId||!serviceId||!facultyId){ notify("Please select Kiosk, Service and Faculty before submit","warning",2200); return; }
+
+        // load available
+        $.get('@Url.Action("GetCheckBoxForProgramAllotment", "Admin")',
+          {KioskId:kioskId,serviceId:serviceId,IsAlloted:0,CourseCategoryId:facultyId},d=>{
+            renderLeft(d||[]); allottedPrograms=[]; setCounts();
+            // show grids area + update button
+            $("#allotArea").show();
+            $("#updateBtn").show();
+            updateKioskBreadcrumbs(true);
+
+            // AFTER loading programmes, hide the KIOSK programOptions box as previously requested
+            $("#programOptions").hide();
+            document.getElementById('toggleOptionsBtn').style.display = 'inline-flex';
+          });
+
+        // load allotted
+        $.get('@Url.Action("GetCheckBoxForProgramAllotment", "Admin")',
+          {KioskId:kioskId,serviceId:serviceId,IsAlloted:1,CourseCategoryId:facultyId},d=>{
+            destPrograms=d||[]; renderDest(); setCounts(); updateKioskBreadcrumbs(true);
+          });
+
+      }
+      else if(activeTab === 'Programme'){
+        const programId = getDxVal("ProgrammeSelect", 'lookup');
+        if (!programId) {
+          notify("Please select Programme", "warning", 2200);
+          return;
+        }
+
+        // Load not-allotted programs
+        $.get('@Url.Action("GetCheckBoxForProgramAllotment", "Admin")',
+          { IsAlloted: 0, programId: programId },
+          d => {
+            pAvail = d || [];
+            renderLeftP(pAvail);
+            $("#pAllotArea").css("display", "grid");
+            $("#updateBtn").show();
+            pSetCounts();
+            updateKioskBreadcrumbs(true);
+
+            // === NEW: hide Programme options (radio pills) automatically after load ===
+            const pillGroup = document.getElementById('pPillGroup');
+            if(pillGroup) pillGroup.style.display = 'none';
+            // also hide programme dropdown & actions so grids take focus
+            document.getElementById('programmeDropdownBlock').style.display='none';
+            document.getElementById('programmeActions').style.display='none';
+
+            // show the programme toggle button so user can Show/Hide options
+            document.getElementById('toggleProgOptionsBtn').style.display = 'inline-flex';
+          });
+
+        // Load already-allotted programs
+        $.get('@Url.Action("GetCheckBoxForProgramAllotment", "Admin")',
+          { IsAlloted: 1, programId: programId },
+          d => {
+            pDest = d || [];
+            renderRightP();
+            pSetCounts();
+            updateKioskBreadcrumbs(true);
+          });
+
+        programmeState.loaded = true;
+        programmeState.selected = true;
+
+        const progSel = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("ProgrammeSelect"));
+        programmeState.selectedText = progSel ? progSel.option("text") : "";
+
+        showProgrammeChips();
+        document.getElementById('pAttachPill').style.display = 'inline-flex';
+      }
+    }
+
+    // --------- NEW: toggle function for Programme options (Show/Hide) ---------
+    function toggleProgrammeOptions(){
+      const pillGroup = document.getElementById('pPillGroup');
+      const dropdown = document.getElementById('programmeDropdownBlock');
+      const actions  = document.getElementById('programmeActions');
+      if(!pillGroup || !dropdown || !actions) return;
+      // if currently hidden -> show them, else hide
+      if(pillGroup.style.display === 'none' || pillGroup.style.display === ''){
+        // currently hidden due to load; show
+        pillGroup.style.display = 'flex';
+        dropdown.style.display = 'flex';
+        actions.style.display = 'flex';
+        // hide the toggle button if you want it only when options hidden — but keep it visible to allow toggle
+        // document.getElementById('toggleProgOptionsBtn').style.display = 'none';
+      } else {
+        // hide
+        pillGroup.style.display = 'none';
+        dropdown.style.display = 'none';
+        actions.style.display = 'none';
+        // show toggle
+        document.getElementById('toggleProgOptionsBtn').style.display = 'inline-flex';
+      }
+    }
+
+    function OnChangeKioskId(e){
+      resetSelectBox("Services"); resetSelectBox("FacultyId");
+      if(safeLeft()) safeLeft().option("dataSource",[]); if(safeRight()) safeRight().option("dataSource",[]);
+      updateKioskBreadcrumbs(true);
+      if(!e.value) return;
+      $.get('/Admin/Getservices',{Kioskid:e.value},data=>{
+        const sb=DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Services"));
+        if(sb) sb.option({dataSource:data,valueExpr:"ValueField",displayExpr:"TextField",value:null});
+      });
+    }
+    function OnChangeServices(e){
+      resetSelectBox("FacultyId");
+      updateKioskBreadcrumbs(true);
+      const kioskId=getDxVal("KioskID",'lookup');
+      if(!(kioskId&&e.value)) return;
+      $.get('/Admin/GetCourseCtgByServiceId',{KioskId:kioskId,serviceId:e.value},data=>{
+        const fb=DevExpress.ui.dxSelectBox.getInstance(document.getElementById("FacultyId"));
+        if(fb) fb.option({dataSource:data,valueExpr:"ValueField",displayExpr:"TextField",value:null});
+      });
+    }
+    function OnChangeFaculty(e){ updateKioskBreadcrumbs(true); }
+    function resetSelectBox(id){ const box=DevExpress.ui.dxSelectBox.getInstance(document.getElementById(id)); if(box){ box.option({dataSource:[],value:null}); } }
+
+    function addSelected(){ const left=safeLeft(); if(!left) return;
+      const rows=left.getSelectedRowsData(); if(!rows.length){ notify("Select items to add","warning"); return; }
+      rows.forEach(r=>{ if(!allottedPrograms.some(a=>a.ValueField===r.ValueField)&&!destPrograms.some(a=>a.ValueField===r.ValueField)){ allottedPrograms.push(r); availablePrograms=availablePrograms.filter(a=>a.ValueField!==r.ValueField);} });
+      renderLeft(availablePrograms); renderDest(); setCounts();
+    }
+    function addAll(){ if(!availablePrograms.length){ notify("No programmes","warning"); return; }
+      availablePrograms.forEach(r=>{ if(!allottedPrograms.some(a=>a.ValueField===r.ValueField)&&!destPrograms.some(a=>a.ValueField===r.ValueField)){ allottedPrograms.push(r);} });
+      availablePrograms=[]; renderLeft(availablePrograms); renderDest(); setCounts();
+    }
+    function removeSelected(){ const right=safeRight(); if(!right) return;
+      const rows=right.getSelectedRowsData(); if(!rows.length){ notify("Select items to remove","warning"); return; }
+      rows.forEach(r=>{ if(allottedPrograms.some(a=>a.ValueField===r.ValueField)){ allottedPrograms=allottedPrograms.filter(a=>a.ValueField!==r.ValueField); availablePrograms.push(r);} });
+      renderLeft(availablePrograms); renderDest(); setCounts();
+    }
+    function removeAll(){ if(!allottedPrograms.length){ notify("No new programmes to remove","warning"); return; }
+      availablePrograms=availablePrograms.concat(allottedPrograms); allottedPrograms=[]; renderLeft(availablePrograms); renderDest(); setCounts();
+    }
+    function toggleOptions(){ const el=document.getElementById('programOptions'); el.style.display=(el.style.display==='none'||el.style.display==='')?'block':'none'; }
+    function mscAllot(){ alert('Open MSC & FI Allotment flow'); }
+
+    /* ================= PROGRAMME (dummy + breadcrumbs) ================= */
+    let pAvail=[], pAllotted=[], pDest=[], pLeftInst=null, pRightInst=null;
+    let programmeState = { selected:false, selectedText:"", loaded:false };
+
+    function selectProgrammeType(type){
+      ['pPillMulti','pPillEdu'].forEach(id=>document.getElementById(id).classList.remove('selected'));
+      document.getElementById(type==='MultiService'?'pPillMulti':'pPillEdu').classList.add('selected');
+
+      // show programme dropdown & actions when user selects a pill
+      document.getElementById('programmeDropdownBlock').style.display='flex';
+      document.getElementById('programmeActions').style.display='flex';
+
+      document.getElementById('pAllotArea').style.display='none';
+      document.getElementById('pProgInfo').style.display='none';
+      programmeState.loaded=false;
+    }
+
+    function onProgrammeChanged(e){
+      const box=DevExpress.ui.dxSelectBox.getInstance(document.getElementById("ProgrammeSelect"));
+      programmeState.selected = !!box.option("value");
+      programmeState.selectedText = box.option("text") || "";
+      if(programmeState.selected){
+        document.getElementById('pChipProgramme').textContent="Programme: "+programmeState.selectedText;
+        document.getElementById('pBadgeAvail').textContent="Available: 0";
+        document.getElementById('pBadgeAllot').textContent="Allotted: 0";
+        document.getElementById('pAttachPill').style.display='inline-flex';
+        document.getElementById('pProgInfo').style.display='flex';
+      }else{
+        document.getElementById('pProgInfo').style.display='none';
+      }
+    }
+
+    function renderLeftP(data){
+      pAvail=data||[];
+      pLeftInst=$("#pGridLeft").dxDataGrid({
+        dataSource:pAvail, keyExpr:"ValueField",
+        searchPanel:{visible:true,placeholder:"Search programme..."},
+        columns:[
+          {caption:"S.No.",width:70,alignment:"center",calculateCellValue:r=>pAvail.findIndex(x=>x.ValueField===r.ValueField)+1},
+          {dataField:"TextField",caption:"Programme Name"}
+        ],
+        selection:{mode:"multiple",showCheckBoxesMode:"always"},
+        paging:{enabled:false}, showBorders:true, height:300
+      }).dxDataGrid("instance");
+    }
+    function renderRightP(){
+      const data=pDest.concat(pAllotted);
+      pRightInst=$("#pGridRight").dxDataGrid({
+        dataSource:data, keyExpr:"ValueField",
+        selection:{mode:"multiple",showCheckBoxesMode:"always"},
+        columns:[
+          {caption:"S.No.",width:70,alignment:"center",calculateCellValue:r=>data.findIndex(x=>x.ValueField===r.ValueField)+1},
+          {dataField:"TextField",caption:"Programme Name"}
+        ],
+        paging:{enabled:false}, showBorders:true, height:300,
+        onContentReady:e=>{ e.component.selectRows(pAllotted.map(x=>x.ValueField),false); },
+        onRowPrepared:e=>{
+          if(e.rowType==="data" && pDest.some(dp=>dp.ValueField===e.data.ValueField)){
+            e.rowElement.css({backgroundColor:"#f3f4f6",color:"#9ca3af",pointerEvents:"none"});
+            e.rowElement.find(".dx-select-checkbox").hide();
+          }
+        }
+      }).dxDataGrid("instance");
+    }
+    function pSetCounts(){
+      const totalAllotted=(pAllotted?.length||0)+(pDest?.length||0);
+      document.getElementById('pBadgeAvail').textContent="Available: "+(pAvail?.length||0);
+      document.getElementById('pBadgeAllot').textContent="Allotted: "+totalAllotted;
+    }
+    function showProgrammeChips(){
+      document.getElementById('pChipProgramme').textContent="Programme: "+(programmeState.selectedText || "–");
+      document.getElementById('pProgInfo').style.display='flex';
+    }
+
+    /* Moves */
+    function pAddSelected(){ if(!pLeftInst) return;
+      const rows=pLeftInst.getSelectedRowsData(); if(!rows.length){ notify("Select items to add","warning"); return; }
+      rows.forEach(r=>{ if(!pAllotted.some(a=>a.ValueField===r.ValueField)&&!pDest.some(a=>a.ValueField===r.ValueField)){ pAllotted.push(r); pAvail=pAvail.filter(a=>a.ValueField!==r.ValueField);} });
+      renderLeftP(pAvail); renderRightP(); pSetCounts();
+    }
+    function pAddAll(){ if(!pAvail.length){ notify("No programmes","warning"); return; }
+      pAvail.forEach(r=>{ if(!pAllotted.some(a=>a.ValueField===r.ValueField)&&!pDest.some(a=>a.ValueField===r.ValueField)){ pAllotted.push(r);} });
+      pAvail=[]; renderLeftP(pAvail); renderRightP(); pSetCounts();
+    }
+    function pRemoveSelected(){ if(!pRightInst) return;
+      const rows=pRightInst.getSelectedRowsData(); if(!rows.length){ notify("Select items to remove","warning"); return; }
+      rows.forEach(r=>{ if(pAllotted.some(a=>a.ValueField===r.ValueField)){ pAllotted=pAllotted.filter(a=>a.ValueField!==r.ValueField); pAvail.push(r);} });
+      renderLeftP(pAvail); renderRightP(); pSetCounts();
+    }
+    function pRemoveAll(){ if(!pAllotted.length){ notify("No new programmes to remove","warning"); return; }
+      pAvail=pAvail.concat(pAllotted); pAllotted=[]; renderLeftP(pAvail); renderRightP(); pSetCounts();
+    }
+
+    /* ================= Tabs (reset kiosk when returning from Programme) ================= */
+    function openTab(tab){
+      // reset tab headers
+      document.getElementById('tabKiosk').classList.remove('active');
+      document.getElementById('tabProgramme').classList.remove('active');
+
+      if(tab==='Programme'){
+        // show programme card
+        document.getElementById('tabProgramme').classList.add('active');
+        document.getElementById('programmeCard').style.display='block';
+        document.getElementById('kioskCard').style.display='none';
+
+        // ALWAYS reset Programme UI to initial pills-only look when open
+        // show pill-group
+        const pillGroup = document.getElementById('pPillGroup');
+        if(pillGroup) pillGroup.style.display = '';
+
+        // clear any selected pills
+        ['pPillMulti','pPillEdu'].forEach(id=>{ const el=document.getElementById(id); el.classList.remove('selected'); const inp=el.querySelector('input'); if(inp) inp.checked=false; });
+
+        // hide programme dropdown / actions / chips / grids
+        document.getElementById('programmeDropdownBlock').style.display='none';
+        document.getElementById('programmeActions').style.display='none';
+        document.getElementById('pProgInfo').style.display='none';
+        document.getElementById('pAllotArea').style.display='none';
+        document.getElementById('pAttachPill').style.display='none';
+
+        // hide programme toggle button by default
+        document.getElementById('toggleProgOptionsBtn').style.display='none';
+
+        // mark programmeState as not-loaded so returning shows initial choices
+        programmeState.loaded = false;
+        programmeState.selected = false;
+        programmeState.selectedText = "";
+      }else{
+        // KIOSK selected
+        document.getElementById('tabKiosk').classList.add('active');
+        document.getElementById('kioskCard').style.display='block';
+        document.getElementById('programmeCard').style.display='none';
+
+        // reset kiosk to pills-only initial state
+        document.querySelectorAll('#pillGroup .pill-radio').forEach(p=>{
+          p.classList.remove('selected');
+          const inp = p.querySelector('input'); if(inp) inp.checked = false;
+        });
+
+        document.getElementById('programOptions').style.display = ''; // show pill area
+        document.getElementById('toggleOptionsBtn').style.display = 'none';
+        document.getElementById('inlineDropdown').style.display = 'none';
+        document.getElementById('servicesBlock').style.display = 'none';
+        document.getElementById('facultyBlock').style.display = 'none';
+        document.getElementById('kioskActions').style.display = 'none';
+        document.getElementById('allotArea').style.display = 'none';
+        document.getElementById('updateBtn').style.display = 'none';
+
+        // reset breadcrumbs
+        updateKioskBreadcrumbs(false);
+
+        // ensure Programme pill-group is visible too (in case user returns later)
+        const pgroup = document.getElementById('pPillGroup');
+        if(pgroup) pgroup.style.display = '';
+      }
+    }
+
+    function getActiveTab() {
+      const activeTab = document.querySelector('.tabs .tab.active');
+      return activeTab ? activeTab.dataset.tab || activeTab.id : null;
+    }
+
+    /* Kiosk pill click: open dependent controls only when user clicks a pill */
+    function selectPill(labelEl,value){
+      // visual select
+      document.querySelectorAll('#pillGroup .pill-radio').forEach(p=>{ p.classList.remove('selected'); const i=p.querySelector('input'); if(i) i.checked=false; });
+      labelEl.classList.add('selected'); const inp=labelEl.querySelector('input'); if(inp) inp.checked=true;
+
+      // reveal dependent controls now (user action)
+      document.getElementById('inlineDropdown').style.display='flex';
+      document.getElementById('servicesBlock').style.display='flex';
+      document.getElementById('facultyBlock').style.display='flex';
+      document.getElementById('kioskActions').style.display='';
+      document.getElementById('toggleOptionsBtn').style.display='inline-flex';
+
+      updateKioskBreadcrumbs(true);
+    }
+
+    /* INIT */
+    (function(){
+      document.getElementById('kioskCard').style.display='none';
+      document.getElementById('programmeCard').style.display='none';
+
+      document.getElementById('inlineDropdown').style.display = 'none';
+      document.getElementById('servicesBlock').style.display = 'none';
+      document.getElementById('facultyBlock').style.display = 'none';
+      document.getElementById('kioskActions').style.display = 'none';
+      document.getElementById('allotArea').style.display = 'none';
+      document.getElementById('updateBtn').style.display = 'none';
+      document.getElementById('toggleOptionsBtn').style.display = 'none';
+      document.getElementById('toggleProgOptionsBtn').style.display = 'none';
+    })();
+</script>
+
+<style>
+    .attach-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f1f5ff;
+        color: #0b3b7a;
+        border: 1px solid #dbeafe;
+        box-shadow: 0 2px 8px rgba(11,63,255,.06);
+    }
+
+    .prog-info .counts {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* Programme grids row layout */
+    #pAllotArea {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 14px;
+        align-items: stretch;
+    }
+
+        #pAllotArea .left-panel, #pAllotArea .right-panel {
+            background: #fff;
+            border: 1px solid #e9eefb;
+            border-radius: 10px;
+            padding: 8px 10px 12px;
+        }
+
+        #pAllotArea .actions-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .panel-title {
+        text-align: center;
+        color: #2a558c;
+        font-weight: 700;
+        letter-spacing: 1px;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+</style>

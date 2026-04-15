@@ -1,0 +1,943 @@
+﻿@* <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .services-section {
+        padding: 8% 0 0 0;
+        background-image: url('https://img.freepik.com/premium-vector/white-abstract-background-design_583398-391.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* --- TOP HEADER AREA --- */
+    .top-header {
+        width: 98%;
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 10px 20px;
+        border-bottom: 1px solid rgba(0, 86, 179, 0.1);
+    }
+
+    .main-page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #222;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+        border-left: 5px solid #0056b3;
+        padding-left: 15px;
+    }
+
+    /* --- COMPACT RIGHT SEARCH BOX --- */
+    .search-container {
+        width: 300px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        outline: none;
+        transition: 0.3s;
+    }
+
+        .search-input:focus {
+            border-color: #0056b3;
+            box-shadow: 0 4px 12px rgba(0,86,179,0.15);
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* --- FIELDSET & LEGEND --- */
+    .category-fieldset {
+        width: 98%;
+        max-width:73%;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        padding: 30px 20px 20px 20px;
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #ddd;
+    }
+
+    .border-adm {
+        border-color: #0056b3;
+    }
+
+    .border-exm {
+        border-color: #6f42c1;
+    }
+
+    .border-fee {
+        border-color: #28a745;
+    }
+
+    .border-sch {
+        border-color: #fd7e14;
+    }
+
+    .category-legend {
+        width: auto;
+        float: none;
+        padding: 0;
+        margin: 0;
+        border: none;
+        position: absolute;
+        top: -14px;
+        left: 20px;
+    }
+
+    .legend-content {
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        padding: 4px 18px 4px 35px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 4px 20px 20px 4px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+        text-transform: uppercase;
+        position: relative;
+    }
+
+        .legend-content i {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+        }
+
+    .head-adm {
+        background: #0056b3;
+    }
+
+    .head-exm {
+        background: #6f42c1;
+    }
+
+    .head-fee {
+        background: #28a745;
+    }
+
+    .head-sch {
+        background: #fd7e14;
+    }
+
+    /* 7 Columns Grid */
+    .menu-wrapper {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 15px;
+        width: 100%;
+    }
+
+    .hidden-fieldset {
+        display: none;
+    }
+
+    /* Service Cards */
+    .menu-item {
+        background: #ffffff;
+        border-radius: 10px;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.3s ease;
+        border: 1px solid #eee;
+        border-bottom: 1px solid #ddd;
+        padding: 12px;
+    }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+    .menu-item-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        line-height: 1.3;
+        height: 2.6em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-top: 5px;
+    }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    /* Animations */
+    .menu-item:hover .fa-arrows-rotate, .menu-item:hover .fa-magnifying-glass {
+        animation: spinGo 1.2s infinite linear;
+    }
+    @@keyframes spinGo {
+        from
+
+    {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .menu-item:hover .icon-box i:not(.fa-arrows-rotate):not(.fa-magnifying-glass) {
+        animation: attractivePulse 0.8s infinite alternate;
+    }
+    @@keyframes attractivePulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.25);
+    }
+
+    }
+
+    /* Card Themes */
+    .menu-item:nth-child(4n+1) {
+        border-bottom-color: #007bff;
+    }
+
+        .menu-item:nth-child(4n+1) .icon-box {
+            background: #e7f1ff;
+            color: #007bff;
+        }
+
+    .menu-item:nth-child(4n+2) {
+        border-bottom-color: #28a745;
+    }
+
+        .menu-item:nth-child(4n+2) .icon-box {
+            background: #eaf6ec;
+            color: #28a745;
+        }
+
+    .menu-item:nth-child(4n+3) {
+        border-bottom-color: #ffc107;
+    }
+
+        .menu-item:nth-child(4n+3) .icon-box {
+            background: #fff9e6;
+            color: #ffc107;
+        }
+
+    .menu-item:nth-child(4n+4) {
+        border-bottom-color: #e83e8c;
+    }
+
+        .menu-item:nth-child(4n+4) .icon-box {
+            background: #fef1f6;
+            color: #e83e8c;
+        }
+
+    .view-all-btn {
+        margin: 10px auto;
+        background: #333;
+        color: white;
+        padding: 12px 60px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .view-all-btn:hover {
+            background: #000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+    @@media (max-width: 1200px) {
+        .menu-wrapper
+
+    {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    }
+    @@media (max-width: 768px) {
+        .top-header
+
+    {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .menu-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-container {
+        width: 100%;
+    }
+
+    }
+</style>
+
+<div class="services-section">
+
+    <div class="top-header">
+        <h1 class="main-page-title">Student Service Portal</h1>
+        <div class="search-container">
+            <i class="fa-solid fa-search search-icon"></i>
+            <input type="text" id="serviceSearch" class="search-input" placeholder="Search services..." onkeyup="filterServices()">
+        </div>
+    </div>
+
+    <fieldset class="category-fieldset border-adm searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-adm"><i class="fa-solid fa-user-graduate"></i> Admission Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("admission") || name.Contains("registration") || name.Contains("document") || name.Contains("subject"))
+                {
+                    string iconClass = name.Contains("re-registration") ? "fa-arrows-rotate" : "fa-user-plus";
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid @iconClass"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-exm searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-exm"><i class="fa-solid fa-file-invoice"></i> Exam Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("assign") || (name.Contains("exam") && !name.Contains("fee")))
+                {
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid fa-file-pen"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-fee hidden-fieldset searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-fee"><i class="fa-solid fa-credit-card"></i> Fees Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("fee") || name.Contains("payment"))
+                {
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-sch hidden-fieldset searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-sch"><i class="fa-solid fa-magnifying-glass"></i> Search Portal</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("search") || name.Contains("print") || name.Contains("admit") || name.Contains("financial"))
+                {
+                    string iconClass = name.Contains("search") ? "fa-magnifying-glass" : (name.Contains("print") ? "fa-print" : "fa-file-invoice");
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid @iconClass"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <button id="viewBtn" class="view-all-btn" onclick="toggleServices()">View All Services</button>
+</div>
+
+<script>
+    function toggleServices() {
+        const fieldsets = document.querySelectorAll('.hidden-fieldset');
+        const btn = document.getElementById('viewBtn');
+        fieldsets.forEach(fs => {
+            if (fs.style.display === "block") {
+                fs.style.display = "none";
+                btn.innerText = "View All Services";
+            } else {
+                fs.style.display = "block";
+                btn.innerText = "Show Less";
+            }
+        });
+    }
+
+    function filterServices() {
+        let input = document.getElementById('serviceSearch').value.toLowerCase();
+        let sections = document.querySelectorAll('.searchable-section');
+        let viewBtn = document.getElementById('viewBtn');
+
+        sections.forEach(section => {
+            let items = section.querySelectorAll('.menu-item');
+            let hasVisibleItem = false;
+
+            items.forEach(item => {
+                let text = item.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    item.style.display = "flex";
+                    hasVisibleItem = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            if (input.length > 0) {
+                section.style.display = hasVisibleItem ? "block" : "none";
+                viewBtn.style.display = "none";
+            } else {
+                viewBtn.style.display = "block";
+                section.style.display = section.classList.contains('hidden-fieldset') ? "none" : "block";
+            }
+        });
+    }
+</script> *@
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@400;800&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .services-section {
+        padding: 8% 15px; /* Added side padding for mobile */
+        background-image: url('https://img.freepik.com/premium-vector/white-abstract-background-design_583398-391.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        font-family: 'Inter', sans-serif; /* Changed to Inter */
+    }
+
+    /* --- TOP HEADER AREA --- */
+    .top-header {
+        width: 100%;
+        max-width: 70%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 10px 20px;
+        border-bottom: 1px solid rgba(0, 86, 179, 0.1);
+        box-sizing: border-box;
+    }
+
+    .main-page-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #222;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0;
+        border-left: 5px solid #0056b3;
+        padding-left: 15px;
+    }
+
+    /* --- SEARCH BOX --- */
+    .search-container {
+        width: 300px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* --- FIELDSET & LEGEND --- */
+    .category-fieldset {
+        width: 100%;
+        max-width:70%; /* Fixed width for better alignment */
+        border-radius: 12px;
+        margin-bottom: 40px;
+        padding: 35px 20px 25px 20px;
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #ddd;
+        box-sizing: border-box; /* Ensures padding doesn't push border out */
+    }
+
+    .border-adm {
+        border-color: #0056b3;
+    }
+
+    .border-exm {
+        border-color: #6f42c1;
+    }
+
+    .border-fee {
+        border-color: #28a745;
+    }
+
+    .border-sch {
+        border-color: #fd7e14;
+    }
+
+    .category-legend {
+        width: auto;
+        padding: 0;
+        margin: 0;
+        border: none;
+        position: absolute;
+        top: -16px;
+        left: 20px;
+    }
+
+    .legend-content {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        padding: 6px 20px 6px 40px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 6px 20px 20px 6px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+        text-transform: uppercase;
+        position: relative;
+    }
+
+        .legend-content i {
+            position: absolute;
+            left: 15px;
+            font-size: 16px;
+        }
+
+    .head-adm {
+        background: #0056b3;
+    }
+
+    .head-exm {
+        background: #6f42c1;
+    }
+
+    .head-fee {
+        background: #28a745;
+    }
+
+    .head-sch {
+        background: #fd7e14;
+    }
+
+    /* --- GRID SYSTEM --- */
+    .menu-wrapper {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* 6 columns desktop */
+        gap: 15px;
+        width: 100%;
+    }
+
+    .hidden-fieldset {
+        display: none;
+    }
+
+    /* Service Cards */
+    .menu-item {
+        background: #ffffff;
+        border-radius: 12px;
+        height: 170px; /* Increased height */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.3s ease;
+        border: 1px solid #eee;
+        border-bottom: 1px solid #ddd; /* Thicker bottom border */
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .menu-item-title {
+        font-size: 14px; /* Slightly larger text */
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        line-height: 1.4;
+        margin-top: 10px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .icon-box {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+    }
+
+    /* Animations */
+    .menu-item:hover .fa-arrows-rotate, .menu-item:hover .fa-magnifying-glass {
+        animation: spinGo 1.2s infinite linear;
+    }
+    @@keyframes spinGo {
+        from
+
+    {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .menu-item:hover .icon-box i:not(.fa-arrows-rotate):not(.fa-magnifying-glass) {
+        animation: attractivePulse 0.8s infinite alternate;
+    }
+    @@keyframes attractivePulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
+
+    }
+
+    /* Card Themes */
+    .menu-item:nth-child(4n+1) {
+        border-bottom-color: #007bff;
+    }
+
+        .menu-item:nth-child(4n+1) .icon-box {
+            background: #e7f1ff;
+            color: #007bff;
+        }
+
+    .menu-item:nth-child(4n+2) {
+        border-bottom-color: #28a745;
+    }
+
+        .menu-item:nth-child(4n+2) .icon-box {
+            background: #eaf6ec;
+            color: #28a745;
+        }
+
+    .menu-item:nth-child(4n+3) {
+        border-bottom-color: #ffc107;
+    }
+
+        .menu-item:nth-child(4n+3) .icon-box {
+            background: #fff9e6;
+            color: #ffc107;
+        }
+
+    .menu-item:nth-child(4n+4) {
+        border-bottom-color: #e83e8c;
+    }
+
+        .menu-item:nth-child(4n+4) .icon-box {
+            background: #fef1f6;
+            color: #e83e8c;
+        }
+
+    .view-all-btn {
+        margin: 20px auto;
+        background: #333;
+        color: white;
+        padding: 14px 60px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        font-family: 'Inter', sans-serif;
+    }
+
+        .view-all-btn:hover {
+            background: #000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+    /* --- RESPONSIVE FIXES --- */
+   @@media (max-width: 1200px) {
+        .menu-wrapper
+
+    {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    }
+
+    @@media (max-width: 992px) {
+        .menu-wrapper
+
+    {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .top-header
+
+    {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .search-container {
+        width: 100%;
+    }
+    /* Fix for cards going outside: 2 columns and proper gap */
+    .menu-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .category-fieldset {
+        padding: 35px 10px 15px 10px;
+    }
+
+    .menu-item {
+        height: 150px;
+        padding: 10px;
+    }
+
+    .menu-item-title {
+        font-size: 13px;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        /* Mobile view: ensure titles don't overflow */
+        .menu-item-title
+
+    {
+        font-size: 12px;
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    }
+</style>
+
+<div class="services-section">
+    <div class="top-header">
+        <h1 class="main-page-title">Student Service Portal</h1>
+        <div class="search-container">
+            <i class="fa-solid fa-search search-icon"></i>
+            <input type="text" id="serviceSearch" class="search-input" placeholder="Search services..." onkeyup="filterServices()">
+        </div>
+    </div>
+
+    <fieldset class="category-fieldset border-adm searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-adm"><i class="fa-solid fa-user-graduate"></i> Admission Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("admission") || name.Contains("registration") || name.Contains("document") || name.Contains("subject"))
+                {
+                    string iconClass = name.Contains("re-registration") ? "fa-arrows-rotate" : "fa-user-plus";
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid @iconClass"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-exm searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-exm"><i class="fa-solid fa-file-invoice"></i> Exam Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("assign") || (name.Contains("exam") && !name.Contains("fee")))
+                {
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid fa-file-pen"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-fee hidden-fieldset searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-fee"><i class="fa-solid fa-credit-card"></i> Fees Details</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("fee") || name.Contains("payment"))
+                {
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="category-fieldset border-sch hidden-fieldset searchable-section">
+        <legend class="category-legend">
+            <span class="legend-content head-sch"><i class="fa-solid fa-magnifying-glass"></i> Search Portal</span>
+        </legend>
+        <div class="menu-wrapper">
+            @foreach (var item in Model)
+            {
+                string name = (string)item.DisplayName.ToLower();
+                if (name.Contains("search") || name.Contains("print") || name.Contains("admit") || name.Contains("financial"))
+                {
+                    string iconClass = name.Contains("search") ? "fa-magnifying-glass" : (name.Contains("print") ? "fa-print" : "fa-file-invoice");
+                    <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <div class="icon-box"><i class="fa-solid @iconClass"></i></div>
+                        <div class="menu-item-title">@item.DisplayName</div>
+                    </a>
+                }
+            }
+        </div>
+    </fieldset>
+
+    <button id="viewBtn" class="view-all-btn" onclick="toggleServices()">View All Services</button>
+</div>
+
+<script>
+    function toggleServices() {
+        const fieldsets = document.querySelectorAll('.hidden-fieldset');
+        const btn = document.getElementById('viewBtn');
+        fieldsets.forEach(fs => {
+            if (fs.style.display === "block") {
+                fs.style.display = "none";
+                btn.innerText = "View All Services";
+            } else {
+                fs.style.display = "block";
+                btn.innerText = "Show Less";
+            }
+        });
+    }
+
+    function filterServices() {
+        let input = document.getElementById('serviceSearch').value.toLowerCase();
+        let sections = document.querySelectorAll('.searchable-section');
+        let viewBtn = document.getElementById('viewBtn');
+
+        sections.forEach(section => {
+            let items = section.querySelectorAll('.menu-item');
+            let hasVisibleItem = false;
+
+            items.forEach(item => {
+                let text = item.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    item.style.display = "flex";
+                    hasVisibleItem = true;
+                } else {
+                    item.style.display = "none";
+                }
+            });
+
+            if (input.length > 0) {
+                section.style.display = hasVisibleItem ? "block" : "none";
+                viewBtn.style.display = "none";
+            } else {
+                viewBtn.style.display = "block";
+                section.style.display = section.classList.contains('hidden-fieldset') ? "none" : "block";
+            }
+        });
+    }
+</script>

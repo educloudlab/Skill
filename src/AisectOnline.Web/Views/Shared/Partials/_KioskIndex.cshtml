@@ -1,0 +1,100 @@
+﻿<script src="~/js/partialpage.js"></script>
+<link href="~/css/partialpage.css" rel="stylesheet" />
+<style>
+    .menu-wrapper {
+        max-height: 760px; /* 2 rows approx */
+        overflow: hidden;
+        transition: max-height 0.6s ease;
+        padding: 105px 165px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+
+        .menu-wrapper.expanded {
+            max-height: 2000px;
+            overflow-y: auto;
+        }
+
+    .menu-item {
+        width: 150px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+        padding: 15px 10px;
+        transition: transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #333;
+    }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-item img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+    .menu-item-title {
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.3em;
+        text-align: center;
+    }
+
+    .view-all-btn {
+        display: block;
+        margin: 20px auto 0;
+        background-color: #0066cc;
+        color: #fff;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .view-all-btn:hover {
+            background-color: #004999;
+        }
+</style>
+
+<div id="menuWrapper" class="menu-wrapper">
+    @foreach (var item in Model)
+    {
+        <a class="menu-item" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+            <img src="~/images/@(string.IsNullOrEmpty(item.ImageName2) ? "default-icon.png" : item.ImageName2)"
+                 alt="@item.DisplayName"
+                 onerror="this.onerror=null;this.src='/images/default-icon.png';" />
+            <div class="menu-item-title">
+                @Html.Raw(item.DisplayName.Replace(" ", "<br/>"))
+            </div>
+        </a>
+    }
+</div>
+
+<button id="toggleButton" class="view-all-btn" onclick="toggleMenu()">View All Services</button>
+
+
+<script>
+    function toggleMenu() {
+        const wrapper = document.getElementById("menuWrapper");
+        const button = document.getElementById("toggleButton");
+        const expanded = wrapper.classList.toggle("expanded");
+        button.textContent = expanded ? "Hide Extra Services" : "View All Services";
+        if (expanded) {
+            wrapper.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+</script>

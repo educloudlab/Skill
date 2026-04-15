@@ -1,0 +1,33 @@
+﻿
+
+@using AisectOnline.Services.Modules.Students
+@model List<ListItems>
+
+<div class="allot-area" id="allotArea">
+    <div class="left-panel">
+        <h4 style="margin-bottom:8px;color:#0b4da2">
+            <i class="fa fa-list-check"></i> Available Programmes
+        </h4>
+        <div id="gridContainer"></div>
+    </div>
+
+    <div class="actions-col">
+        <button class="action-btn primary" onclick="addSelected()">Add ►</button>
+        <button class="action-btn primary" onclick="addAll()">Add All ►►</button>
+        <button class="action-btn ghost" onclick="removeSelected()">◄ Remove</button>
+        <button class="action-btn ghost" onclick="removeAll()">◄◄ Remove All</button>
+    </div>
+
+    <div class="right-panel">
+        <h4 style="margin-bottom:8px;color:#0b4da2">
+            <i class="fa fa-boxes-stacked"></i> Allotted Program List
+        </h4>
+        <div id="gridContainer2"></div>
+    </div>
+</div>
+
+<script>
+    // Automatically render the left grid using the passed model
+    var availablePrograms = @Html.Raw(Json.Serialize(Model ?? new List<AisectOnline.Services.Modules.Students.ListItems>()));
+    renderLeft(availablePrograms);
+</script>

@@ -1,0 +1,1887 @@
+﻿@model AisectOnline.Services.Modules.Students.StudentDto
+@using AisectOnline.Services.Modules.Students
+@using DevExtreme.AspNet.Mvc
+@{
+    Layout = "_Layout";
+}
+
+<body class="custom-global-style custom-background">
+    <div class="custom-background" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: inherit; z-index: -1; backdrop-filter: blur(6px);"></div>
+
+    <div class="form-container">
+        <div id="dxTabs"></div>
+             <form id="studentForm" action="/Student/StudentRegistration2" method="post" enctype="multipart/form-data">
+
+         @Html.Hidden("KioskTypeID", @Model?.KioskTypeID, new { id = "KioskTypeID" })
+
+                    @Html.Hidden("ServiceId", @Model?.ServiceId, new { id = "ServiceId" })
+                    @Html.Hidden("BranchManager", @Model?.BranchManager, new { id = "BranchManager" })
+                    @Html.Hidden("RequestNo", @Model?.RequestNo, new { id = "RequestNo" })
+                    @Html.Hidden("Kioskid", @Model?.Kioskid, new { id = "Kioskid" })
+        <div class="form-section show animate">
+            <div style="background: #bdebb980; padding: 10px; text-align: center; font-size: 18px; font-weight: 500; color: #1a237e; border-bottom: 1px solid #ddd; margin-bottom: 20px;     margin-top: -20px;
+}">
+                Kiosk Type and Services
+            </div>
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="tel" class="col-form-label">
+                        Session
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Session").Name("Session").DataSource(Model.SessionDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model.Session).Placeholder("Please Select").InputAttr("aria-label", "Session")   .ValidationRules(rules => {
+                        rules.AddRequired().Message("Session is required.");
+                    }) .OnValueChanged("function(e) { copy(e); }")
+                     )
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Faculty/Academy
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("CourseCategory").Name("CourseCategory").DataSource(Model.CourseCategoryDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model.CourseCategory).Placeholder("Please Select").InputAttr("aria-label", "CourseCategory") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Faculty/Academy is required.");
+                    }) .OnValueChanged("function(e) { onCourseCategoryChanged(e); }")
+                     )
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Program Name
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Program").Name("Program").DataSource(Model.ProgramDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Placeholder("Please Select").Value(Model.Program).InputAttr("aria-label", "Program") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Program Name is required.");
+                    }) .OnValueChanged("function(e) { onProgramChanged(e); }")
+                     )
+
+                </div>
+                <div class="form-group">
+                    <label for="tel" class="col-form-label">
+                        University/Scheme
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Scheme").Name("Scheme").DataSource(Model.SchemeDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Placeholder("Please Select").Value(Model.Scheme).InputAttr("aria-label", "Scheme") .ValidationRules(rules => {
+                        rules.AddRequired().Message("University/Scheme is required.");
+                    }) .OnValueChanged("function(e) { onSchemeChanged(e); }")
+                     )
+                </div>
+                <div class="form-group">
+                    <label for="ctype" class="col-form-label">
+                        Course/Years
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("CourseFeeID").Name("CourseFeeID").DataSource(Model.CourseFeeIDDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Placeholder("Please Select").Value(Model.CourseFeeID).InputAttr("aria-label", "CourseFeeID")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("Course/Years is required.");
+                    })  .OnValueChanged("onCourseFeeChange")
+                     )
+
+
+                </div>
+                <div class="form-group">
+                    <label for="coursemed" class="col-form-label">Preferd Course Medium<span class="asteriskField" style="color: red">*</span></label>
+                    @(Html.DevExtreme().SelectBox().ID("CourseMedium1").Name("CourseMedium1").DataSource(Model.CourseMediumDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model.CourseMedium1).Placeholder("Please Select").InputAttr("aria-label", "CourseMedium1") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Preferred Course Medium is required.");
+                    })  .OnValueChanged("onMediumChanged")
+                     )
+                </div>
+                <div class="form-group col-md-12">
+
+                    <div class="main-containern">
+
+                        <fieldset class="info-section">
+                            <legend style="
+                                background: #f9f9f9;
+                                width: 24%;
+                                font-size: 13px;
+                                font-weight: bold;
+                                color: #7b00b1;">
+                                Optional Subject
+                            </legend>
+                            <div class="fees-row">
+                                <span style="color: Red" id="validChk"></span>
+                                <div id="optionalSubjectsContainer">
+
+                                    <!-- Checkboxes will render here -->
+                                </div>
+
+                            </div>
+                        </fieldset>
+                        <fieldset class="info-section">
+                            <legend style="
+                                background: #f9f9f9;
+                                width: 55%;
+                                font-size: 13px;
+                                font-weight: bold;
+                                color: #7b00b1;">
+                                Fees Details
+                            </legend>
+                            <div class="fees-row">
+                                <table id="regFeeDetail" class="custom-table">
+                                    <!-- Dynamic fee rows should go here -->
+                                </table>
+
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="photo-section">
+                            <legend style="
+                                background: #f9f9f9;
+                                width: 55%;
+                                font-size: 13px;
+                                font-weight: bold;
+                                color: #7b00b1;">
+                                Upload Photo*
+                            </legend>
+                            <div class="upload-box" id="preview-box">
+                                <img id="profilePreview"
+                                     src="~/Images/Profile.jpg"
+                                     alt="Profile Preview"
+                                     style="width: 100px; height: 121px;  border: 1px solid #ccc;" />
+                            </div>
+                            <div class="note">Photograph is<br>mandatory</div>
+                            <div class="file-center">
+                                <input type="hidden" name="PhotoValid" id="PhotoValid" value="false">
+                                @(Html.DevExtreme().FileUploader()
+                                                                .Name("Photo")
+                                                                .ID("photoUploader")
+                                                                .SelectButtonText("Select photo")
+                                                                .LabelText("")
+                                                                .Accept("image/*")
+                                                                .UploadMode(FileUploadMode.UseForm)
+                                                                .InputAttr("aria-label", "Select Photo")
+                                                                .OnValueChanged("validateImage")
+                                                                .ShowFileList(false)
+                                                                 )
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
+            </div>
+               <div class="submit-btn">
+<button class="next-button" type="button" onclick="nextTab()">NEXT</button>      
+</div>
+        </div>
+
+        <div class="form-section">
+            <div style="background:#ffadcf59; padding: 10px; text-align: center; font-size: 18px; font-weight: 500; color: #1a237e; border-bottom: 1px solid #ddd; margin-bottom: 20px;     margin-top: -20px;
+}">
+                Personal Information
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="FirstName" class="col-form-label">
+                        First Name <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("FirstName").Name("FirstName").Value(Model?.FirstName).MaxLength(50)
+                                        .InputAttr("aria-label", "First Name")
+                                        .Placeholder("Enter First Name")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("First Name is required.");
+                    })
+                     )
+                </div>
+                <div class="form-group">
+                    <label for="LastName" class="col-form-label">
+                        Last Name <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox()
+                                        .ID("LastName")
+                                        .Name("LastName")
+                                        .Value(Model?.LastName)
+                                        .MaxLength(50)
+                                        .InputAttr("aria-label", "Last Name")
+                                         .ValidationRules(rules => {
+                        rules.AddRequired().Message("Last Name is required.");
+                    })
+                                        .Placeholder("Enter Last Name")
+                                         )
+                </div>
+                <div class="form-group">
+                    <label for="Dob" class="col-form-label">
+                        Father's/Husband's Name <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("FatherName").Name("FatherName").Value(Model?.FatherName).MaxLength(50).InputAttr("aria-label", "Father Name").Placeholder("Enter Father Name")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("Father's/Husband's Name is required.");
+                    })
+                     )
+
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="MotherName" class="col-form-label">
+                        Mother's Name <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox()
+                                        .ID("MotherName")
+                                        .Name("MotherName")
+                                        .Value(Model?.MotherName)
+                                        .MaxLength(50)
+                                        .Placeholder("Enter Mother Name") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Mother's Name is required.");
+                    })
+                     )
+                </div>
+
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Date of Birth
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().DateBox().ID("Dob").Name("Dob").Value((DateTime?)Model?.Dob).Type(DateBoxType.Date).DisplayFormat("yyyy-MM-dd")   .ValidationRules(rules => {
+                        rules.AddRequired().Message("Date of Birth is required.");
+                    })
+                     )
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Email
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("EmailAddress").Name("EmailAddress").Value(Model?.EmailAddress).Mode(TextBoxMode.Email).MaxLength(50).InputAttr(new { onkeypress = "return RestrictCommaSemicolon(event);", ondrop = "return false;" }).Placeholder("Enter Email ") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Email is required.");
+                    })
+                     )
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Mobile No
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("MobileNo").Name("MobileNo").Value(Model?.MobileNo).Mode(TextBoxMode.Text).MaxLength(50).MaxLength(12).InputAttr("aria-label", "Mobile No").Placeholder("Enter MobileNo") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Mobile No is required.");
+                    })
+                     )
+
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                                                                                            marital  Status                           <span class="asteriskField" style="color: red">*</span>
+
+                    </label>
+                                                                                   @(Html.DevExtreme().SelectBox().ID("MaritalStatus").Name("MaritalStatus").DataSource(Model.MaritalStatusDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.MaritalStatus).Placeholder("Please Select").InputAttr("aria-label", "MaritalStatus")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("marital Status is required.");
+                    })
+                                                                                    )
+
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Gender
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Sex").Name("Sex").DataSource(Model.SexDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.Sex).Placeholder("Please Select").InputAttr("aria-label", "Sex")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("Gender is required.");
+                    })
+                     )
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Category                           <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Category").Name("Category").DataSource(Model.CategoryDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.Category).Placeholder("Please Select").InputAttr("aria-label", "Category") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Category is required.");
+                    })
+                     )
+
+
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Driving Licence Type                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("DrivingLicenceType").Name("DrivingLicenceType").DataSource(Model.DrivingLicenceTypeDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.DrivingLicenceType).Placeholder("Please Select").InputAttr("aria-label", "DrivingLicenceType") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Driving Licence Type is required.");
+                    })
+                     )
+
+                </div>
+                <div class="form-group">
+                    <label for="select" class="col-form-label">
+                        Adhar Number
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    <div class="form-group">
+
+                        @(Html.DevExtreme().TextBox().ID("AadharNo").Name("AadharNo").Value(Model?.AadharNo).MaxLength(12) .ValidationRules(rules => {
+                        rules.AddRequired().Message("Aadhar Number is required.");
+                    })
+                         )
+                    </div>
+
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+
+                    <div class="col-md-12">
+
+                        <legend>Permanent Address<small> (As per attached document)</small></legend>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label id="padd" for="name">Parmanant Address</label>
+                                @(Html.DevExtreme().TextArea()
+                                                                .ID("ContactAddress")
+                                                                .Name("ContactAddress")
+                                                                .Value(Model?.ContactAddress)
+                                                                .Height(124)
+                                                                .MaxLength(200)
+                                                                .InputAttr("style", "resize:none;width:100%")
+                                                                .OnInput("function(e) { if (e.event.keyCode === 13) e.event.preventDefault(); }")  .ValidationRules(rules => {
+                                rules.AddRequired().Message("Permanent Address is required.");
+                            })
+                             )
+                            </div>
+                            <div class="form-group">
+                                <label id="state" for="name">City</label>
+                                @(Html.DevExtreme().TextBox()
+                                                                .ID("VillageTownCity")
+                                                                .Name("VillageTownCity")
+                                                                .Value(Model?.VillageTownCity)
+                                                                .MaxLength(50)  .ValidationRules(rules => {
+                                rules.AddRequired().Message("City is required.");
+                            })
+                             )    
+                                                                
+                                                                <div class="form-group" style="    margin-top: 4%;">
+                                    <label id="name-label13" for="name">State</label>
+                                    @(Html.DevExtreme().SelectBox()
+                                                                        .ID("State")
+                                                                        .Name("State")
+                                                                        .DataSource(Model.StateDropdown)
+                                                                        .DisplayExpr("TextField")
+                                                                        .ValueExpr("ValueField")
+                                                                        .Value(Model?.State)
+                                                                        .Placeholder("Please Select")
+                                                                        .InputAttr("aria-label", "State")
+                                                                        .OnValueChanged("function(e) { onStateChanged(e,'per'); }") .ValidationRules(rules => {
+                                rules.AddRequired().Message("State is required.");
+                            })
+                             )
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label id="pin" for="number">Pin Code</label>
+                                @(Html.DevExtreme().TextBox()
+                                                                .ID("Pin")
+                                                                .Name("Pin")
+                                                                .Value(Model?.Pin)
+                                                                .MaxLength(6)  .ValidationRules(rules => {
+                                rules.AddRequired().Message("Pin Code is required.");
+                            }))                                <div class="form-group" style="    margin-top: 4%;">
+                                    <label id="dist" for="number">District</label>
+    @(Html.DevExtreme().SelectBox()
+                    .ID("District")
+                    .Name("District")
+                    .DataSource(Model.DistrictDropdown)
+                    .DisplayExpr("displayExpr")
+                    .ValueExpr("valueExpr")
+                    .Value(Model?.District)
+                    .Placeholder("Please Select")
+                    .InputAttr("aria-label", "District")
+                    .ValidationRules(rules => {
+                        rules.AddRequired().Message("District is required.");
+                    })
+                     )
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+         
+                <div class="form-group">
+
+                    <div class="col-md-12">
+                        <div class="form-check">
+     <legend>
+                            Correspondance Address<small> (Same as Permananent Address)</small>
+<input type="checkbox" class="form-check-input" id="copyAddress" onclick="copyAddressFunc()" style="width:1%;cursor: auto;">
+                </legend>
+</div>
+                      
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label id="name-label15" for="name">Correspondance Address</label>
+  @(Html.DevExtreme().TextArea()
+                    .ID("CorresAddress")
+                    .Name("CorresAddress")
+                    .Value(Model?.CorresAddress)
+                    .Height(124)
+                    .MaxLength(200)
+                    .InputAttr("style", "resize:none;width:100%"))
+                            </div>
+                            <div class="form-group">
+                                <label id="state" for="name">City</label>
+   @(Html.DevExtreme().TextBox()
+                    .ID("CorresVillageTownCity")
+                    .Name("CorresVillageTownCity")
+                    .Value(Model?.CorresVillageTownCity)
+                    .MaxLength(50)
+    )
+                                <div class="form-group" style="    margin-top: 4%;">
+                                    <label id="name-label13" for="name">State</label>
+ @(Html.DevExtreme().SelectBox()
+                    .ID("CorresState")
+                    .Name("CorresState")
+                    .DataSource(Model.StateDropdown)
+                    .DisplayExpr("TextField")
+                    .ValueExpr("ValueField")
+                    .Value(Model?.CorresState )
+                    .Placeholder("Please Select")
+                    .InputAttr("aria-label", "State")
+                    .OnValueChanged("function(e) { onStateChanged(e,'cor'); }")
+  )
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label id="pin" for="number">Pin Code</label>
+ @(Html.DevExtreme().TextBox()
+                    .ID("CorresPin")
+                    .Name("CorresPin")
+                    .Value(Model?.CorresPin)
+                    .MaxLength(6)
+  )
+
+                                <div class="form-group" style="    margin-top: 4%;">
+                                    <label id="dist" for="number">District</label>
+                                    @(Html.DevExtreme().SelectBox()
+                    .ID("CorresDistrict")
+                    .Name("CorresDistrict")
+                    .DataSource(Model.CorresDistrictDropdown)
+                    .DisplayExpr("displayExpr")
+                    .ValueExpr("valueExpr")
+                    .Value(Model?.CorresDistrict)
+                    .Placeholder("Please Select")
+                    .InputAttr("aria-label", "District")
+                                     )
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+   
+   <div class="submit-btn">
+<button class="next-button" type="button" onclick="nextTab()">NEXT</button>      
+</div>
+
+
+
+        </div>
+        <div class="form-section">
+            <div style="background: #bcddff5c; padding: 10px; text-align: center; font-size: 18px; font-weight: 500; color: #1a237e; border-bottom: 1px solid #ddd; margin-bottom: 20px;     margin-top: -20px;
+}">
+                Education And Others
+            </div>
+            <div class="col-md-12">
+
+                <legend>Education</legend>
+
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label id="aqualification" for="aquli">
+                        Academic Qualification
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("AcademicQualification").Name("AcademicQualification").DataSource(Model.AcademicQualificationDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.AcademicQualification).Placeholder("Please Select").InputAttr("aria-label", "AcademicQualification")   .ValidationRules(rules => {
+                        rules.AddRequired().Message("Academic Qualification is required.");
+                    })
+                     )
+
+                </div>
+
+                <div class="form-group">
+                    <label id="msub" for="msub">
+                        Main Subject
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("MainSubject").Name("MainSubject").Value(Model?.MainSubject).MaxLength(50).InputAttr("aria-label", "Main Subject").Placeholder("Enter Main Subject") )
+                </div>
+                <div class="form-group">
+                    <label id="yop" for="name">
+                        Year Of Passing
+                    </label>
+                    @(Html.DevExtreme().NumberBox().ID("YearOfPassing").Name("YearOfPassing").Value(Model?.YearOfPassing).Min(2000).Max(DateTime.Now.Year).InputAttr("aria-label", "YearOfPassing").Placeholder("Enter Year of Passing") )
+
+                </div>
+                <div class="form-group">
+                    <label id="division" for="div">
+                        Division
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("Division").Name("Division").Value(Model?.Division).InputAttr("aria-label", "Division").Placeholder("Enter Division") )
+                </div>
+                <div class="form-group">
+                    <label id="perc" for="name">
+                        % of Marks
+                    </label>
+                    @(Html.DevExtreme().NumberBox()
+                                        .ID("MarksPercentage")
+                                        .Name("MarksPercentage")
+                                        .Value((double?)Model?.MarksPercentage)  // 👈 Cast to double?
+                                        .Min(0)
+                                        .Max(100)
+                                        .Step(0.01)
+                                        .Format("#0.##")
+                                        .Placeholder("Enter Marks Percentage")
+                                         )
+                </div>
+
+
+                <div class="form-group">
+                    <label id="board" for="name">
+                        Board
+                    </label>
+                    @(Html.DevExtreme().TextBox()
+                                        .ID("BoardCode")
+                                        .Name("BoardCode")
+                                        .Value(Model?.BoardCode)
+                                        .MaxLength(50)
+                                        .InputAttr("aria-label", "Board Code")
+                                        .Placeholder("Enter Board Code")
+                                         
+                                        )
+                </div>
+
+                <div class="form-group">
+                    <label id="emedium" for="emedium">
+                        Course Medium                                                                                <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("CourseMedium").Name("CourseMedium").DataSource(Model.CourseMediumDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.CourseMedium).Placeholder("Please Select").InputAttr("aria-label", "CourseMedium") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Course Medium is required.");
+                    })
+                     )
+
+
+                </div>
+                <div class="form-group">
+                    <label id="deb" for="deb">
+                        DEB Id
+                    </label>
+                    @(Html.DevExtreme().TextBox().ID("Deb").Name("Deb").Value(Model?.Deb).MaxLength(50).InputAttr("aria-label", "Deb").Placeholder("Enter DEB ID") )
+                </div>
+                <div class="form-group">
+                    <label id="belong" for="belong">
+                        Belongs To                                                                               <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("StudentBelongsTo").Name("StudentBelongsTo").DataSource(Model.StudentBelongsToDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.StudentBelongsTo).Placeholder("Please Select").InputAttr("aria-label", "StudentBelongsTo")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("Belongs To is required.");
+                    }) )
+
+
+                </div>
+            </div>
+
+            <div class="form-row">
+
+
+                <div class="form-group">
+                    <label id="nation" for="nation">
+                        Nationality                                                                           <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().SelectBox().ID("Nationality").Name("Nationality").DataSource(Model.NationalityDropdown).DisplayExpr("TextField").ValueExpr("ValueField").Value(Model?.Nationality).Placeholder("Please Select").InputAttr("aria-label", "Nationality")  .ValidationRules(rules => {
+                        rules.AddRequired().Message("Nationality is required.");
+                    }) )
+
+
+                </div>
+                <div class="form-group">
+                    <label id="fincome" for="fincome">
+                        Family Income
+
+                        <span class="asteriskField" style="color: red">*</span>
+                    </label>
+                    @(Html.DevExtreme().NumberBox()
+                                        .ID("FamilyIncomeYearly")
+                                        .Name("FamilyIncomeYearly")
+                                        .Value((double?)Model?.FamilyIncomeYearly)
+                                        .Min(2000)
+                                        .Max(DateTime.Now.Year)
+                                        .InputAttr("aria-label", "FamilyIncomeYearly")
+                                        .Placeholder("Enter Family Income Yearly") .ValidationRules(rules => {
+                        rules.AddRequired().Message("Family Income is required.");
+                    }) )
+
+                </div>
+
+                <div class="form-group">
+                      @(Html.DevExtreme().Button()
+        .Text("Submit")
+        .Type(ButtonType.Default)
+        .UseSubmitBehavior(true) 
+        .StylingMode(ButtonStylingMode.Contained)
+         
+    )
+                </div>
+
+
+
+            </div>
+
+            
+     <div class="submit-btn">
+            
+
+            @* <button class="next-button" type="button" onclick="nextTab()">NEXT</button>    *@   
+     </div>
+        </div>
+        </form>
+        <div class="form-section">
+          <iframe src="/Student/StudentsDocument?flag=new" 
+        width="80%" 
+        height="400px" 
+        style="border:none;">
+</iframe>
+
+         
+        </div>
+          <!-- Hidden file input -->
+  <input type="file" id="hiddenFileInput" accept=".pdf" style="display:none" />
+ <div class="form-section">
+            <div style="background: #ffc4f44f; padding: 10px; text-align: center; font-size: 18px; font-weight: 500; color: #1a237e; border-bottom: 1px solid #ddd; margin-bottom: 20px;     margin-top: -20px;
+}">
+                Student Summary
+            </div>
+            <table class="summarytable">
+                <tr><th colspan="6" class="summaryheading">Course   </th></tr>
+                <tr>
+                    <td class="summarytd">Session</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Faculty/Academy.</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd"> Program Name</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">University Scheme</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Course Type</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Preferd Course Medium</td>
+                    <td class="summarytd"></td>
+                </tr>
+
+
+                <tr><th colspan="6" class="summaryheading">Personal Detail</th></tr>
+                <tr>
+                    <td class="summarytd">First Name</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Last Name</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Father/Husband Name</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Mother Name</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">DOB</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Email</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Mobile Number</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Fax</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Gender</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Category</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">License Type</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Aadhar Number</td>
+                    <td class="summarytd"></td>
+
+
+                </tr>
+
+                <tr><th colspan="6" class="summaryheading">Permanent Address (As per attached document)</th></tr>
+                <tr>
+                    <td class="summarytd">Permanent Address</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">City</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Pin Code</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">State</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">District</td>
+                    <td class="summarytd" colspan="4"></td>
+                </tr>
+
+                <tr><th colspan="6" class="summaryheading">Correspondance Address (Same as Permananent Address)</th></tr>
+                <tr>
+                    <td class="summarytd">Parmanant Address</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">City</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Pin Code</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">State</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">District</td>
+                    <td class="summarytd" colspan="4"></td>
+                </tr>
+
+
+
+                <tr><th colspan="6" class="summaryheading">Academic Detail</th></tr>
+                <tr>
+                    <td class="summarytd">Academic Qualification </td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Main Subject</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Year Of Passing</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Division * (1,2,3,4 for Pass)</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">% of Marks</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Board</td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Education Medium </td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">DEB Id</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd"></td>
+                </tr>
+                <tr>
+                    <td class="summarytd">Belongs To</td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Nationality </td>
+                    <td class="summarytd"></td>
+                    <td class="summarytd">Family Income </td>
+                    <td class="summarytd"></td>
+                </tr>
+
+            </table>
+
+        <div class="submit-btn">
+<button class="next-button" type="button" onclick="nextTab()">SUBMIT</button>      
+</div>
+        </div>
+
+    </div>
+    <script>
+
+        $(document).ready(function () {
+    $("#studentForm").on("submit", function (e) {
+        e.preventDefault();
+
+        var form = $(this)[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            url: form.action,
+            type: form.method,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log(response);
+                debugger
+                if (response && response.success && response.requestNo) {
+                    DevExpress.ui.notify("Student created successfully!", "success", 2000);
+                    disableFormFields("#studentForm"); 
+                     document.querySelectorAll('.next-button').forEach((btn, index) => {
+                        btn.addEventListener('click', () => {
+                            if (index + 1 < tabContents.length) {
+                                showTab(index + 1);
+                            }
+                        });
+                    });
+                } else {
+                    DevExpress.ui.notify("Error: " + (response.error || "Unknown error"), "error", 3000);
+                }
+            },
+            error: function (xhr) {
+                DevExpress.ui.notify("Error: " + xhr.responseText, "error", 3000);
+            }
+        });
+        nextTab();
+    });
+
+    function disableFormFields(formSelector) {
+        var $form = $(formSelector);
+
+        // disable normal inputs
+        $form.find("input, textarea, select").attr("disabled", true);
+
+        // disable DevExtreme widgets properly
+        $form.find(".dx-widget").each(function () {
+            var dxInstance = $(this).data("dxComponents");
+            if (dxInstance) {
+                dxInstance.forEach(function (compName) {
+                    var instance = $(this)[compName]("instance");
+                    if (instance && instance.option) {
+                        instance.option("disabled", true);
+                    }
+                }, this);
+            }
+        });
+    }
+});
+
+
+        const sections = document.querySelectorAll('.form-section');
+
+        new DevExpress.ui.dxTabs("#dxTabs", {
+          items: [
+            { text: "Course" },
+            { text: "Personal Details" },
+            { text: "Education & Other Details" },
+                { text: "Student Document" },
+            { text: "Summary" }
+
+
+          ],
+          selectedIndex: 0,
+          onSelectionChanged(e) {
+            sections.forEach((s, i) => {
+              s.classList.remove('show', 'animate');
+              if (i === e.component.option("selectedIndex")) {
+                s.classList.add('show');
+                requestAnimationFrame(() => s.classList.add('animate'));
+              }
+            });
+          }
+        });
+    </script>
+
+
+    <script>
+        function previewImage(event) {
+            const box = document.getElementById('preview-box');
+            box .innerHTML = '';
+            const img = document.createElement('img');
+            img .src = URL.createObjectURL(event.target.files[0]);
+            box .appendChild(img);
+        }
+
+
+
+    </script>
+
+
+</body>
+
+
+
+
+
+
+<script>
+              function onMediumChanged(e) {
+  const mediumId = e.value;
+  if (mediumId != null) {
+    const courseFeeId = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseFeeID")).option("value");
+    if (!mediumId || !courseFeeId) return;
+
+    $.ajax({
+      url: '/Student/GetOptionalSubject',
+      type: 'GET',
+      data: {
+        courseFeeId: courseFeeId,
+        mediumId: mediumId
+      },
+      dataType: 'json',
+      success: function (data1) {
+        const container = $('#optionalSubjectsContainer');
+        container.empty();
+
+        const data = data1.data;
+        if (!Array.isArray(data) || data.length === 0) {
+          container.append('<tr><td colspan="4">No optional subjects found.</td></tr>');
+          return;
+        }
+
+        let tableHTML = '';
+        let rowOpen = false;
+
+        for (let i = 0; i < data.length; i++) {
+          if (i % 4 === 0) {
+            if (rowOpen) tableHTML += '</tr>';
+            tableHTML += '<tr>';
+            rowOpen = true;
+          }
+
+          tableHTML += `
+            <td>
+              <label class="checkbox-label">
+                <input type="checkbox" name="chkbox" id="checkbox${i}" value="${data[i].ValueField}">
+                <span>${data[i].TextField}</span>
+              </label>
+            </td>
+          `;
+        }
+
+        if (rowOpen) {
+          // Fill empty <td> if total items not multiple of 4
+          const remaining = 4 - (data.length % 4);
+          if (remaining < 4) {
+            for (let j = 0; j < remaining; j++) {
+              tableHTML += `<td></td>`;
+            }
+          }
+          tableHTML += '</tr>';
+        }
+
+        container.html(tableHTML);
+        document.getElementById("chkboxcount").value = data.length;
+      },
+      error: function (xhr, status, error) {
+        console.error("Error loading optional subjects:", error);
+        alert('Failed to load optional subjects.');
+      }
+    });
+  } else {
+    $('#optionalSubjectsContainer').empty();
+  }
+}
+
+
+                     async function onCourseFeeChange(e) {
+                    const valCourseFeeID = e.value;
+                    const valSessionID =  DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Session")).option("value");  // Replace with actual input ID or value
+                    const valStudentID = $('#StudentID').val();  // Replace with actual input ID or value
+                    const kioskId = '@Model.Kioskid'; // Replace with actual kioskId or fetch dynamically
+
+                    try {
+                        const response = await fetch(`/Student/GetFees?valCourseFeeID=${valCourseFeeID}&valSessionID=${valSessionID}&valStudentID=${valStudentID}&kioskId=${kioskId}`);
+                       debugger;
+                        const result = await response.json();
+
+                        if (result.success && result.data.length > 0) {
+                            populateFeeTable(result.data);
+                        } else {
+                            $('#regFeeDetail').html('<tr><td colspan="5" class="text-center text-danger">No fee details found.</td></tr>');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching fee details:', error);
+
+                    }
+                       DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseMedium1")).option("value", null);
+                }
+
+                function populateFeeTable(data) {
+                    const table = document.getElementById("regFeeDetail");
+                    table.innerHTML = ""; // Clear existing rows
+
+                    // Add header
+                    const header = `<tr>
+                        <th>Fee Type</th>
+                        <th>Amount</th>
+
+                    </tr>`;
+                    table.insertAdjacentHTML('beforeend', header);
+
+                    // Populate rows
+                    data.forEach(item => {
+                        debugger
+                        const row = `<tr>
+                          <td>${item.FeeType || ''}</td>
+
+                            <td>${item.Fee ?? 0 }</td>
+                        </tr>`;
+                        table.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+                   function validateImage(e) {
+                    const file = e.value[0];
+
+                    if (!file) {
+                        DevExpress.ui.notify("No file selected.", "error", 2000);
+                        document.getElementById("PhotoValid").value = "false";
+                        return;
+                    }
+
+                    const allowedExtensions = ['png', 'jpg', 'jpeg'];
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    const fileSizeKB = file.size / 1024;
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        DevExpress.ui.notify("Only .png, .jpg, and .jpeg files are allowed.", "error", 3000);
+                        document.getElementById("PhotoValid").value = "false";
+                        return;
+                    }
+
+                    if (fileSizeKB < 10 || fileSizeKB > 50) {
+                        DevExpress.ui.notify("File size must be between 10KB and 50KB.", "error", 3000);
+                        document.getElementById("PhotoValid").value = "false";
+                        return;
+                    }
+
+                    // Preview the image
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById("profilePreview").src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+
+                    document.getElementById("PhotoValid").value = "true";
+                }
+
+                     document.addEventListener("DOMContentLoaded", function () {
+                    const tabs = document.querySelectorAll('input[name="tab-effect-2"]');
+                    const tabContents = document.querySelectorAll('.tab-content > div');
+
+                    function showTab(index) {
+                        tabContents.forEach((tab, i) => {
+                            tab.classList.toggle("active-tab", i === index);
+                            tabs[i].checked = (i === index);
+                        });
+                    }
+
+                    // Tab click event
+                    document.querySelectorAll('.tabs span').forEach((span, index) => {
+                        span.addEventListener('click', () => showTab(index));
+                    });
+
+                    // Next button
+                    document.querySelectorAll('.next-button').forEach((btn, index) => {
+                        btn.addEventListener('click', () => {
+                            if (index + 1 < tabContents.length) {
+                                showTab(index + 1);
+                            }
+                        });
+                    });
+
+                    // Previous button
+                    document.querySelectorAll('.prev-button').forEach((btn, index) => {
+                        btn.addEventListener('click', () => {
+                            if (index - 1 >= 0) {
+                                showTab(index - 1);
+                            }
+                        });
+                    });
+
+                    // Show first tab on load
+                    showTab(0);
+                });
+                         // 🏙 State Changed → Load Districts (permanent / correspondence)
+                    function onStateChanged(e, flag) {
+                        const stateId = e.value;
+                        const targetSelectBoxId = flag === 'per' ? "District" : "CorresDistrict";
+                        const districtBox = DevExpress.ui.dxSelectBox.getInstance(document.getElementById(targetSelectBoxId));
+
+                        if (!districtBox) {
+                            console.warn(`SelectBox with ID '${targetSelectBoxId}' not found.`);
+                            return;
+                        }
+
+                        // Reset before loading
+                        districtBox.option({ dataSource: [], value: null, isValid: true });
+
+                        if (!stateId) return;
+
+                        $.ajax({
+                            url: '/Student/GetDistrictByStdID',
+                            type: 'GET',
+                            data: { stdId: stateId },
+
+                            success: function (districts) {
+                                debugger;
+                                districtBox.option({
+                                    dataSource: new DevExpress.data.DataSource({ store: districts }),
+                                    displayExpr: "DistrictName",
+                                    valueExpr: "DistrictId"
+                                });
+
+                                setTimeout(() => {
+                                    if (typeof districtBox.validate === "function") {
+                                        districtBox.validate();
+                                    }
+                                }, 100);
+                            },
+                            error: function () {
+                                DevExpress.ui.notify('Failed to load districts.', 'error', 2000);
+                            }
+                        });
+
+                    }
+                    // 🔁 Load Scheme when Session changes
+                function copy(e) {
+                const ServiceID = '@Model.ServiceId';
+                const KioskTypeID = '@Model.KioskTypeID';
+                const sessionId = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Session")).option("value");
+
+                $.ajax({
+                    url: `/Student/GetCourseScheme`,
+                    type: "GET",
+                    data: {
+                        kioskTypeId: KioskTypeID,
+                        sessionId: sessionId,
+                        kioskServiceId: ServiceID
+                    },
+                    success: function (data) {
+                        debugger;
+                        const schemeSelectBox = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Scheme"));
+
+                        schemeSelectBox.option({
+                            dataSource: data,
+                            valueExpr: "ValueField",      // match key name in data
+                            displayExpr: "TextField",     // match key name in data
+                            value: null              // clear selection
+                        });
+                    },
+                    error: function () {
+                        DevExpress.ui.notify("Failed to load Scheme", "error", 2000);
+                    }
+                });
+                DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseMedium1")).option("value", null);
+            }
+
+
+                    // 🎓 Load CourseYear when Scheme changes
+                    function onSchemeChanged(e) {
+                        const SessionID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Session")).option("value");
+                        const ProgrammeID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Program")).option("value");
+                        const SchemeID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Scheme")).option("value");
+                        const KIOSKID = '@Model.Kioskid';
+
+                        $.ajax({
+                            url: `/Student/GetCourseyear`,
+                            type: "GET",
+                            data: { SessionID, ProgrammeID, SchemeID, KIOSKID },
+                            success: function (data) {
+                                DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseFeeID"))
+                                    .option({
+                                         dataSource: data,
+                            valueExpr: "ValueField",      // match key name in data
+                            displayExpr: "TextField",     // match key name in data
+                            value: null     });
+                            },
+                            error: function () {
+                                DevExpress.ui.notify("Failed to load Course Year", "error", 2000);
+                            }
+                        });
+                    }
+
+                    // 📚 Load Programmes when Course Category changes
+                       function onCourseCategoryChanged(e) {
+            const courseCategoryId = e.value;
+            const kioskTypeId = '@Model.KioskTypeID';
+            const kioskId = '@Model.Kioskid';
+           
+            // Get Session ID safely
+            const sessionBox = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Session"));
+            const sessionId = sessionBox?.option("value");
+            if (!courseCategoryId || !kioskTypeId || !sessionId || !kioskId) {
+                DevExpress.ui.notify("Missing parameters", "error", 2000);
+                return;
+            }
+            // Load Programmes based on selected Course Category
+            $.ajax({
+                url: `/Student/GetProgrammes`,
+                type: "GET",
+                data: {
+                    KioskTypeID: kioskTypeId,
+                    SessionId: sessionId,
+                    CourseCategoryID: courseCategoryId,
+                    KioskID: kioskId
+                },
+                success: function (data) {
+                    debugger
+                    const programBox = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Program"));
+                    if (programBox) {
+                        programBox.option({
+                            dataSource: data,
+                            valueExpr: "ValueField",
+                            displayExpr: "TextField",
+                            value: null
+                        });
+                        
+                    } else {
+                        console.warn("Program SelectBox not found.");
+                    }
+                },
+                error: function () {
+                    DevExpress.ui.notify("Failed to load Programmes", "error", 2000);
+                }
+            });
+
+            // Safely call loadCourseFeeDetail with slight delay to ensure DOM is ready
+            setTimeout(() => {
+                if (typeof loadCourseFeeDetail === "function") {
+                    loadCourseFeeDetail();
+                } else {
+                    console.warn("Function loadCourseFeeDetail not defined.");
+                }
+            }, 100);
+            DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Scheme")).option("value", null);
+            DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseMedium1")).option("value", null);
+        }
+        //on ProgrammeID select
+            function onProgramChanged(e){
+                     DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Scheme")).option("value", null);
+                DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseMedium1")).option("value", null);
+            }
+
+                        function loadCourseFeeDetail() {
+                const valCourseFeeID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("CourseFeeID"))?.option("value") || 0;
+                const valSessionID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("Session"))?.option("value") || 0;
+                const valStudentID = DevExpress.ui.dxSelectBox.getInstance(document.getElementById("StudentID"))?.option("value") || 0;
+                const valKioskID = '@Model.Kioskid';
+
+                if (!valStudentID || valStudentID === 0) {
+                    alert("Please select a valid student.");
+                    return;
+                }
+
+                const url1 = '@Url.Action("FillCourseFeeDetail1", "Student")';
+
+                $.ajaxSetup({ cache: false });
+
+                $.getJSON(url1, {
+                    valCourseFeeID,
+                    valSessionID,
+                    valStudentID,
+                    valKioskID
+                }, function (data) {
+                    clearDynamicTable(); // Clears the table before refill
+                    createDynamicTable($("#regFeeDetail"), data); // Builds new rows
+                    document.getElementById('mgrDiv').style.display = "block";
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX Error:", textStatus, errorThrown);
+                    alert("Failed to load course fee detail.");
+                });
+            }
+
+// 🏠 Copy address when checkbox is checked
+ function copyAddressFunc() {
+        const isChecked = document.getElementById("copyAddress").checked;
+
+        // Correspondence fields instances
+        const corresAddress = $("#CorresAddress").dxTextArea("instance");
+        const corresVillage = $("#CorresVillageTownCity").dxTextBox("instance");
+        const corresState = $("#CorresState").dxSelectBox("instance");
+        const corresPin = $("#CorresPin").dxTextBox("instance");
+        const corresDistrict = $("#CorresDistrict").dxSelectBox("instance");
+
+        if (isChecked) {
+            // Copy values from Permanent address
+            corresAddress.option("value", $("#ContactAddress").dxTextArea("instance").option("value"));
+            corresVillage.option("value", $("#VillageTownCity").dxTextBox("instance").option("value"));
+            corresState.option("value", $("#State").dxSelectBox("instance").option("value"));
+            corresPin.option("value", $("#Pin").dxTextBox("instance").option("value"));
+            corresDistrict.option("value", $("#District").dxSelectBox("instance").option("value"));
+
+            // Disable fields
+            corresAddress.option("disabled", true);
+            corresVillage.option("disabled", true);
+            corresState.option("disabled", true);
+            corresPin.option("disabled", true);
+            corresDistrict.option("disabled", true);
+        } else {
+            // Clear fields
+            corresAddress.option("value", "");
+            corresVillage.option("value", "");
+            corresState.option("value", null);
+            corresPin.option("value", "");
+            corresDistrict.option("value", null);
+
+            // Enable fields
+            corresAddress.option("disabled", false);
+            corresVillage.option("disabled", false);
+            corresState.option("disabled", false);
+            corresPin.option("disabled", false);
+            corresDistrict.option("disabled", false);
+        }
+    }
+
+    // Bind checkbox change
+    document.getElementById("copyAddress").addEventListener("change", copyAddressFunc);
+
+
+
+
+                    //image upload
+                   function ShowImageValidationAndUpload(e) {
+                    const file = e.value[0];
+                    if (!file) return;
+
+                    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+                    const fileSizeKB = file.size / 200;
+
+                    if (!allowedExtensions.includes(fileExt)) {
+                        DevExpress.ui.notify("Only image files (jpg, png, gif) are allowed!", "error", 2000);
+                        e.component.reset();
+                        return;
+                    }
+
+                    if (fileSizeKB > 200) {
+                        DevExpress.ui.notify("Image size must be less than 1MB", "error", 2000);
+                        e.component.reset();
+                        return;
+                    }
+
+                    // Show image preview
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        document.getElementById("profilePreview").src = evt.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+
+                    // ✅ Bind address copy logic
+                    $(document).ready(function () {
+                        $('#homepostalcheck').click(function () {
+                            setBillingAddress();
+                        });
+                    });
+
+
+
+</script>
+
+
+<style>
+  
+
+    .fee-column {
+        font-weight: 500;
+        color: #444;
+    }
+
+    .amount-column {
+        text-align: right;
+        color: #222;
+    }
+
+    .dx-datagrid-headers {
+        background: #f2f2f2;
+        color: #333;
+        font-size: 15px;
+    }
+
+    .dx-datagrid-rowsview .dx-row > td {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 14px;
+    }
+
+    .dx-total-row td {
+        border-top: 2px solid #000 !important;
+        background: #f9f9f9;
+        font-weight: bold;
+    }
+
+    .eligibility {
+        margin-top: 12px;
+        font-size: 14px;
+        color: red;
+        font-weight: 500;
+    }
+
+    .custom-table {
+        width: 100%;
+        max-width: 100%;
+        border-collapse: collapse;
+        margin-top: -17px;
+    }
+
+        .custom-table th, .custom-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding-right: 14%;
+        }
+
+        .custom-table th {
+            background: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .custom-table td:last-child {
+            text-align: right;
+        }
+
+        .custom-table .total-row {
+            font-weight: bold;
+            border-top: 2px solid #000;
+            background: #f9f9f9;
+        }
+
+    </style>
+      <style>
+    #uploadDocumentSection {
+      background: #fff;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 38px 28px 36px 28px;
+      border-radius: 8px;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.07);
+      font-family: Arial, sans-serif;
+    }
+    .custom-row { display: flex; align-items: flex-start; gap: 36px; margin-top: 18px; }
+    .upload-doc-area {
+      border: 2px dashed #bbb; border-radius: 8px; min-height: 180px; width: 260px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; transition: border-color 0.2s; color: #50a845; font-size: 19px; cursor: pointer;
+    }
+    .choose-btn { margin-top: 16px; display: block; }
+    .uploads-section { flex: 1; min-width: 350px; }
+    .document-progress { margin-bottom: 26px; border-bottom: 1px solid #eee; padding-bottom: 18px; padding-top: 10px; }
+    .main-label { font-size: 19px; color: #444; font-weight: 500; margin-bottom: 10px; }
+    .remove-file { margin-left: 12px; color: #c33; cursor: pointer; font-size: 19px; }
+    .pdf-thumb {
+      width: 42px; height: 55px; object-fit: contain; margin-right: 10px;
+      border: 1px solid #bbb; border-radius: 4px; background: #fafafa; cursor: pointer;
+    }
+    .progress-bar-container {
+      background: #eee;
+      border-radius: 6px;
+      width: 185px;
+      height: 7px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0;
+      background-color: #4abd5d;
+      transition: width 0.3s cubic-bezier(.65,.05,.36,1);
+    }
+    .progress-count {
+      font-size: 14px;
+      color: #444;
+      margin-top: 4px;
+      font-weight: 600;
+      user-select: none;
+    }
+    .pdf-popup-backdrop {position: fixed; left:0; top:0; right:0; bottom:0; background: rgba(0,0,0,0.28); z-index: 60;}
+    .pdf-popup {
+      position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      background: #fff; border-radius: 8px; box-shadow: 0 4px 48px #2227; z-index: 61; padding: 18px 20px;
+    }
+    .pdf-popup embed { border-radius: 5px; }
+    .popup-close { cursor: pointer; color: #c33; position: absolute; right: 14px; top: 11px; font-size: 24px; }
+   
+  </style>
+  
+<script>
+    const docOptions = ["5th","6th","7th","8th","9th","10th","11th","12th","Graduation","PG","Caste"];
+    const maxUploads = 8;
+    let uploads = [];
+
+    const dropdownInstance = $("#documentDropdown").dxSelectBox({
+      dataSource: docOptions,
+      value: null,
+      searchEnabled: true,
+      placeholder: "Select document...",
+      showClearButton: true,
+      width: 320,
+      label: "Please select document type",
+      labelMode: "floating",
+    }).dxSelectBox("instance");
+
+    $("#choose-btn").dxButton({
+      text: "Choose File",
+      type: "success",
+      onClick() {
+        if (getAvailableDocTypes().length === 0) {
+          alert("Max 8 uploads reached.");
+          return;
+        }
+        if (!dropdownInstance.option('value')) {
+          alert("Please select a document type for upload.");
+          return;
+        }
+        $("#hiddenFileInput").click();
+      }
+    });
+
+    $("#hiddenFileInput").on("change", function (e) {
+      const files = e.target.files;
+      if (files && files[0]) {
+        const file = files[0];
+        if (!file.name.toLowerCase().endsWith(".pdf")) {
+          alert("Only PDF files are allowed.");
+          return;
+        }
+        startProgressSim(file);
+        $(this).val("");
+      }
+    });
+
+    $("#dragArea").on("dragover", (e) => {
+      e.preventDefault();
+      $(e.currentTarget).css("border-color", "#4abd5d");
+    }).on("dragleave", (e) => {
+      $(e.currentTarget).css("border-color", "#bbb");
+    }).on("drop", (e) => {
+      e.preventDefault();
+      $(e.currentTarget).css("border-color", "#bbb");
+      const files = e.originalEvent.dataTransfer.files;
+      if (files.length) startProgressSim(files[0]);
+    }).on("click", () => {
+      $("#choose-btn").click();
+    });
+
+    function getAvailableDocTypes() {
+      return docOptions.filter(opt => !uploads.some(u => u.docType === opt && !u.removed));
+    }
+    function refreshDropdown() {
+      const available = getAvailableDocTypes();
+      dropdownInstance.option("dataSource", available);
+      if (!available.includes(dropdownInstance.option('value'))) {
+        dropdownInstance.option('value', null);
+      }
+      dropdownInstance.option("disabled", available.length === 0);
+    }
+    function removeUpload(docType) {
+      const idx = uploads.findIndex(u => u.docType === docType && !u.removed);
+      if (idx !== -1) {
+        if (uploads[idx].url) URL.revokeObjectURL(uploads[idx].url);
+        uploads[idx].removed = true;
+      }
+      renderUploads(); refreshDropdown();
+    }
+    window.removeUpload = removeUpload;
+
+    window.viewPdf = function(idx) {
+      const u = uploads[idx];
+      const popupHtml = `
+        <div class="pdf-popup-backdrop" onclick="closePdfPopup()"></div>
+        <div class="pdf-popup" style="width:90%;height:90vh;overflow:hidden;position:fixed;">
+          <span class="popup-close" onclick="closePdfPopup()">&#10005;</span>
+          <div style="margin-bottom:8px;font-size:17px;font-weight:500;">${u.docType} : ${u.name}</div>
+          <embed src="${u.url}" width="100%" height="90%" type="application/pdf" />
+        </div>
+      `;
+      $('#pdf-popup-viewport').html(popupHtml).show();
+    };
+    window.closePdfPopup = function() {
+      $('#pdf-popup-viewport').hide().html('');
+    };
+
+    function startProgressSim(file) {
+      const docType = dropdownInstance.option("value");
+      if (uploads.some(u => u.docType === docType && !u.removed)) return;
+      if (!file.name.toLowerCase().endsWith(".pdf")) {
+        alert("Only PDF files are allowed.");
+        return;
+      }
+      if (uploads.length >= maxUploads) {
+        alert("Maximum " + maxUploads + " uploads allowed.");
+        return;
+      }
+      const fileUrl = URL.createObjectURL(file);
+      uploads.push({
+        docType,
+        file,
+        name: file.name,
+        size: file.size,
+        progress: 0,
+        percent: 0,
+        completed: false,
+        removed: false,
+        url: fileUrl
+      });
+      refreshDropdown();
+      renderUploads();
+      let idx = uploads.findIndex(u => u.docType === docType && !u.removed);
+      let progress = 0;
+      const totalSteps = 60;
+      const duration = 1200;
+      const stepMs = duration / totalSteps;
+      function animate() {
+        if (uploads[idx].removed) return;
+        progress += 100 / totalSteps;
+        uploads[idx].progress = progress > 100 ? 100 : progress;
+        uploads[idx].percent = Math.floor(uploads[idx].progress);
+        renderUploads();
+        if (progress < 100) setTimeout(animate, stepMs);
+        else {
+          uploads[idx].progress = 100;
+          uploads[idx].percent = 100;
+          uploads[idx].completed = true;
+          renderUploads();
+        }
+      }
+      animate();
+    }
+
+    function renderUploads() {
+      let html = "";
+      uploads.filter(u => !u.removed).forEach((u, idx) => {
+        html += `
+          <div class="document-progress">
+            <div style="display:flex;align-items:center;margin-bottom:4px;">
+              <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" class="pdf-thumb" alt="PDF" onclick="viewPdf('${idx}')" title="View PDF" />
+              <div style="margin-left:2px;font-size:16px;">${u.docType} - ${u.name} &nbsp; (${(u.size/1048576).toFixed(1)} MB)</div>
+              <span class="remove-file" title="Remove" onclick="removeUpload('${u.docType}')">&#10005;</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progressBar_${u.docType}"></div>
+            </div>
+            <span class="progress-count" id="progressCount_${u.docType}">Uploading... ${u.percent||0}%</span>
+          </div>
+        `;
+      });
+      $("#uploads").html(html);
+      uploads.filter(u => !u.removed).forEach(u => {
+        document.getElementById(`progressBar_${u.docType}`).style.width = `${u.progress}%`;
+        document.getElementById(`progressCount_${u.docType}`).textContent = u.completed ? "Uploaded 100%" : `Uploading... ${u.percent||0}%`;
+      });
+    }
+
+    renderUploads();
+    refreshDropdown();
+  </script>
+
+
+            <script>
+                
+function nextTab() {
+    var isFormValid = true;
+
+    // List all the widget IDs to validate
+    var widgetIds = [
+        "Session", "CourseCategory", "Program", "Scheme", "CourseFeeID", "CourseMedium1",
+        "FirstName", "LastName", "FatherName", "MotherName", "Dob", "EmailAddress",
+        "MobileNo", "marital status", "Sex", "Category", "DrivingLicenceType", "AadharNo",
+        "ContactAddress", "VillageTownCity", "State", "Pin", "District", "AcademicQualification",
+        "CourseMedium", "StudentBelongsTo", "Nationality", "FamilyIncomeYearly"
+    ];
+
+    // Validate each widget
+    widgetIds.forEach(function (id) {
+        var validator = $("#" + id).dxValidator("instance");
+        if (validator) {
+            var result = validator.validate();
+            if (!result.isValid) {
+                isFormValid = false;
+            }
+        }
+    });
+
+    // Photo upload validation
+   
+
+    if (isFormValid) {
+        // Code to move to next tab here
+        goToNextTab();
+    } else {
+        DevExpress.ui.notify("Please fill all required fields correctly.", "error", 3000);
+    }
+}
+
+// Example function to move to next tab - aap apne tabs implement karen yeh bas reference ke liye
+function goToNextTab(){
+    // Example: show next .form-section and hide current...
+    var currentSection = $(".form-section:visible");
+    var nextSection = currentSection.next(".form-section");
+    if(nextSection.length){
+        currentSection.hide();
+        nextSection.show();
+    }
+}
+
+// Optional: copyAddressFunc to copy permanent to correspondence address
+function copyAddressFunc() {
+    if (document.getElementById("copyAddress").checked) {
+        $("#CorresAddress").dxTextArea("instance").option("value", $("#ContactAddress").dxTextArea("instance").option("value"));
+        $("#CorresVillageTownCity").dxTextBox("instance").option("value", $("#VillageTownCity").dxTextBox("instance").option("value"));
+        $("#CorresState").dxSelectBox("instance").option("value", $("#State").dxSelectBox("instance").option("value"));
+        $("#CorresPin").dxTextBox("instance").option("value", $("#Pin").dxTextBox("instance").option("value"));
+        $("#CorresDistrict").dxSelectBox("instance").option("value", $("#District").dxSelectBox("instance").option("value"));
+    } else {
+        $("#CorresAddress").dxTextArea("instance").option("value", "");
+        $("#CorresVillageTownCity").dxTextBox("instance").option("value", "");
+        $("#CorresState").dxSelectBox("instance").option("value", null);
+        $("#CorresPin").dxTextBox("instance").option("value", "");
+        $("#CorresDistrict").dxSelectBox("instance").option("value", null);
+    }
+}
+
+            </script>
+
+            <script>
+                $(function () {
+        // Tab track rakhne ke liye DX Tabs instance le lo
+        var dxTabs = $("#dxTabs").dxTabs("instance");
+
+        // Apne tab-wise required field lists yahan set karo (tab index ke order me, 0-based)
+        var tabFieldMap = [
+            // Tab 0: Course
+            ["Session", "CourseCategory", "Program", "Scheme", "CourseFeeID", "CourseMedium1"],
+            // Tab 1: Personal Details
+            ["FirstName", "LastName", "FatherName", "MotherName", "Dob", "EmailAddress", "MobileNo", "MaritalStatus", "Sex", "Category", "DrivingLicenceType", "AadharNo", "ContactAddress", "VillageTownCity", "State", "Pin", "District"],
+            // Tab 2: Education & Other Details
+            ["AcademicQualification", "MainSubject", "YearOfPassing", "Division", "MarksPercentage", "BoardCode", "CourseMedium", "StudentBelongsTo", "Nationality", "FamilyIncomeYearly"],
+            // Tab 3: Student Document (photo required)
+            ["PhotoValid"],
+
+            // Tab 5: Summary/tab (no validation, just view summary)
+            []
+        ];
+
+        // Tab unlock/enable flag
+        var unlockedTabs = [true, true, true, true, true, true];
+
+        // Disable tabs visually except the first
+        function updateTabs() {
+            // Tabs ko disable visually
+            var tabItems = $(".dx-tabs-wrapper .dx-tab");
+            unlockedTabs.forEach(function (enabled, idx) {
+                if (!enabled) tabItems.eq(idx).addClass("dx-state-disabled");
+                else tabItems.eq(idx).removeClass("dx-state-disabled");
+            });
+        }
+
+        // Next button logic
+        window.nextTab = function () {
+            var currentIndex = dxTabs.option("selectedIndex");
+            // Form fields validate karo tabFieldMap ke hisab se
+            var widgetIds = tabFieldMap[currentIndex];
+            var allValid = true;
+
+            widgetIds.forEach(function (id) {
+                // Special case: photo
+                if (id === "PhotoValid") {
+                    if ($("#PhotoValid").val() !== "true") {
+                        allValid = false;
+                        DevExpress.ui.notify("Please upload a photo.", "error", 2000);
+                    }
+                    return;
+                }
+                var validator = $("#" + id).dxValidator ? $("#" + id).dxValidator("instance") : null;
+                if (validator) {
+                    var result = validator.validate();
+                    if (!result.isValid) allValid = false;
+                }
+            });
+
+            if (allValid) {
+                // Unlock and activate next tab
+                if (currentIndex + 1 < unlockedTabs.length) {
+                    unlockedTabs[currentIndex + 1] = true;
+                    updateTabs();
+                    dxTabs.option("selectedIndex", currentIndex + 1);
+                    // Form-sections show/hide (apke html me sections array ka use ho raha hai)
+                    const sections = document.querySelectorAll('.form-section');
+                    sections.forEach((s, i) => {
+                        s.classList.remove('show', 'animate');
+                        if (i === currentIndex + 1) {
+                            s.classList.add('show');
+                            requestAnimationFrame(() => s.classList.add('animate'));
+                        }
+                    });
+                }
+            } else {
+                DevExpress.ui.notify("Please fill all required fields correctly.", "error", 2500);
+            }
+        };
+
+        // Tab click par prevent karo agar tab unlock nahi hai
+        $("#dxTabs").off("click").on("click", ".dx-tab", function (e) {
+            var idx = $(this).index();
+            if (!unlockedTabs[idx]) {
+                e.preventDefault();
+                e.stopPropagation();
+                DevExpress.ui.notify("Please complete previous tab before proceeding.", "error", 2000);
+            }
+        });
+
+        // Jab tab tab se change ho to bhi section show/hide ho
+        var originalTabs = $("#dxTabs").dxTabs("instance");
+        originalTabs.option("onSelectionChanged", function (e) {
+            var selIdx = e.component.option("selectedIndex");
+            const sections = document.querySelectorAll('.form-section');
+            sections.forEach((s, i) => {
+                s.classList.remove('show', 'animate');
+                if (i === selIdx) {
+                    s.classList.add('show');
+                    requestAnimationFrame(() => s.classList.add('animate'));
+                }
+            });
+        });
+
+        // On load update visuals
+        updateTabs();
+    });
+
+            </script>
+
+            <!-- Tab 2: Education & Other Details ka section -->
+
+    
+
+<script>
+$(function () {
+    // Submit button DX style me
+    $("#submitBtn").dxButton({
+        text: "SUBMIT",
+        type: "success",
+        // icon: "check",
+        onClick: function () {
+            // Last tab ke required fields validate karo
+            var widgetIds = ["AcademicQualification", "MainSubject", "YearOfPassing", "Division", "MarksPercentage", "BoardCode", "CourseMedium", "StudentBelongsTo", "Nationality", "FamilyIncomeYearly"];
+            var allValid = true;
+
+            widgetIds.forEach(function (id) {
+                var validator = $("#" + id).dxValidator ? $("#" + id).dxValidator("instance") : null;
+                if (validator) {
+                    var result = validator.validate();
+                    if (!result.isValid) allValid = false;
+                }
+            });
+
+            if (allValid) {
+                DevExpress.ui.notify("Form submitted successfully!", "success", 2500);
+                // Yaha apna AJAX / Save logic call karna
+            } else {
+                DevExpress.ui.notify("Please complete all required fields before submitting.", "error", 2500);
+            }
+        }
+    });
+});
+</script>

@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace AisectOnline.Data.Models;
+
+public partial class ScfdTransaction
+{
+    public int StudentCourseFeeDetailId { get; set; }
+
+    public int? StudentCourseFeeId { get; set; }
+
+    public int? FeeTypeId { get; set; }
+
+    public int? Month { get; set; }
+
+    public decimal? Fee { get; set; }
+
+    public DateTime? FeeStartDate { get; set; }
+
+    public DateTime? FeeEndDate { get; set; }
+
+    public DateTime? FeeReceivedDate { get; set; }
+
+    public int? ReceivedBy { get; set; }
+
+    public string? TransactionId { get; set; }
+
+    public string? Course { get; set; }
+
+    public int Sessionid { get; set; }
+
+    public string EwtTransactionId { get; set; } = null!;
+
+    public DateTime? TransactionDate { get; set; }
+
+    public string? Remark { get; set; }
+}

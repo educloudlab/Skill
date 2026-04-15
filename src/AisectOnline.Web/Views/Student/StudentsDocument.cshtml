@@ -1,0 +1,626 @@
+﻿<!-- DevExtreme CSS/JS -->
+<link rel="stylesheet" href="~/css/devextreme/dx.light.css" />
+<script src="~/js/devextreme/jquery.min.js"></script>
+<script src="~/js/devextreme/dx.all.js"></script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+<script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+
+<style>
+    :root {
+        --blue: #3b82f6;
+        --green: #16a34a;
+        --muted: #667085;
+        --border: #e6eef6;
+        --bg: #fafbff;
+    }
+
+    /* container */
+    .u-wrap {
+        max-width: 1180px;
+        margin: 18px auto;
+        font-family: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+        box-sizing: border-box;
+        padding: 8px;
+    }
+
+    .u-card {
+        background: #fff;
+        border-radius: 14px;
+/*         box-shadow: 0 8px 24px rgba(0,0,0,.06);
+ */        padding: 20px;
+    }
+
+    .u-head {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .u-title {
+        margin: 0;
+        font-weight: 900;
+        font-size: 26px;
+        position: relative;
+        padding-bottom: 10px;
+        color: #0f172a;
+        display: inline-block;
+    }
+
+        .u-title:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 160px;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg,#c7d2fe,#60a5fa,#34d399);
+            opacity: .8;
+        }
+
+    .u-sub {
+        margin-top: 6px;
+        color: #475467;
+        font-size: 13px;
+    }
+
+    /* main grid: left = drop area (flexible), right = uploading box (fixed) */
+    .u-grid {
+        display: grid;
+        grid-template-columns: 1fr 480px;
+        gap: 18px 20px;
+        align-items: start;
+    }
+
+    /* SelectBox styling */
+    .u-leftHead .dx-texteditor {
+        width: 100% !important;
+        margin-bottom: 12px;
+    }
+
+    .u-leftHead .dx-selectbox {
+        height: 42px;
+    }
+
+        .u-leftHead .dx-selectbox .dx-texteditor-input {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .u-leftHead .dx-selectbox .dx-texteditor-input-container {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+    /* LEFT: Drop area (large) */
+    .u-drop {
+        border: 2px dashed var(--border);
+        border-radius: 14px;
+        height: 320px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        cursor: pointer;
+        transition: border-color .18s, background .18s;
+        padding: 18px;
+        box-sizing: border-box;
+    }
+
+        .u-drop.drag {
+            border-color: #93a4ff;
+            background: #f3f6ff;
+        }
+
+    .u-badge {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        border: 1px solid #eef4ff;
+        display: grid;
+        place-items: center;
+        background: #eef6ff;
+        color: #2f65ff;
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .u-drop .t1 {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .u-drop .t2 {
+        color: #98a2b3;
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .u-browse {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+    }
+
+        .u-browse:hover {
+            background: #f6f8fc;
+        }
+
+    /* RIGHT: Upload box (fixed width) */
+    .u-uploadBox {
+        border: 1px solid #eef3fb;
+        border-radius: 12px;
+        background: #fff;
+        height: 383px; /* fixed height as requested */
+        max-height: 383px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 12px 14px 72px; /* leave room for fixed button */
+        box-sizing: border-box;
+/*         overflow: hidden; /* list scrolls inside */
+ */    }
+
+    .u-rightTitle {
+        font-weight: 700;
+        color: #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+        .u-rightTitle::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96,165,250,.12);
+        }
+
+    /* AttachList -> make it vertical stack (one below another) and scrollable */
+    #AttachList {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto; 
+        padding-right: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .u-emptyBox {
+        border: 2px dashed #e6eef6;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    /* item style - each item takes full width of list (vertical stack) */
+    .u-item {
+        display: grid;
+        grid-template-columns: 40px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 6px;
+        border-top: 1px solid #f0f4f8;
+        box-sizing: border-box;
+        width: 100%; /* ensure full width in stacked list */
+        background: #fff;
+        border-radius: 8px;
+    }
+
+        .u-item:first-child {
+            border-top: 0;
+        }
+
+    .u-ico {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #667085;
+        font-size: 16px;
+        background: #fff;
+    }
+
+    .u-meta .nm {
+        font-weight: 600;
+        color: var(--blue);
+        cursor: pointer;
+    }
+
+    .u-meta .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+    .u-line {
+        margin-top: 8px;
+        height: 5px;
+        background: #eef4fa;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+        .u-line > span {
+            display: block;
+            height: 70%;
+            width: 0;
+            background: linear-gradient(90deg,var(--blue),#4fd1c5);
+            transition: width .35s cubic-bezier(.4,0,.2,1);
+        }
+
+            .u-line > span.done {
+                background: var(--green);
+            }
+
+  /*   .u-status {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+        .u-status .ok {
+            color: var(--green);
+            font-weight: 600;
+        } */
+
+    /* Upload All button fixed inside upload box bottom-right */
+    .u-actionsFixed {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        z-index: 3;
+    }
+
+    .u-btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+
+        .u-btn:hover {
+            background: #f6f8fc;
+        }
+
+        .dx-toast-warning{
+            background-color:cornflowerblue
+            
+        }
+        .u-btn.u-remove {
+  border: none;
+  background: transparent;
+  color: #ef4444; /* red */
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+}
+
+.u-btn.u-remove:hover {
+  color: #dc2626;
+  background: #fee2e2;
+  border-radius: 50%;
+}
+
+</style>
+
+<div class="u-wrap">
+    <div class="u-card">
+        <div class="u-head">
+            <h2 class="u-title">Student Documents</h2>
+            <p class="u-sub">PDF upload with queue. Click “Upload All” to send.</p>
+        </div>
+
+        <div class="u-grid">
+            <!-- LEFT: Drop area (big) -->
+            <div class="u-leftHead">
+                @(Html.DevExtreme().SelectBox()
+                                .ID("DocumentSelectBox")
+                                .DisplayExpr("documentName")
+                                .ValueExpr("documentId")
+                                .DataSource(new JS("[]"))
+                                .SearchEnabled(true)
+                                .ShowClearButton(true)
+                                .Width("100%")
+                                .Placeholder("Select Document")
+                                )
+
+                <div style="height:12px;"></div>
+
+                <div id="DropArea" class="u-drop" title="Click to choose PDF or drag & drop">
+                    <div class="u-badge">⬆️</div>
+                    <div class="t1">Drag files to upload</div>
+                    <div class="t2">PDF only • Max 2 MB each</div>
+                    <div class="u-browse" id="BrowseBtn">Browse PDF</div>
+                </div>
+
+                <input type="file" id="fileUploader" accept="application/pdf" multiple style="display:none;">
+            </div>
+
+            <!-- RIGHT: Uploading box (fixed width) -->
+            <div class="u-rightWrap">
+                <div class="u-uploadBox">
+                    <div class="u-rightTitle">Uploading</div>
+                    <div id="AttachList" class="u-emptyBox">No files queued. Select a type then add PDFs.</div>
+                    <div class="u-actionsFixed"><div id="UploadAllBtn"></div></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="studentId" value="27" />
+<input type="hidden" id="kioskId" value="789" />
+<div id="PdfPopup"></div>
+
+<script>
+    // ===== state & helpers (same as before) =====
+    let selectedDocumentId = null;
+    let allDocuments = [];
+    let allDocumentsBackup = [];
+    let uploadQueue = [];
+
+    const toast=(m,t="info",time=1500)=>DevExpress.ui.notify({
+      message:m,type:t,displayTime:time,width:260,position:{my:"top right",at:"top right",of:window,offset:"-16 16"}
+    });
+    const escapeHtml = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+
+    function refreshSelectBox(){
+      let inst=null;
+      try{ inst=$("#DocumentSelectBox").dxSelectBox("instance"); }catch(e){ inst=null; }
+      if(inst){ inst.option("dataSource", allDocuments); inst.reset(); }
+      else { $("#DocumentSelectBox").data("dxSelectBoxDataSource", allDocuments); }
+      selectedDocumentId=null;
+    }
+
+    $(function(){
+      $("#UploadAllBtn").dxButton({ text:"Upload All", type:"success", stylingMode:"contained", onClick: uploadAllDocuments });
+
+      $("#PdfPopup").dxPopup({
+        title:"Preview", visible:false, showCloseButton:true, dragEnabled:true, hideOnOutsideClick:true, shading:true,
+        width:"80%", height:"80vh", maxWidth:1000, position:{at:"center",my:"center"},
+        contentTemplate:c=>c.append('<iframe id="pdfFrame" style="width:100%;height:100%;border:0;"></iframe>'),
+        onHiding:()=>$("#pdfFrame").attr("src","")
+      });
+
+      let docInst=null;
+      try{ docInst = $("#DocumentSelectBox").dxSelectBox("instance"); }catch(e){ docInst=null; }
+
+      $.ajax({
+        url:'@Url.Action("GetStudentDocuments", "Student")', type:'GET', data:{ stdId:27 },
+        success:data=>{
+          allDocumentsBackup = data||[];
+          allDocuments = [...allDocumentsBackup];
+          if(docInst) docInst.option("dataSource", allDocuments);
+          else {
+            $("#DocumentSelectBox").dxSelectBox({
+              dataSource: allDocuments,
+              displayExpr: "documentName",
+              valueExpr: "documentId",
+              searchEnabled: true,
+              showClearButton: true,
+              placeholder: "Select Document",
+              onValueChanged: e=> { selectedDocumentId = e.value; }
+            });
+            try{ docInst = $("#DocumentSelectBox").dxSelectBox("instance"); }catch(e){ docInst=null; }
+          }
+        },
+        error: ()=>toast("Could not load document types.","warning",3000)
+      });
+
+      if(docInst) docInst.option("onValueChanged", e=> selectedDocumentId = e.value );
+
+      const drop = document.getElementById("DropArea");
+      const openPicker = ()=>document.getElementById("fileUploader").click();
+
+      drop.addEventListener("click", ()=>{ if(!selectedDocumentId) return toast("Select a document first.","warning"); openPicker(); });
+      document.getElementById("BrowseBtn").addEventListener("click", e=>{ e.stopPropagation(); if(!selectedDocumentId) return toast("Select a document first.","warning"); openPicker(); });
+
+      ["dragenter","dragover"].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.add("drag"); }));
+      ["dragleave","drop"].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.classList.remove("drag"); }));
+      drop.addEventListener("drop", e=>{ e.preventDefault(); if(!selectedDocumentId) return toast("Select a document first.","warning"); addFilesToQueue(e.dataTransfer.files, selectedDocumentId); });
+
+      document.getElementById("fileUploader").addEventListener("change", function(){
+        if(!selectedDocumentId){ toast("Select a document first.","warning"); this.value=""; return; }
+        addFilesToQueue(this.files, selectedDocumentId);
+        this.value="";
+      });
+
+      setTimeout(()=>{ try{ window.dispatchEvent(new Event('resize')); }catch(e){ $(window).trigger('resize'); } }, 80);
+    });
+
+     function addFilesToQueue(files, docId){
+      if(!files||!files.length) return;
+
+      const MAX = 1 * 1024 * 1024;   // ✅ 1 MB limit
+      const docName = (allDocuments.find(d=>String(d.documentId)===String(docId))?.documentName) || "Unknown";
+
+      for(const file of files){
+        if(file.type !== "application/pdf"){
+          toast(`"${file.name}" is not a PDF.`,"error",1600);
+          continue;
+        }
+        if(file.size > MAX){
+          toast(`"${file.name}" PDF Size Not More Then 1 MB.`,"warning",2000);
+          continue;
+        }
+
+        // ✅ size ठीक है तो queue में add कर दो
+        const id=(crypto.randomUUID?crypto.randomUUID():Date.now()+"_"+Math.random().toString(16).slice(2));
+        const item = {
+          id, documentId:docId, documentName:docName,
+          file, name:file.name, sizeMB:file.size/1024/1024,
+          status:"Queued", progress:0, _intervalId:null
+        };
+        uploadQueue.push(item);
+        startClientProgress(item);
+
+        allDocuments = allDocuments.filter(d=>String(d.documentId)!==String(docId));
+      }
+
+      refreshSelectBox();
+      renderQueue();
+    }
+
+
+
+
+
+    function renderQueue(){
+      const list = document.getElementById("AttachList");
+      list.innerHTML = "";
+      if(!uploadQueue.length){
+        list.className = "u-emptyBox";
+        list.textContent = "No files queued. Select a type then add PDFs.";
+        return;
+      }
+
+      uploadQueue.forEach((it, index)=>{
+        const row = document.createElement("div");
+        row.className = "u-item";
+        const progressWidth = (it.progress||0) + "%";
+        const statusText = it.progress >= 100 ? "Completed" : (it.status || "Queued");
+        row.innerHTML = `
+          <div class="u-ico" id="ico_${it.id}" title="Preview">📄</div>
+          <div class="u-meta">
+            <div class="nm" id="nm_${it.id}">${escapeHtml(it.name)}</div>
+            <div class="sub">${escapeHtml(it.documentName)} • ${it.sizeMB.toFixed(2)} MB</div>
+            <div class="u-line"><span id="pbar_${it.id}" style="width:${progressWidth}"></span></div>
+
+          </div>
+          <div class="u-actions">
+      <button type="button" class="u-btn u-remove" id="rm_${it.id}" title="Remove">
+        ✖
+      </button>
+    </div>
+
+        `;
+        list.appendChild(row);
+
+        const openPrev = ()=>{ const url = URL.createObjectURL(it.file); $("#PdfPopup").dxPopup("instance").show(); $("#pdfFrame").attr("src", url); };
+        document.getElementById(`ico_${it.id}`).addEventListener("click", openPrev);
+        document.getElementById(`nm_${it.id}`).addEventListener("click", openPrev);
+
+        document.getElementById(`rm_${it.id}`).addEventListener("click", ()=>{
+          const removed = uploadQueue.splice(index,1)[0];
+          if(removed._intervalId) clearInterval(removed._intervalId);
+          const stillQueued = uploadQueue.some(x=>String(x.documentId)===String(removed.documentId));
+          if(!stillQueued){
+            const back = allDocumentsBackup.find(d=>String(d.documentId)===String(removed.documentId));
+            if(back && !allDocuments.some(d=>String(d.documentId)===String(back.documentId))){
+              allDocuments.push(back);
+              allDocuments.sort((a,b)=>String(a.documentName).localeCompare(String(b.documentName)));
+              refreshSelectBox();
+            }
+          }
+          renderQueue();
+        });
+      });
+    }
+
+    function startClientProgress(item){
+      if(item._intervalId) return;
+      item.status = "Uploading…";
+      item.progress = item.progress || 0;
+
+      const estimatedMs = Math.min(1800 + item.sizeMB * 1500, 7000);
+      const tick = 120;
+      const steps = Math.max(6, Math.ceil(estimatedMs / tick));
+      const stepInc = 100 / steps;
+      const kbsec = Math.max(10, Math.round((item.sizeMB * 1024) / (estimatedMs / 1000)));
+
+      let progress = item.progress;
+      const id = setInterval(()=>{
+        if(progress < 98) progress = Math.min(98, progress + stepInc + Math.random() * (stepInc * 0.4));
+        else progress = Math.min(99.5, progress + Math.random() * 0.6);
+        item.progress = progress;
+        const pbar = document.getElementById(`pbar_${item.id}`);
+        const pst  = document.getElementById(`pstatus_${item.id}`);
+        const spd  = document.getElementById(`pspd_${item.id}`);
+        if(pbar) pbar.style.width = Math.floor(progress) + "%";
+        if(pst) pst.textContent = Math.floor(progress) + "% done";
+        if(spd) spd.textContent = kbsec + " KB/sec";
+
+        if(item.progress >= 100){
+          clearInterval(id);
+          item._intervalId = null;
+          item.progress = 100;
+          if(pbar){ pbar.style.width = "100%"; pbar.classList.add("done"); }
+          if(pst) pst.textContent = "Completed";
+          if(spd) spd.textContent = "";
+        }
+      }, tick);
+
+      item._intervalId = id;
+      renderQueue();
+    }
+    async function uploadAllDocuments(){
+      if(!uploadQueue.length){ toast("No files to upload.","info",1200); return; }
+
+      const fd = new FormData();
+      fd.append("studentId", document.getElementById("studentId").value);
+      fd.append("kioskId", document.getElementById("kioskId").value);
+
+      uploadQueue.forEach((item,i)=>{
+        fd.append(`documents[${i}].documentId`, item.documentId);
+        fd.append(`documents[${i}].file`, item.file, item.name);
+        const pst = document.getElementById(`pstatus_${item.id}`);
+        if(pst) pst.textContent = "Uploading…";
+      });
+
+      try{
+        const res = await fetch('@Url.Action("UploadMultipleDocuments", "Student")', { method:'POST', body: fd });
+        const result = await res.json();
+        if(result?.success){
+          uploadQueue.forEach(item=>{
+            if(item._intervalId){ clearInterval(item._intervalId); item._intervalId = null; }
+            item.progress = 100;
+            const pbar = document.getElementById(`pbar_${item.id}`);
+            const pst  = document.getElementById(`pstatus_${item.id}`);
+            const spd  = document.getElementById(`pspd_${item.id}`);
+            if(pbar){ pbar.style.width = "100%"; pbar.classList.add("done"); }
+            if(pst){ pst.textContent = "Completed"; pst.classList.add("ok"); }
+            if(spd) spd.textContent = "";
+          });
+
+          toast("All documents uploaded successfully.","success",1400);
+
+          uploadQueue.forEach(item=>{
+            allDocuments = allDocuments.filter(d=>String(d.documentId)!==String(item.documentId));
+          });
+
+          uploadQueue = [];
+          refreshSelectBox();
+          renderQueue();
+        } else {
+          toast("Upload failed: " + (result?.message || "Unknown error"), "error", 2200);
+        }
+      } catch(e){
+        console.error(e);
+        toast("Error uploading documents.","error",2200);
+      }
+    }
+
+</script>

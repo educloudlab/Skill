@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body onclick="resetBalanceText()">
+    
+    @Html.Partial("LayoutBaseContentHeaderUser")
+    
+    <div>
+        @RenderBody()
+    </div>
+    @Html.Partial("LayoutBaseContentFooterUser")
+</body>
+</html>

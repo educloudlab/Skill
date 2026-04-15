@@ -1,0 +1,114 @@
+﻿@using AisectOnline.Services.Modules.Students
+@model int
+
+<!-- 🔹 Heading -->
+
+
+<!-- 🔹 Grid -->
+<fieldset class="form-box">
+    <legend>Master Data </legend>
+    <div class="grid-box">
+        @(Html.DevExtreme().DataGrid<ListItems>()
+                .ID("gridContainer_" + Model)
+                .KeyExpr("ValueField")
+                .Columns(columns =>
+                {
+                    columns.Add().DataField("TextField").Caption("Description");
+
+                    columns.Add().Type(GridCommandColumnType.Buttons)
+                    .Caption("Actions").Width(160).Alignment(HorizontalAlignment.Center)
+                    .Buttons(b =>
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit).CssClass("act-edit");
+                        b.Add().Name(GridColumnButtonName.Delete).CssClass("act-delete");
+                        b.Add().Name(GridColumnButtonName.Save).CssClass("icon-save");
+                        b.Add().Name(GridColumnButtonName.Cancel).CssClass("icon-cancel");
+                    });
+                })
+                .Editing(e => e
+                .Mode(GridEditMode.Row)
+                .AllowAdding(true)
+                .AllowUpdating(true)
+                .AllowDeleting(true)
+                .ConfirmDelete(true)
+                .Texts(t => t
+                .ConfirmDeleteTitle("Confirm Delete")
+                .ConfirmDeleteMessage("Are you sure you want to delete this record?")
+                )
+                )
+                .Paging(p => p.PageSize(10))
+                .ShowBorders(true)
+                .DataSource(d => d.Mvc()
+                .Controller("Admin")
+                .LoadAction("GetMasterDataList")
+                .InsertAction("CreateMasterData")
+                .UpdateAction("UpdateMasterData")
+                .DeleteAction("DeleteMasterData")
+                .Key("ValueField")
+                .LoadParams(new { typeId = Model })
+                .OnBeforeSend("function(method, ajaxOptions) { ajaxOptions.data.typeId = " + Model + "; }")
+                )
+                  // Toast trigger
+                .OnRowInserted("onRowInserted")
+                .OnRowUpdated("onRowUpdated")
+                .OnRowRemoved("onRowRemoved")
+                )
+    </div>
+</fieldset>
+
+<!-- 🔹 Toast JS -->
+<script>
+    // Common Toast function
+    function showToast(msg, bgColor, offsetY) {
+        DevExpress.ui.notify({
+            message: msg,
+            type: "custom",
+            displayTime: 2000,
+            position: {
+                my: "center top",
+                at: "center top",
+                of: ".page-title",
+                offset: "0 " + offsetY
+            },
+            width: 260
+        });
+
+        // custom style after render
+        setTimeout(function () {
+            let lastToast = document.querySelector(".dx-toast-content:last-child");
+            if (lastToast) {
+                lastToast.style.background = bgColor;
+                lastToast.style.color = "#fff";
+                lastToast.style.borderRadius = "6px";
+                lastToast.style.fontWeight = "600";
+                lastToast.style.display = "flex";
+                lastToast.style.alignItems = "center";
+                lastToast.style.justifyContent = "center";
+                lastToast.style.gap = "8px";
+            }
+        }, 50);
+    }
+
+    // Grid events
+    function onRowInserted(e) {
+        // Two notifications together on insert
+        showToast("✔ Fee Type Added Successfully", "#16a34a", 40);   // first green
+        setTimeout(function(){
+            showToast("ℹ Remember to Save Changes", "#2563eb", 80); // second blue
+        }, 100);
+    }
+    function onRowUpdated(e) {
+        // Two notifications together on update
+        showToast("✔ Fee Type Updated Successfully", "#16a34a", 40); // green
+        setTimeout(function(){
+            showToast("ℹ Data Synced", "#2563eb", 80);               // blue
+        }, 100);
+    }
+    function onRowRemoved(e) {
+        // Two notifications together on delete
+        showToast("✖ Fee Type Deleted", "#dc2626", 40); // red
+        setTimeout(function(){
+            showToast("ℹ Record Removed From List", "#2563eb", 80); // blue
+        }, 100);
+    }
+</script>

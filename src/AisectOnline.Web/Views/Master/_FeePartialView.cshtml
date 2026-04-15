@@ -1,0 +1,79 @@
+﻿@using AisectOnline.Data.Models
+@using AisectOnline.Services.Modules.MasterData
+@using AisectOnline.Services.Modules.Students
+@using Microsoft.EntityFrameworkCore.Metadata.Builders
+
+<div id="data-grid-demo">
+    @(
+        Html.DevExtreme().DataGrid<LateFeeMaster>()
+            .ID("gvLateFee")
+            .ShowBorders(true)
+            .Paging(p => p.Enabled(false))
+            .Editing(e => e.Mode(GridEditMode.Popup)
+                .AllowUpdating(true)
+                .AllowAdding(true)
+                @* .AllowDeleting(true) *@
+                .Popup(p => p
+                    .Title("Fee Info")
+                    .ShowTitle(true)
+                    .Width(700)
+                    .Height(525)
+                )
+                .Form(f => f.Items(items => {
+                    items.AddGroup()
+                        .ColCount(2)
+                        .ColSpan(2)
+                        .Items(groupItems => {                           
+
+                            
+                            groupItems.AddSimpleFor(m => m.Days)
+                                      .IsRequired(true)
+                                      .ValidationRules(rules =>
+                                      {
+                                          rules.AddRequired()
+                                               .Message("Days is required");
+                                          rules.AddNumeric()
+                                               .Message("Days must be numeric");
+                                      });
+
+                            groupItems.AddSimpleFor(m => m.LateFeeAmount)
+                                      .IsRequired(true)
+                                      .ValidationRules(rules =>
+                                      {
+                                          rules.AddRequired()
+                                               .Message("Late Fee Amount is required");
+                                          rules.AddNumeric()
+                                               .Message("Late Fee Amount must be numeric");
+                                      });
+
+                            groupItems.AddSimpleFor(m => m.IsActive)
+                                      .Editor(e => e.CheckBox())
+                                      .ValidationRules(rules =>
+                                      {
+                                          rules.AddRequired()
+                                               .Message("Please select Active status");
+                                      });
+                        });
+                }))
+            )
+
+            .Columns(columns => {
+                columns.AddFor(m => m.Days)
+                       .Width(70);
+                columns.AddFor(m => m.LateFeeAmount);
+                columns.AddFor(m => m.IsActive)
+                       .DataType(GridColumnDataType.Boolean)
+                       .Caption("Active?");  
+            })
+
+            .DataSource(d => d.Mvc()
+                .Controller("Master")
+                .LoadAction("_FeePartialView")          
+                .UpdateAction("FeeUpdate")
+                .InsertAction("FeeInsert")
+                .DeleteAction("FeeDelete")
+                .Key("LateFeeId")
+                .LoadParams(new { sessionID = new JS("getSessionID") })
+            )
+    )
+</div>

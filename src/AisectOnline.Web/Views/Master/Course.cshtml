@@ -1,0 +1,42 @@
+﻿@using AisectOnline.Data.Models
+@using AisectOnline.Services.Modules.MasterData
+
+
+@model SessionDto
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Course Grid";
+}
+
+<table>
+    <tr>
+        <td style="height:100px"></td>
+    </tr>
+</table>
+ <div id="programmePartial">
+</div> 
+
+<script>
+
+    $(function() {
+        $("#programmePartial").load('/Master/_ProgrammePartialView?KioskTypeID=@Model.KioskTypeID&KioskServiceID=@Model.KioskServiceID&SessionID=@Model.SessionID');
+    });
+
+
+       function getSessionLoadParams() {
+        return {
+            SessionID: '@Model.SessionID',
+            KioskTypeID: '@Model.KioskTypeID',
+            KioskServiceID: '@Model.KioskServiceID'
+        };
+    }
+
+
+</script> 
+
+
+
+@* @Html.Partial("_ProgrammePartialView", Model)
+ *@ 
+
+
