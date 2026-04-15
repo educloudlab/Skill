@@ -1,0 +1,145 @@
+﻿   
+        
+ .wrapper {
+      transition: filter 0.4s ease;
+    }
+
+    .blurred {
+      filter: blur(5px);
+      pointer-events: none;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .login-btn {
+      padding: 12px 25px;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url('https://www.transparenttextures.com/patterns/connected.png') center/cover no-repeat;
+      border-radius: 12px;
+      padding: 40px;
+      width: 400px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .modal-content img {
+      display: block;
+      margin: 0 auto 0px;
+      max-width: 150px;
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .modal-content h2 {
+      color: #007bff;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .modal-content p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: block;
+      text-align: left;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    .sign-in-btn {
+      background:linear-gradient(to right, #000691, #008fff);
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .sign-in-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .captcha-image {
+      font-weight: bold;
+      font-size: 18px;
+      background: linear-gradient(to right, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      color: #222;
+      padding: 8px 15px;
+      letter-spacing: 3px;
+      border-radius: 6px;
+      user-select: none;
+      font-family: monospace;
+    }
