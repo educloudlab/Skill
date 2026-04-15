@@ -52,8 +52,14 @@ builder.Services.AddControllers()
 
 
 // Data Protection
+var dpKeysPath = config["DataProtectionKeys:Path"];
+if (string.IsNullOrEmpty(dpKeysPath) || !Path.IsPathRooted(dpKeysPath) || !Directory.Exists(Path.GetPathRoot(dpKeysPath)))
+{
+    dpKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
+}
+Directory.CreateDirectory(dpKeysPath);
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(config["DataProtectionKeys:Path"]))
+    .PersistKeysToFileSystem(new DirectoryInfo(dpKeysPath))
     .SetApplicationName("AisectOnlineERP");
 
 // Authentication & Identity
@@ -94,10 +100,10 @@ app.UseSession();
 app.UseRouting();
 app.UseCors("Default");
 
-app.MapControllerRoute("default", "{controller=Account}/{action=LogOn}/{id?}");
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute("default", "{controller=Account}/{action=LogOn}/{id?}");
 
 if (app.Environment.IsDevelopment())
 {
