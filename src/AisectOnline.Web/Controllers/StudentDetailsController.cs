@@ -94,7 +94,7 @@ namespace AisectOnline.WebUI.Controllers
         }
 
 
-       
+        [HttpPost("saveUploadExcel")]
         public JsonResult saveUploadExcel(IFormFile file, int district, int State, string skp)
         {
             StudentDeatils _Student = new StudentDeatils();
@@ -146,7 +146,7 @@ namespace AisectOnline.WebUI.Controllers
             };
             return Json(result);
         }
-        [HttpPost]
+        [HttpPost("DeleteAllRecords")]
         public ActionResult DeleteAllRecords(string id)
         {
             try
@@ -268,7 +268,7 @@ namespace AisectOnline.WebUI.Controllers
     
 
 
-        [HttpGet]
+        [HttpGet("getUploadExcel")]
         public JsonResult getUploadExcel(int stateId, int districtId, int kioskID)
         {
             var kiosk = _excelService.GetUploadeData(stateId, districtId, kioskID);

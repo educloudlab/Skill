@@ -263,10 +263,23 @@
 
 
         <div class="inputbox">
-           <input type="file" id="fileInput" name="file" class="frm-control" />
-        
+            <input type="file" id="fileInput" name="file" class="form-control" accept=".xls,.xlsx" />
         </div>
         <div class="errormsg" id="fileValidationMessage"></div>
+
+
+
+   @*      <form asp-action="UploadExcel" asp-controller="Home" method="post" enctype="multipart/form-data">
+            <div class="inputbox">
+                <input type="file" id="fileInput" name="file" class="form-control" accept=".xls,.xlsx" />
+            </div>
+            <div class="errormsg" id="fileValidationMessage"></div>
+
+            <button type="submit" class="btn btn-primary mt-2">Upload</button>
+        </form> *@
+
+
+
 
 
          <div class="inputbox">
@@ -331,8 +344,6 @@
 
      
         $('#uploadForm').submit(function(event) {
-
-           
         $('#img').show(); 
         debugger;
         var dropdown = $("#dropdown option:selected").text();
