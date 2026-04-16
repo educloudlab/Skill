@@ -10,6 +10,8 @@ using AisectOnline.Common.Session;
 using AisectOnline.Services.Modules.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 namespace AisectOnline.Web.Controllers
 {
     /// <summary>
@@ -100,7 +102,11 @@ namespace AisectOnline.Web.Controllers
                 var action = context.ActionDescriptor.RouteValues["action"];
                 _logger.LogError(context.Exception, "Unhandled exception in {Controller}.{Action}", controller, action);
 
-                context.Result = Failure("An unexpected error occurred.", 500);
+                var env = context.HttpContext.RequestServices.GetService<IWebHostEnvironment>();
+                var message = env != null && !env.IsProduction()
+                    ? context.Exception.ToString()
+                    : "An unexpected error occurred.";
+                context.Result = Failure(message, 500);
                 context.ExceptionHandled = true;
             }
 
