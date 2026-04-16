@@ -53,7 +53,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_30F2C8419CDA47AD88CAE38112636DD2 }}
 
       - name: Set startup command
-        run: az webapp config set --name aisectskills --resource-group $(az webapp show --name aisectskills --query resourceGroup -o tsv) --startup-file "dotnet AisectOnline.Web.dll"
+        run: az webapp config set --name aisectskills --resource-group WebApps --startup-file "dotnet AisectOnline.Web.dll"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
