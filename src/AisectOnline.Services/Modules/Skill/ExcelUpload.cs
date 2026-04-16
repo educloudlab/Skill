@@ -19,7 +19,7 @@ namespace AisectOnline.Services.Modules.Skill
         public ExcelUpload(IConfiguration configuration)
         {
 
-            var DefaultConnection = "Server=161.248.24.37;Database=SkillProjects;User ID=aisect2;Password=bqG8#PML$ZcRs#qy;TrustServerCertificate=True;";
+            var DefaultConnection = "Server=161.248.24.37;Database=SkillProjects;User ID=aisect2;Password=bqG8#PML$ZcRs#qy;TrustServerCertificate=True;Encrypt=False;";
             _connectionString = DefaultConnection;
 
             // configuration.GetConnectionString("DefaultConnection");
