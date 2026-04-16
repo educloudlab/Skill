@@ -35,4 +35,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="startup.sh" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
