@@ -18,13 +18,9 @@ namespace AisectOnline.Services.Modules.Skill
         private readonly string _connectionString = string.Empty;
         public ExcelUpload(IConfiguration configuration)
         {
-
-            // var DefaultConnection = "Server=161.248.24.37;Database=SkillProjects;User ID=aisect2;Password=bqG8#PML$ZcRs#qy;TrustServerCertificate=True;Encrypt=False;";
-            // _connectionString = DefaultConnection;
-
-             configuration.GetConnectionString("DefaultConnection");
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
-
+            _connectionString = configuration.GetConnectionString("SkillProjectsConnection")
+                ?? configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("No connection string found.");
         }
 
 
