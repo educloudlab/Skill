@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,11 +19,11 @@ namespace AisectOnline.Services.Modules.Skill
         public ExcelUpload(IConfiguration configuration)
         {
 
-            var DefaultConnection = "Server=161.248.24.37;Database=SkillProjects;User ID=aisect2;Password=bqG8#PML$ZcRs#qy;TrustServerCertificate=True;Encrypt=Optional;";
-            _connectionString = DefaultConnection;
+            // var DefaultConnection = "Server=161.248.24.37;Database=SkillProjects;User ID=aisect2;Password=bqG8#PML$ZcRs#qy;TrustServerCertificate=True;Encrypt=False;";
+            // _connectionString = DefaultConnection;
 
-            // configuration.GetConnectionString("DefaultConnection");
-            //_connectionString = configuration.GetConnectionString("DefaultConnection");
+             configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
 
         }
 
