@@ -55,7 +55,7 @@ jobs:
       - name: Set startup command and environment
         run: |
           az webapp config set --name aisectskills --resource-group WebApps --startup-file "bash /home/site/wwwroot/startup.sh"
-          az webapp config appsettings set --name aisectskills --resource-group WebApps --settings ASPNETCORE_ENVIRONMENT=Development
+          az webapp config appsettings set --name aisectskills --resource-group WebApps --settings ASPNETCORE_ENVIRONMENT=Development OPENSSL_CONF=/home/site/wwwroot/openssl.cnf
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
