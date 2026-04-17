@@ -251,6 +251,7 @@ namespace AisectOnline.WebUI.Controllers
             return RedirectToAction("StudentDetail");
         }
 
+        [HttpGet("StudentDetailInformation")]
         public IActionResult StudentDetailInformation()
         {
             return View();
