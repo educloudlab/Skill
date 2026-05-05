@@ -105,7 +105,7 @@ namespace AisectOnline.Web.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> SaveStudentCourses([FromBody] List<students> studentData)
+        public async Task<IActionResult> SaveStudentCourses([FromBody] List<student> studentData)
         {
             if (studentData == null || studentData.Count == 0)
             {
@@ -179,7 +179,7 @@ namespace AisectOnline.Web.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> SaveStudent([FromBody] students studentData)
+        public async Task<IActionResult> SaveStudent([FromBody] student studentData)
         {
             if (studentData == null)
             {

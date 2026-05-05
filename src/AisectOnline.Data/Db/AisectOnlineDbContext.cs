@@ -22,6 +22,7 @@ public partial class AisectOnlineDbContext : IdentityDbContext<ApplicationUser, 
 
 
 
+    public virtual DbSet<Category> Categorys { get; set; }
 
     public virtual DbSet<StudentDetail> StudentDetails { get; set; }
 
@@ -2224,6 +2225,32 @@ public partial class AisectOnlineDbContext : IdentityDbContext<ApplicationUser, 
         base.OnModelCreating(modelBuilder);
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
+
+
+       
+        modelBuilder.Ignore<CourseName>();
+
+        //modelBuilder.Ignore<StudentDetailDto>();
+         modelBuilder.Ignore<Services>();
+
+         modelBuilder.Ignore<SubjectName>();
+
+        modelBuilder.Entity<SubjectName>()
+        .HasKey(x => x.ExamPaperId);
+
+
+        //modelBuilder.Ignore<std>();
+        modelBuilder.Ignore<Student>();
+
+
+        // If there is a Category class used only for dropdown/viewmodel:
+        modelBuilder.Ignore<Category>();
+
+           modelBuilder.Entity<Services>()
+
+            .HasKey(x => x.KIOSKServiceID);
+
+
         modelBuilder.Entity<A102>(entity =>
         {
             entity
@@ -2346,6 +2373,10 @@ public partial class AisectOnlineDbContext : IdentityDbContext<ApplicationUser, 
             entity.Property(e => e.ResponseString).HasMaxLength(50);
             entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
         });
+
+      
+     
+
 
         modelBuilder.Entity<AbCioCashWithDrawl>(entity =>
         {
