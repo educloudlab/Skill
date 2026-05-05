@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AisectOnline.Data.Models;
 
 public partial class AssignmentPracticalMark
 {
+
+    [Key]
     public int Id { get; set; }
 
     public string? RegistrationNo { get; set; }
