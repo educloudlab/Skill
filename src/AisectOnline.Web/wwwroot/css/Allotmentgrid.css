@@ -1,0 +1,148 @@
+﻿
+.dx-checkbox-container {
+    margin-bottom: 0px;
+}
+
+.page {
+    margin: 78px auto;
+    max-width: 1150px;
+    font-family: "Segoe UI", Roboto, Arial;
+    color: #0b335f;
+    position: relative;
+    z-index: 1;
+}
+
+.academy-outer {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid #e6eefb;
+    box-shadow: 0 12px 30px rgba(14,165,233,0.08);
+}
+
+.heading-row {
+    text-align: center;
+    margin-bottom: 2%;
+}
+
+    .heading-row h2 {
+        margin: 0;
+        color: orange;
+        font-size: 22px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        text-align: center;
+    }
+
+.top-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.panel {
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e6e9f2;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+    position: relative;
+}
+
+.boxed-select {
+    border: 1px solid #e6e9f2;
+    border-radius: 8px;
+    padding: 8px;
+    background: #fff;
+}
+
+.allot-area {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.left-panel, .right-panel {
+    flex: 1;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e9eefb;
+    min-height: 320px;
+}
+
+.actions-col {
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn, .update-btn {
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    transform: translateZ(0);
+}
+
+    .action-btn:hover, .update-btn:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 10px 20px rgba(15,23,42,0.12);
+    }
+
+.action-btn {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+    .action-btn.primary {
+        background: linear-gradient(180deg,#06b6d4,#3b82f6);
+        color: #fff;
+        border: none;
+    }
+
+    .action-btn.ghost {
+        background: #fff;
+        color: #0b335f;
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+#gridContainer .dx-data-grid, #gridContainer2 .dx-data-grid {
+    height: 260px !important;
+}
+
+.update-btn {
+    display: none;
+    margin: 20px auto 0 auto;
+    background: linear-gradient(180deg,#22c55e,#16a34a);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dx-datagrid .dx-row.disabled-row td {
+    color: #c0c0c0 !important;
+    background: #f9f9f9 !important;
+    font-style: italic;
+}
+
+.dx-datagrid .dx-row.disabled-row .dx-select-checkbox {
+    opacity: 0.2;
+    pointer-events: none;
+    overflow: hidden;
+}

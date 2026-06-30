@@ -35,4 +35,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="startup.sh" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="openssl.cnf" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

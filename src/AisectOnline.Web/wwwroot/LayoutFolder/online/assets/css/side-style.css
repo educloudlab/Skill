@@ -1,0 +1,70 @@
+﻿  .leftDiv {
+             
+                float: left;
+            }
+
+
+
+div.b {
+  position: fixed;
+  right: 0;
+  width: 12%;
+  height: 65%;
+  border: 1px solid gray;
+  background-color:aliceblue;
+      padding: 15px;
+ 
+} 
+
+@media only screen and (max-width: 1024px) {
+div.b {
+display:none;
+ 
+} 
+}
+
+@media only screen and (max-width: 1024) {
+.leftDiv {
+display:none;
+ 
+} 
+}
+
+@media only screen and (max-width: 1440px) {
+.container {
+margin-top:0%;
+} 
+}
+
+@media only screen and (max-width: 375px) {
+.container {
+margin-top:18%;
+} 
+}
+
+@media only screen and (max-width: 2560px) {
+.container {
+max-width:75%;
+} 
+}
+
+@media only screen and (max-width: 1440px) {
+div.b {
+  position: fixed;
+  right: 0;
+  width: 8%;
+  height: 50%;
+  border: 1px solid gray;
+  background-color:aliceblue; 
+} 
+}
+
+@media only screen and (max-width: 768px) {
+.leftDiv {
+display:none;
+
+
+} 
+}
+
+

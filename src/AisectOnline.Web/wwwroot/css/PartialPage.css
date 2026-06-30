@@ -1,0 +1,27 @@
+﻿.hidden {
+    display: none;
+}
+
+.view-all-wrapper {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+.view-all-button {
+    background: linear-gradient(to right, #004ce5, #0066ff);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 76, 229, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .view-all-button:hover {
+        background: linear-gradient(to right, #003ccc, #005be0);
+        transform: scale(1.05);
+    }

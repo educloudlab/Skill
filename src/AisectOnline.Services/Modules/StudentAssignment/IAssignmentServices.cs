@@ -10,7 +10,7 @@ namespace AisectOnline.Services.Modules.StudentAssignment
 {
     public interface IAssignmentServices
     {
-        Task<List<Servicess>> GetServiceName(int KioskID);
+        Task<List<Services>> GetServiceName(int KioskID);
         Task<List<CourseCategory>> GetCoursecategoryid(int ServiceID, int KioskID);
 
         Task<List<CourseName>> GetCourseName(int KioskID, int CategoryID, int ServiceID);

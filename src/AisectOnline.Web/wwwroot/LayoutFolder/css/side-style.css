@@ -1,0 +1,175 @@
+﻿  .leftDiv {
+             
+                float: left;
+            }
+
+
+
+div.b {
+  position: fixed;
+  right: 0;
+  width: 12%;
+  height: 65%;
+
+  background-color:aliceblue;
+      padding: 15px;
+ 
+} 
+
+@media only screen and (max-width: 1024px) {
+div.b {
+display:none;
+ 
+} 
+}
+
+@media only screen and (max-width: 1024) {
+.leftDiv {
+display:none;
+ 
+} 
+}
+
+@media only screen and (max-width: 1440px) {
+.container {
+margin-top:0%;
+} 
+}
+
+@media only screen and (max-width: 375px) {
+.container {
+margin-top:18%;
+} 
+}
+
+@media only screen and (max-width: 2560px) {
+.container {
+max-width:75%;
+} 
+}
+
+@media only screen and (max-width: 1440px) {
+div.b {
+  position: fixed;
+  right: 0;
+  width: 8%;
+  height: 50%;
+} 
+}
+
+@media only screen and (max-width: 768px) {
+.leftDiv {
+display:none;
+
+
+} 
+}
+
+
+
+:root {
+	--gradient-shadow: linear-gradient(
+		45deg,
+		#fb0094,
+		#0000ff,
+		#00ff00,
+		#ffff00,
+		#ff0000,
+		#fb0094,
+		#0000ff,
+		#00ff00,
+		#ffff00,
+		#ff0000
+	);
+}
+
+.shadow {
+	display: flex;
+justify-content: center;
+    align-items: center;
+    position: relative;
+    color: #fff;
+    /* text-align: center; */
+    font-size: 50px;
+    font-weight: bold;
+    width: 230px;
+    height: 590px;
+    background: White;
+    margin-left: -13px;
+    margin-top: -14px;
+    padding: inherit;
+}
+.shadow:before,
+.shadow:after {
+content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--gradient-shadow);
+    background-size: 100%;
+    width: calc(100% + 4px);
+    height: calc(95% + 4px);
+    z-index: -1;
+    animation: animate 20s linear infinite;
+}
+
+.shadow:after {
+	filter: blur(20px);
+}
+
+@keyframes animate {
+	0% {
+		background-position: 0 0;
+	}
+	50% {
+		background-position: 300% 0;
+	}
+	100% {
+		background-position: 0 0;
+	}
+}
+
+
+
+.glitch-text {
+    font-size: 2.7 rem;
+    font-weight: bold;
+    position: relative;
+    color: #45f23;
+    animation: glitch 2s infinite;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: 'Kiosk And Download';
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ff005e;
+    background: transparent;
+    clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
+    animation: glitch 2s infinite;
+}
+
+.glitch-text::after {
+    color: #00d4ff;
+    clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch {
+    0%, 100% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-2px, 2px);
+    }
+    40% {
+        transform: translate(2px, -2px);
+    }
+    60% {
+        transform: translate(-1px, 1px);
+    }
+    80% {
+        transform: translate(1px, -1px);
+    }
+}
