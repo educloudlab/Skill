@@ -18,7 +18,7 @@ namespace AisectOnline.Services.Modules.StudentAssignment
     {
         private readonly AisectOnlineDbContext _context;
         public AssignmentServices(AisectOnlineDbContext context) => _context = context;
-        public async Task<List<Servicess>> GetServiceName(int KioskID)
+        public async Task<List<Services>> GetServiceName(int KioskID)
         {
             await _context.Database.OpenConnectionAsync();
             try
@@ -27,8 +27,8 @@ namespace AisectOnline.Services.Modules.StudentAssignment
                 var KioskIds = new SqlParameter("@KioskId", KioskID);
 
                 return await _context.Database
-                    .SqlQueryRaw<Servicess>("EXEC up_GetServiceName @KioskId", KioskIds)
-                    .ToListAsync() ?? new List<Servicess>();
+                    .SqlQueryRaw<Services>("EXEC up_GetServiceName @KioskId", KioskIds)
+                    .ToListAsync() ?? new List<Services>();
             }         
             finally
             {
